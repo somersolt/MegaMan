@@ -1,6 +1,8 @@
 #pragma once
 #include "Scene.h"
 
+class Player;
+class SpriteGo;
 
 class SceneGame : public Scene
 {
@@ -14,6 +16,10 @@ public:
 protected:
 
 	Status currentStatus;
+
+	Player* player = nullptr;
+	SpriteGo* backgroundtest = nullptr;
+	SpriteGo* backgroundtestLayer = nullptr;
 
 public:
 	SceneGame(SceneIds id);

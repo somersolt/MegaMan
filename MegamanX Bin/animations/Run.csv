@@ -2,7 +2,6 @@ ID,FPS,"LOOPTYPE (0: Single, 1: Loop, 2: PingPong)",,
 Run,10,1,,
 ,,,,
 TEXTURE ID,LEFT,TOP,WIDTH,HEIGHT
-graphics/xsheet.png,105,100,30,41
 graphics/xsheet.png,135,100,22,41
 graphics/xsheet.png,157,100,24,41
 graphics/xsheet.png,181,100,32,41

@@ -35,8 +35,9 @@ void Animator::Update(float dt)
 	if (accumTime < clipDuration)
 		return;
 	
-	accumTime = 0.f;
 	currentFrame += addFrame;
+	accumTime = 0.f;
+	isChange = false;
 
 	if (currentFrame == totalFrame || currentFrame == -1)
 	{
@@ -91,7 +92,7 @@ void Animator::Update(float dt)
 	SetFrame(currentClip->frames[currentFrame]);
 }
 
-void Animator::Play(const std::string& clipId, bool clearQueue)
+void Animator::Play(const std::string& clipId, bool clearQueue , bool ischange)
 {
 	if (clearQueue)
 	{
@@ -100,16 +101,26 @@ void Animator::Play(const std::string& clipId, bool clearQueue)
 			queue.pop();
 		}
 	}
+	if (ischange)
+	{
+		isChange = true;
+	}
 
 	isPlaying = true;
 	addFrame = 1;
-	accumTime = 0.f;
+	if (!isChange)
+	{
+		accumTime = 0.f;
+	}
 
 	currentClip = &RES_MGR_ANI_CLIP.Get(clipId);
 	currentFrame = 0;
 	totalFrame = currentClip->GetTotalFrame();
 	clipDuration = 1.f / currentClip->fps;
-	SetFrame(currentClip->frames[0]);
+	if (!isChange)
+	{
+		SetFrame(currentClip->frames[0]);
+	}
 }
 
 void Animator::PlayQueue(const std::string& clipId)

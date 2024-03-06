@@ -1,5 +1,7 @@
 #include "pch.h"
 #include "SceneGame.h"
+#include "Player/Player.h"
+
 
 SceneGame::SceneGame(SceneIds id) : Scene(id)
 {
@@ -21,6 +23,22 @@ void SceneGame::SetStatus(Status newStatus)
 
 void SceneGame::Init()
 {
+
+	// 임시 맵 
+	backgroundtest = new SpriteGo("");
+	backgroundtest->SetTexture("graphics/test_stage.png");
+	AddGo(backgroundtest);
+
+	backgroundtestLayer = new SpriteGo("");
+	backgroundtestLayer->SetTexture("graphics/test_stage_collision.png");
+	AddGo(backgroundtestLayer);
+
+	// 플레이어
+
+	player = new Player("player");
+	AddGo(player);
+	player->SetPosition({ 0,0 });
+
 	Scene::Init();
 }
 
@@ -48,7 +66,11 @@ void SceneGame::Update(float dt)
 {
 
 	Scene::Update(dt);
-	
+
+	sf::Vector2f worldViewCenter = worldView.getCenter();
+	worldViewCenter = player->GetPosition();
+	worldView.setSize({1920/3,1080/3});
+	worldView.setCenter(worldViewCenter);
 }
 
 void SceneGame::LateUpdate(float dt)

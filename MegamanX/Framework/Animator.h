@@ -63,6 +63,8 @@ protected:
 
 	float accumTime = 0.f;
 
+	bool isChange = false;
+
 	sf::Sprite* target = nullptr; // 애니메이션 대상
 
 public:
@@ -86,11 +88,14 @@ public:
 
 	void SetFrame(const AnimationFrame& frame);
 
+	const int GetCurrentFrame() { return currentFrame; } // 현재 프레임
+	void SetCurrentFrame(int c) { currentFrame = c; } // 현재 프레임 변경
+
 
 
 	void Update(float dt);
 
-	void Play(const std::string& clipId, bool clearQueue = true);
+	void Play(const std::string& clipId, bool clearQueue = true, bool ischange = false);
 	void PlayQueue(const std::string& clipId);
 	void Stop();
 };
