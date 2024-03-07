@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "Player.h"
-
+#include "SceneGame.h"
+#include "Buster.h"
 
 
 Player::Player(const std::string& name) : SpriteGo(name)
@@ -16,13 +17,23 @@ void Player::SetPlayerStatus(Status status)
 
 void Player::Shoot()
 {
-	//TO-DO 투사체 구현
+	Buster* buster = new Buster("buster");
+	buster->Init();
+	buster->Reset();
+	buster->SetPosition({ position.x, position.y - 16 });
+	buster->Fire({1.f,0.f}, 600, 1 ,side);
+	sceneGame->AddGo(buster);
 	isShooting = false;
 }
 
 void Player::ChargeShoot()
 {
-	//TO-DO 충전에 따른 투사체 구현
+	Buster* chargeBuster = new Buster("chargeBuster");
+	chargeBuster->Init();
+	chargeBuster->Reset();
+	chargeBuster->SetPosition({ position.x, position.y - 30 });
+	chargeBuster->ChargeFire({ 1.f,0.f }, 600, 5, side);
+	sceneGame->AddGo(chargeBuster);
 	isShooting = false;
 }
 
@@ -30,13 +41,15 @@ void Player::Init()
 {
 	SpriteGo::Init();
 	playerAnimation.SetTarget(&sprite);
-
+	playerEffectAnimation.SetTarget(&effect);
 }
 
 void Player::Reset()
 {
+	SpriteGo::Reset();
+	sceneGame = dynamic_cast<SceneGame*>(SCENE_MGR.GetCurrentScene());
 	playerAnimation.ClearEvent();
-
+	playerEffectAnimation.ClearEvent();
 	playerAnimation.Play("animations/Idle.csv");
 	SetPlayerStatus(Status::Idle);
 	SetOrigin(Origins::BC);
@@ -76,8 +89,12 @@ void Player::Update(float dt)
 {
 	SpriteGo::Update(dt);
 	playerAnimation.Update(dt);
+	playerEffectAnimation.Update(dt);
+
 	h = InputMgr::GetAxisRaw(Axis::Horizontal);
 	shootTimer += dt;
+	effect.setPosition(position);
+	effect.setOrigin({ effect.getLocalBounds().width / 2 , effect.getLocalBounds().height - 30});
 
 	if (isShootingMode) // 실제 사격과 관계없이 총을 꺼내들고 있는 시간
 	{
@@ -127,6 +144,14 @@ void Player::Update(float dt)
 	if (h != 0.f && !isCantFlip)
 	{
 		SetFlipX(h < 0);
+		if (h < 0)
+		{
+			side = Sides::Left;
+		}
+		else if (h > 0)
+		{
+			side = Sides::Right;
+		}
 	}
 	if (!isDash)
 	{
@@ -135,6 +160,12 @@ void Player::Update(float dt)
 	if (!isCharge)
 	{
 		chargeTimer = 0;
+		chargeEffectMode = false;
+	}
+	if (isCharge && !chargeEffectMode && chargeTimer > 0.5f)
+	{
+		playerEffectAnimation.Play("animations/Charge.csv");
+		chargeEffectMode = true;
 	}
 
 	if (1.f > chargeTimer && chargeTimer > 0.5f)
@@ -154,7 +185,6 @@ void Player::Update(float dt)
 	if (InputMgr::GetKeyDown(sf::Keyboard::X) && shootTimer > shootInterval)
 	{
 		Shoot();
-		shootTimer = 0;
 		chargeTimer = 0;
 		isShooting = true;
 		isShootingMode = true;
@@ -165,9 +195,16 @@ void Player::Update(float dt)
 		chargeTimer += dt;
 	}
 
-	if (InputMgr::GetKeyUp(sf::Keyboard::X) && shootTimer > shootInterval)
+	if (InputMgr::GetKeyUp(sf::Keyboard::X))
 	{
-		ChargeShoot();
+		if (!chargeEffectMode)
+		{
+			Shoot();
+		}
+		if (chargeEffectMode)
+		{
+			ChargeShoot();
+		}
 		isCharge = false;
 		shootTimer = 0;
 		isShooting = true;
@@ -374,5 +411,14 @@ void Player::UpdateHit(float dt)
 
 void Player::UpdateDie(float dt)
 {
+}
+
+void Player::Draw(sf::RenderWindow& window)
+{
+	window.draw(sprite);
+	if (chargeEffectMode)
+	{
+		window.draw(effect);
+	}
 }
 

@@ -2,6 +2,8 @@
 #include "SpriteGo.h"
 #include "Animator.h"
 
+class SceneGame;
+
 class Player : public SpriteGo
 {
 public:
@@ -18,21 +20,24 @@ public:
 		Die,
 	};
 
-
 protected:
+	SceneGame* sceneGame = nullptr;
 
 	Animator playerAnimation; // sprite와는 별개
 	sf::RectangleShape playerCollision; //충돌박스 (아직 안씀)
 
+	sf::Sprite effect;
+	Animator playerEffectAnimation;
 
 	float speed = 200.f;
 	sf::Vector2f velocity;
-	Status preStatus = None;
-	Status currentStatus = None;
-
+	Status preStatus = Status::None;
+	Status currentStatus = Status::None;
+	Sides side = Sides::None;
 
 
 	bool isCharge = false;
+	bool chargeEffectMode = false;
 	float chargeTimer = 0.f;
 
 
@@ -43,7 +48,7 @@ protected:
 
 
 	float shootTimer = 0.f;
-	float shootInterval = 0.3f;
+	float shootInterval = 0.5f;
 
 	bool isShootingMode = false; // 대시
 	float ShootingModeTimer = 0.f;
@@ -84,6 +89,6 @@ public:
 	void UpdateHit(float dt);
 	void UpdateDie(float dt);
 
-
+	void Draw(sf::RenderWindow& window) override;
 };
 

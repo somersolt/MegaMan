@@ -1,0 +1,9 @@
+ID,FPS,"LOOPTYPE (0: Single, 1: Loop, 2: PingPong)",,
+Buster,10,1,,
+,,,,
+TEXTURE ID,LEFT,TOP,WIDTH,HEIGHT
+graphics/buster.png,117,16,29,24
+graphics/buster.png,156,16,33,24
+graphics/buster.png,196,16,42,24
+graphics/buster.png,244,16,38,24
+graphics/buster.png,288,16,39,24

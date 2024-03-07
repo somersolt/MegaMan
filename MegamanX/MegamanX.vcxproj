@@ -137,6 +137,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Player\Buster.cpp" />
     <ClCompile Include="Framework\DataTable.cpp" />
     <ClCompile Include="Framework\DataTableMgr.cpp" />
     <ClCompile Include="Framework\Animator.cpp" />
@@ -166,6 +167,7 @@
     <ClCompile Include="GameObjects\SpriteGoEffect.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Player\Buster.h" />
     <ClInclude Include="Framework\DataTable.h" />
     <ClInclude Include="Framework\DataTableMgr.h" />
     <ClInclude Include="Framework\Animator.h" />
