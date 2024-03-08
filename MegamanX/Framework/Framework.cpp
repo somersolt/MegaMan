@@ -9,7 +9,7 @@ void Framework::Init(int width, int height, const std::string& name)
     windowSize.y = height;
 
     window.create(sf::VideoMode(windowSize.x, windowSize.y), name);
-
+    //window.setFramerateLimit(15); // 프레임 검사 테스트
     DT_MGR.Init();
     InputMgr::Init();
     SOUND_MGR.Init();

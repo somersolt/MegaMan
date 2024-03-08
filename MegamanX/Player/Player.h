@@ -16,6 +16,7 @@ public:
 		FallingDown,
 		Landing,
 		Dash,
+		Climbing,
 		Hit,
 		Die,
 	};
@@ -26,8 +27,9 @@ protected:
 	Animator playerAnimation; // sprite와는 별개
 	sf::RectangleShape playerHitBox;  //충돌박스 표시
 	sf::FloatRect playerBounds;
-	sf::Color collisionColor = { 255 , 0 , 0 }; // 충돌 색깔 - 빨간색!
-	sf::Color UnCollisionColor = { 0 , 0 , 255 }; // 충돌 색깔 - 빨간색!
+	sf::Color collisionColor = { 255 , 0 , 0 }; // 충돌 색깔 - 빨간색
+	sf::Color sideCollisionColor = { 0 , 255 , 0 }; // 충돌 색깔 - 초록색
+	sf::Color UnCollisionColor = { 0 , 0 , 255 }; // 충돌 색깔 - 파란색
 
 	sf::Sprite effect;
 	Animator playerEffectAnimation;
@@ -42,7 +44,17 @@ protected:
 	sf::Vector2f preposition;
 	bool PreColliding = false; // 이전 충돌 처리
 	bool isColliding = false; // 충돌 처리
-	bool isSideColliding = false; // 충돌 처리
+
+	bool isBottomLeftColliding = false;
+	bool isBottomRightColliding = false;
+
+	bool isPreMiddleLeftColliding = false; // 이전 좌측 충돌 처리
+	bool isMiddleLeftColliding = false; // 좌측 충돌 처리
+
+	bool isPreMiddleRightColliding = false; // 이전 우측 충돌 처리
+	bool isMiddleRightColliding = false; // 우측 충돌 처리
+
+
 
 	bool isDash = false; // 대시
 
@@ -81,7 +93,12 @@ protected:
 	int endX ;
 	int startY;
 	int endY;
+	
+	int rollBackMiddleLeft;
+	int rollBackMiddleRight;
 
+	int rollBackBottomLeft;
+	int rollBackBottomRight;
 
 
 public:
@@ -107,6 +124,7 @@ public:
 	void UpdateFallingDown(float dt);
 	void UpdateLanding(float dt);
 	void UpdateDash(float dt);
+	void UpdateClimbing(float dt);
 	void UpdateHit(float dt);
 	void UpdateDie(float dt);
 

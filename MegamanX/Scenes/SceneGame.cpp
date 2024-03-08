@@ -79,20 +79,17 @@ void SceneGame::Exit()
 
 void SceneGame::Update(float dt)
 {
-
 	Scene::Update(dt);
-
-	sf::Vector2f worldViewCenter = worldView.getCenter();
-	worldViewCenter = player->GetPosition();
-	worldView.setSize({1920/3,1080/3});
-	worldView.setCenter(worldViewCenter);
-
 	//std::cout << player->GetPosition().x << "/" << player->GetPosition().y << std::endl;
 }
 
 void SceneGame::LateUpdate(float dt)
 {
 	Scene::LateUpdate(dt);
+	sf::Vector2f worldViewCenter = worldView.getCenter();
+	worldViewCenter = player->GetPosition();
+	worldView.setSize({ 1920 / 3,1080 / 3 });
+	worldView.setCenter(worldViewCenter);
 }
 
 void SceneGame::FixedUpdate(float dt)
