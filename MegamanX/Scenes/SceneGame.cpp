@@ -35,10 +35,10 @@ void SceneGame::Init()
 	collisionMapSprite.setTexture(collisionMapTexture);
 	collisionMapSprite.setPosition({ 1000, 0 });
 
-	mapHitBox.setSize(static_cast<sf::Vector2f>(collisionMapTexture.getSize()));
-	mapHitBox.setFillColor(sf::Color::Red);
-	mapHitBox.setPosition({ 1000, 0 });
-
+	mapHitBox = new SpriteGo("mapHitBox");
+	mapHitBox->SetTexture("graphics/test_stage_collision2.png");
+	AddGo(mapHitBox);
+	mapHitBox->SetPosition({ 1000, 0 });
 
 	////ÁøÂ¥ ¸Ê
 	//background = new SpriteGo("Map");
@@ -104,7 +104,6 @@ void SceneGame::FixedUpdate(float dt)
 void SceneGame::Draw(sf::RenderWindow& window)
 {
 	Scene::Draw(window);
-	window.draw(mapHitBox);
 }
 
 sf::Vector2f SceneGame::PlayerBoundsWorldToLocal(sf::Vector2f playerBoundsPos)

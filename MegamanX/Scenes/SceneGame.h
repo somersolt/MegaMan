@@ -29,7 +29,7 @@ public:
 	sf::Texture collisionMapTexture;
 	sf::Sprite collisionMapSprite;
 
-	sf::RectangleShape mapHitBox;  //충돌박스 표시
+	SpriteGo* mapHitBox = nullptr;  //충돌박스 표시
 
 	void SetStatus(Status newStatus);
 

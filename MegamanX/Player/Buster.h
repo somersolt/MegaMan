@@ -9,10 +9,10 @@ protected:
 	Animator busterAnimation;
 
 	sf::Vector2f direction;
-	float speed;
+	float speed = 300;
 	int damage = 1;
 
-	SceneGame* sceneGame;
+	SceneGame* sceneGame = nullptr;
 
 	float timer = 0.f;
 	float duration = 3.f;

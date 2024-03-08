@@ -43,12 +43,15 @@ void Player::Init()
 	SpriteGo::Init();
 	playerAnimation.SetTarget(&sprite);
 	playerEffectAnimation.SetTarget(&effect);
+	textureId = "graphics/xsheet.png";
+
 }
 
 void Player::Reset()
 {
 	SpriteGo::Reset();
 	sceneGame = dynamic_cast<SceneGame*>(SCENE_MGR.GetCurrentScene());
+	MapImage = sceneGame->collisionMapImage;
 	//게임 씬 동기화
 
 	playerAnimation.ClearEvent();
@@ -56,7 +59,7 @@ void Player::Reset()
 	playerAnimation.Play("animations/Idle.csv");
 	SetPlayerStatus(Status::Idle);
 	SetOrigin(Origins::BC);
-	SetPosition({ 1000.f, 0.f });
+	SetPosition({ 1250,0 });
 	SetFlipX(false);
 	// 플레이어 애니메이션 세팅
 
@@ -64,9 +67,6 @@ void Player::Reset()
 	playerHitBox.setOrigin({ playerHitBox.getLocalBounds().width / 2, playerHitBox.getLocalBounds().height });
 	playerHitBox.setFillColor(sf::Color::Transparent);
 	playerHitBox.setPosition(position);
-	playerBounds = playerHitBox.getGlobalBounds();
-
-
 
 	std::function<void()> ToIdle = std::bind(&Player::IdleAnimation, this);
 	playerAnimation.AddEvent("animations/Landing.csv", 2, ToIdle);
@@ -133,39 +133,6 @@ void Player::Update(float dt)
 		}
 	}
 
-
-
-	switch (currentStatus)
-	{
-	case Player::None:
-		break;
-	case Player::Idle:
-		UpdateIdle(dt);
-		break;
-	case Player::Run:
-		UpdateRun(dt);
-		break;
-	case Player::JumpingUp:
-		UpdateJumpingUp(dt);
-		break;
-	case Player::FallingDown:
-		UpdateFallingDown(dt);
-		break;
-	case Player::Landing:
-		UpdateLanding(dt);
-		break;
-	case Player::Dash:
-		UpdateDash(dt);
-		break;
-	case Player::Hit:
-		UpdateHit(dt);
-		break;
-	case Player::Die:
-		UpdateDie(dt);
-		break;
-	default:
-		break;
-	}
 
 	if (h != 0.f && !isCantFlip)
 	{
@@ -240,30 +207,63 @@ void Player::Update(float dt)
 	}
 	
 
+	playerBounds = playerHitBox.getGlobalBounds();
 
+	boundingBoxWorldPos = playerBounds.getPosition();
+	boundingBoxLocalPos = sceneGame->PlayerBoundsWorldToLocal(boundingBoxWorldPos);
+
+	startX = std::max(0, static_cast<int>(boundingBoxLocalPos.x));
+	endX = std::min(static_cast<int>(MapImage.getSize().x - 30),
+		static_cast<int>(boundingBoxLocalPos.x + 30));
+	startY = std::max(0, static_cast<int>(boundingBoxLocalPos.y));
+	endY = std::min(static_cast<int>(MapImage.getSize().y - 35),
+		static_cast<int>(boundingBoxLocalPos.y + 35));
+
+	if (startX > 0 && endX < 350 && startY > 0 && endY < 200)  // TO-DO 맵의 로컬좌표 크기임. 큰맵으로 만들면 크게 *오류방지*
+	{
+		CheckBottomCollision();
+
+	}
+
+	switch (currentStatus)
+	{
+	case Player::None:
+		break;
+	case Player::Idle:
+		UpdateIdle(dt);
+		break;
+	case Player::Run:
+		UpdateRun(dt);
+		break;
+	case Player::JumpingUp:
+		UpdateJumpingUp(dt);
+		break;
+	case Player::FallingDown:
+		UpdateFallingDown(dt);
+		break;
+	case Player::Landing:
+		UpdateLanding(dt);
+		break;
+	case Player::Dash:
+		UpdateDash(dt);
+		break;
+	case Player::Hit:
+		UpdateHit(dt);
+		break;
+	case Player::Die:
+		UpdateDie(dt);
+		break;
+	default:
+		break;
+	}
 
 	if (InputMgr::GetKeyDown(sf::Keyboard::Z))
 	{
-		SetPosition({ 0,0 });
+		velocity.x = 0;
+		velocity.y = 0;
+		SetPosition({ 1250,0 });
+		isGrounded = false;
 	}
-
-	if (!isGrounded)
-	{
-		velocity.y += gravity * dt;
-	}
-
-	playerBounds.left = playerHitBox.getPosition().x - playerHitBox.getSize().x / 2;
-	playerBounds.top = playerHitBox.getPosition().y - playerHitBox.getSize().y / 2;
-	playerBounds.width = playerHitBox.getSize().x;
-	playerBounds.height = playerHitBox.getSize().y;
-
-
-	position += sf::Vector2f(velocity.x, velocity.y * dt);
-	SetPosition(position); // 중력을 포함한 위치 적용
-
-	SetOrigin(Origins::BC);
-
-	//std::cout << velocity.x << std::endl; // 테스트 코드
 }
 
 
@@ -276,27 +276,44 @@ void Player::UpdateIdle(float dt)
 		playerAnimation.Play("animations/Shot.csv");
 		isCantFlip = true;
 		isShooting = false;
+
 	} // 대기 -> 사격
+
+	if (!isGrounded && !isColliding && velocity.y > 0)
+	{
+		SetPlayerStatus(Status::FallingDown);
+		playerAnimation.Play("animations/JumpDown.csv");
+		return;
+	}
+
+	if (InputMgr::GetKeyDown(sf::Keyboard::Space))
+	{
+		isColliding = false;
+		isGrounded = false;
+		velocity.y = -600.f;
+		SetPlayerStatus(Status::JumpingUp);
+		playerAnimation.Play("animations/JumpUp.csv");
+		return;
+
+	} // 대기 -> 점프
 
 	if (h != 0.f)
 	{
 		isCantFlip = false;
 		SetPlayerStatus(Status::Run);
 		playerAnimation.Play("animations/Run.csv");
+		return;
 	}
 	 // 대기 -> 달리기
 
-	if (InputMgr::GetKeyDown(sf::Keyboard::Space))
-	{
-		SetPlayerStatus(Status::JumpingUp);
-		velocity.y = -600.f;
-		playerAnimation.Play("animations/JumpUp.csv");
-	} // 대기 -> 점프
 
 	if (InputMgr::GetKeyDown(sf::Keyboard::C))
 	{
+		isGrounded = false;
 		SetPlayerStatus(Status::Dash);
 		playerAnimation.Play("animations/Dash.csv");
+		return;
+
 	} // 대기 -> 대시
 
 }
@@ -314,7 +331,6 @@ void Player::UpdateRun(float dt)
 		}
 		playerAnimation.Play("animations/RunShot.csv", true, true);
 		playerAnimation.SetCurrentFrame(i);
-
 	} // 달리기 -> 사격
 
 	if (!isShootingMode)
@@ -330,29 +346,43 @@ void Player::UpdateRun(float dt)
 
 	} // 달리기 사격 -> 달리기
 
+	if (!isGrounded && !isColliding && velocity.y > 0)
+	{
+		SetPlayerStatus(Status::FallingDown);
+		playerAnimation.Play("animations/JumpDown.csv");
+		return;
+	}
+
 	if (InputMgr::GetKeyDown(sf::Keyboard::Space))
 	{
-		SetPlayerStatus(Status::JumpingUp);
 		velocity.y = -600.f;
+		isGrounded = false;
+		SetPlayerStatus(Status::JumpingUp);
 		playerAnimation.Play("animations/JumpUp.csv");
+		return;
+
 	} // 달리기 -> 점프
 
 	if (InputMgr::GetKeyDown(sf::Keyboard::C))
 	{
 		SetPlayerStatus(Status::Dash);
 		playerAnimation.Play("animations/Dash.csv");
+		return;
+
 	} // 달리기 -> 대시
 
 	if (h == 0.f)
 	{
 		SetPlayerStatus(Status::Idle);
 		playerAnimation.Play("animations/Idle.csv");
+		return;
 	}
 	// 달리기 -> 서기 
 }
 
 void Player::UpdateJumpingUp(float dt)
 {
+	isGrounded = false;
 
 	if (isShootingMode)
 	{
@@ -368,12 +398,15 @@ void Player::UpdateJumpingUp(float dt)
 			playerAnimation.Play("animations/JumpUpShot.csv", true, true);
 			playerAnimation.SetCurrentFrame(2);
 		}
+
 	}//점프 상승 중 사격
 
 	if (velocity.y > 0)
 	{
 		SetPlayerStatus(Status::FallingDown);
 		playerAnimation.Play("animations/JumpDown.csv");
+		return;
+
 	} // 점프 상승 중 하강
 }
 
@@ -386,13 +419,18 @@ void Player::UpdateFallingDown(float dt)
 		int i = playerAnimation.GetCurrentFrame();
 		playerAnimation.Play("animations/JumpDownShot.csv", true, true);
 		playerAnimation.SetCurrentFrame(i);
+
 	} // 점프 하강 중 사격
 
-	if (position.y >= 0.f)  // TO-DO 충돌판정으로 바꾸기
+	if (isGrounded && velocity.y >= 0)
 	{
 		SetPlayerStatus(Status::Landing);
 		playerAnimation.Play("animations/Landing.csv");
+		return;
+
 	} // 점프 하강 중 착지
+
+
 }
 
 void Player::UpdateLanding(float dt)
@@ -405,6 +443,7 @@ void Player::UpdateLanding(float dt)
 		int i = playerAnimation.GetCurrentFrame();
 		playerAnimation.Play("animations/LandingShot.csv", true, true);
 		playerAnimation.SetCurrentFrame(i);
+
 	} // 점프 하강 중 사격
 }
 
@@ -412,11 +451,11 @@ void Player::UpdateDash(float dt)
 {
 	if (!isFlipX)
 	{
-		velocity.x = 1;
+		velocity.x = 0.5f;
 	}
 	else if (isFlipX)
 	{
-		velocity.x = -1;
+		velocity.x = -0.5f;
 	}
 	isCantFlip = true;
 	isDash = true;
@@ -424,9 +463,14 @@ void Player::UpdateDash(float dt)
 
 	if (InputMgr::GetKeyDown(sf::Keyboard::Space))
 	{
-		SetPlayerStatus(Status::JumpingUp);
+		isColliding = false;
+		isGrounded = false;
 		velocity.y = -600.f;
+
+		SetPlayerStatus(Status::JumpingUp);
 		playerAnimation.Play("animations/JumpUp.csv");
+		return;
+
 	} // 대시 -> 점프
 
 	if (isShootingMode)
@@ -461,62 +505,74 @@ void Player::Draw(sf::RenderWindow& window)
 
 void Player::LateUpdate(float dt)
 {
+	
 
+	position += sf::Vector2f(velocity.x, velocity.y * dt);
+
+
+	preposition = position;
+
+	if(PreColliding && isColliding && !PreGrounded && isGrounded) // 보정
+	{
+		position = preposition;
+		PreColliding = false;
+		PreGrounded = isGrounded;
+		SetPosition(position); // 중력을 포함한 위치 적용
+		SetOrigin(Origins::BC);
+		if (isGrounded && isColliding)
+		{
+			velocity.y = 0;
+		}
+		return;
+	}
+	PreColliding = isColliding;
+	PreGrounded = isGrounded;
+	SetPosition(position); // 중력을 포함한 위치 적용
+	SetOrigin(Origins::BC);
+
+	if (isGrounded && isColliding)
+	{
+		velocity.y = 0;
+	}
 }
 
 
 void Player::FixedUpdate(float dt)
 {
-
-	//sf::Sprite collisionMap = sceneGame->collisionMapSprite;
-	//sf::Image MapImage = collisionMap.getTexture()->copyToImage();
-
-	//for (int x = playerBounds.left; x < playerBounds.left + playerBounds.width; ++x)
-	//{
-	//	int y = playerBounds.top + playerBounds.height;
-	//	sf::Color pixelColor = MapImage.getPixel(x, y);
-	//	std::cout << x << "/" << y << std::endl;
-	//	if (pixelColor == collisionColor)
-	//	{
-	//		//std::cout << "in!!" << std::endl;
-	//		velocity.y = 0;
-	//		isColliding = true;
-	//	}
-	//	if (pixelColor != collisionColor)
-	//	{
-	//		//std::cout << "out!!" << std::endl;
-	//		isColliding = false;
-	//	}
-	//}
-	//isGrounded = isColliding;
-
-	sf::Vector2f boundingBoxWorldPos = playerBounds.getPosition();
-	sf::Image MapImage = sceneGame->collisionMapSprite.getTexture()->copyToImage();
-	sf::Vector2f boundingBoxLocalPos = sceneGame->PlayerBoundsWorldToLocal(boundingBoxWorldPos);
-
-	int startX = std::max(0, static_cast<int>(boundingBoxLocalPos.x));
-	int endX = std::min(static_cast<int>(MapImage.getSize().x),
-		static_cast<int>(boundingBoxLocalPos.x + 30));
-	int bottomY = static_cast<int>(boundingBoxLocalPos.y + 35);
-	if (startX >= 0 && bottomY >= 0 && bottomY <= 165)
+	if (!isGrounded)
 	{
-		for (int x = startX; x < endX; ++x)
-		{
-			sf::Color pixelColor = MapImage.getPixel(x, bottomY);
-			std::cout << x << "/" << bottomY << std::endl;
-			if (pixelColor == collisionColor)
-			{
-				//std::cout << "in!!" << std::endl;
-				velocity.y = 0;
-				isColliding = true;
-			}
-			if (pixelColor != collisionColor)
-			{
-				//std::cout << "out!!" << std::endl;
-				isColliding = false;
-			}
-		}
-		isGrounded = isColliding;
+		velocity.y += gravity * dt;
 	}
+}
+
+void Player::CheckBottomCollision()
+{
+	sf::Color BottomLeftPixel = MapImage.getPixel(startX, endY);
+	if (BottomLeftPixel == collisionColor)
+	{
+		isColliding = true;
+		isGrounded = true;
+		return;
+	}
+	sf::Color BottomRightPixel = MapImage.getPixel(endX, endY);
+	if (BottomRightPixel == collisionColor)
+	{
+		isColliding = true;
+		isGrounded = true;
+		return;
+	}
+	isColliding = false;
+	isGrounded = false;
+}
+
+void Player::CheckRightCollision()
+{
+	sf::Color MiddleRightPixel = MapImage.getPixel(endX, endY / 2);
+	if (MiddleRightPixel == collisionColor)
+	{
+		isSideColliding = true;
+		return;
+	}
+	isSideColliding = false;
 }
 

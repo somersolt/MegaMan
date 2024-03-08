@@ -27,6 +27,7 @@ protected:
 	sf::RectangleShape playerHitBox;  //충돌박스 표시
 	sf::FloatRect playerBounds;
 	sf::Color collisionColor = { 255 , 0 , 0 }; // 충돌 색깔 - 빨간색!
+	sf::Color UnCollisionColor = { 0 , 0 , 255 }; // 충돌 색깔 - 빨간색!
 
 	sf::Sprite effect;
 	Animator playerEffectAnimation;
@@ -36,30 +37,34 @@ protected:
 	Status preStatus = Status::None;
 	Status currentStatus = Status::None;
 	Sides side = Sides::None;
+	sf::Image MapImage;
 
+	sf::Vector2f preposition;
+	bool PreColliding = false; // 이전 충돌 처리
+	bool isColliding = false; // 충돌 처리
+	bool isSideColliding = false; // 충돌 처리
 
-	bool isCharge = false;
+	bool isDash = false; // 대시
+
+	bool isGrounded = false; // 서있는 상태
+	bool PreGrounded = false; // 이전 프레임에 서있는 상태
+
+	bool isCantFlip = false; // 방향변경 불가 변수
+	
+	bool isShooting = false; // 사격 상태 변수
+	float shootTimer = 0.f;
+	float shootInterval = 0.5f;
+
+	bool isShootingMode = false; // 사격 모션으로 변경
+	float ShootingModeTimer = 0.f;
+	float ShootingModeInterval = 1.f;
+
+	bool isCharge = false; // 차지 사격 변수
 	bool chargeEffectMode = false;
 	float chargeTimer = 0.f;
 
 
-	bool isDash = false; // 대시
-	bool isGrounded = false; // 서있는 상태
-	bool isColliding = false; // 충돌 처리
-
-	bool isCantFlip = false; // 입력방지 변수
-	bool isShooting = false; // 사격 모션으로 변경
-
-
-	float shootTimer = 0.f;
-	float shootInterval = 0.5f;
-
-	bool isShootingMode = false; // 대시
-	float ShootingModeTimer = 0.f;
-	float ShootingModeInterval = 1.f;
-
-
-	float h; // 방향키 입력변수
+	float h = 0; // 방향키 입력변수
  	const float gravity = 1000.f;
 		/*
 		맵 만든뒤에 반드시 중력 추가
@@ -67,6 +72,17 @@ protected:
 
 	void IdleAnimation();
 	void ShotAnimation();
+
+
+	sf::Vector2f boundingBoxWorldPos;
+	sf::Vector2f boundingBoxLocalPos;
+
+	int startX;
+	int endX ;
+	int startY;
+	int endY;
+
+
 
 public:
 
@@ -97,7 +113,8 @@ public:
 	void LateUpdate(float dt) override;
 	void FixedUpdate(float dt) override;
 
-
+	void CheckBottomCollision();
+	void CheckRightCollision();
 
 	void Draw(sf::RenderWindow& window) override;
 };

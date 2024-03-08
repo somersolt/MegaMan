@@ -9,7 +9,7 @@ Buster::Buster(const std::string& name) : SpriteGo(name)
 
 void Buster::Fire(const sf::Vector2f dir, float s, int d, Sides side)
 {
-	SetTexture("graphics/Buster.png");
+	
 	sprite.setTextureRect({ 61,0, 10,16 });
 	SetOrigin({ GetLocalBounds().width - 20, GetLocalBounds().height / 2});
 
@@ -31,13 +31,14 @@ void Buster::ChargeFire(const sf::Vector2f dir, float s, int d, Sides side)
 		direction = -direction;
 		SetFlipX(true);
 	}
-		busterAnimation.Play("animations/Buster.csv");
+	busterAnimation.Play("animations/Buster.csv");
 }
 
 void Buster::Init()
 {
 	GameObject::Init();
 	busterAnimation.SetTarget(&sprite);
+	textureId = "graphics/Buster.png";
 }
 
 void Buster::Update(float dt)
