@@ -2,6 +2,7 @@
 #include "Player.h"
 #include "SceneGame.h"
 #include "Buster.h"
+#include <algorithm>
 
 
 Player::Player(const std::string& name) : SpriteGo(name)
@@ -48,13 +49,24 @@ void Player::Reset()
 {
 	SpriteGo::Reset();
 	sceneGame = dynamic_cast<SceneGame*>(SCENE_MGR.GetCurrentScene());
+	//게임 씬 동기화
+
 	playerAnimation.ClearEvent();
 	playerEffectAnimation.ClearEvent();
 	playerAnimation.Play("animations/Idle.csv");
 	SetPlayerStatus(Status::Idle);
 	SetOrigin(Origins::BC);
-	SetPosition({ 0.f, 0.f });
+	SetPosition({ 1000.f, 0.f });
 	SetFlipX(false);
+	// 플레이어 애니메이션 세팅
+
+	playerHitBox.setSize({ 30.f, 35.f });
+	playerHitBox.setOrigin({ playerHitBox.getLocalBounds().width / 2, playerHitBox.getLocalBounds().height });
+	playerHitBox.setFillColor(sf::Color::Transparent);
+	playerHitBox.setPosition(position);
+	playerBounds = playerHitBox.getGlobalBounds();
+
+
 
 	std::function<void()> ToIdle = std::bind(&Player::IdleAnimation, this);
 	playerAnimation.AddEvent("animations/Landing.csv", 2, ToIdle);
@@ -91,10 +103,24 @@ void Player::Update(float dt)
 	playerAnimation.Update(dt);
 	playerEffectAnimation.Update(dt);
 
+	///  히트박스 테스트 코드
+
+	if (InputMgr::GetKeyDown(sf::Keyboard::T))
+	{
+		playerHitBox.setFillColor(sf::Color::Transparent);
+	}
+	if (InputMgr::GetKeyDown(sf::Keyboard::R))
+	{
+		playerHitBox.setFillColor(sf::Color::Blue);
+	}
+	/// 히트박스 테스트 코드
+
+
 	h = InputMgr::GetAxisRaw(Axis::Horizontal);
 	shootTimer += dt;
 	effect.setPosition(position);
 	effect.setOrigin({ effect.getLocalBounds().width / 2 , effect.getLocalBounds().height - 30});
+	playerHitBox.setPosition(position);
 
 	if (isShootingMode) // 실제 사격과 관계없이 총을 꺼내들고 있는 시간
 	{
@@ -212,22 +238,29 @@ void Player::Update(float dt)
 		sf::Color color(255, 255, 255, 255); // 원래 색으로 돌아옴
 		sprite.setColor(color);
 	}
-	//
-
 	
 
-	velocity.y += gravity * dt; // 중력 적용
+
+
+	if (InputMgr::GetKeyDown(sf::Keyboard::Z))
+	{
+		SetPosition({ 0,0 });
+	}
+
+	if (!isGrounded)
+	{
+		velocity.y += gravity * dt;
+	}
+
+	playerBounds.left = playerHitBox.getPosition().x - playerHitBox.getSize().x / 2;
+	playerBounds.top = playerHitBox.getPosition().y - playerHitBox.getSize().y / 2;
+	playerBounds.width = playerHitBox.getSize().x;
+	playerBounds.height = playerHitBox.getSize().y;
+
 
 	position += sf::Vector2f(velocity.x, velocity.y * dt);
 	SetPosition(position); // 중력을 포함한 위치 적용
 
-	if (position.y > 0.f)
-	{
-		position.y = 0.f;
-		velocity.y = 0.f;
-
-		// 땅에 닿으면, 0이 아니라 맵 충돌로 변경 
-	}
 	SetOrigin(Origins::BC);
 
 	//std::cout << velocity.x << std::endl; // 테스트 코드
@@ -419,6 +452,71 @@ void Player::Draw(sf::RenderWindow& window)
 	if (chargeEffectMode)
 	{
 		window.draw(effect);
+	}
+	window.draw(playerHitBox);
+
+}
+
+
+
+void Player::LateUpdate(float dt)
+{
+
+}
+
+
+void Player::FixedUpdate(float dt)
+{
+
+	//sf::Sprite collisionMap = sceneGame->collisionMapSprite;
+	//sf::Image MapImage = collisionMap.getTexture()->copyToImage();
+
+	//for (int x = playerBounds.left; x < playerBounds.left + playerBounds.width; ++x)
+	//{
+	//	int y = playerBounds.top + playerBounds.height;
+	//	sf::Color pixelColor = MapImage.getPixel(x, y);
+	//	std::cout << x << "/" << y << std::endl;
+	//	if (pixelColor == collisionColor)
+	//	{
+	//		//std::cout << "in!!" << std::endl;
+	//		velocity.y = 0;
+	//		isColliding = true;
+	//	}
+	//	if (pixelColor != collisionColor)
+	//	{
+	//		//std::cout << "out!!" << std::endl;
+	//		isColliding = false;
+	//	}
+	//}
+	//isGrounded = isColliding;
+
+	sf::Vector2f boundingBoxWorldPos = playerBounds.getPosition();
+	sf::Image MapImage = sceneGame->collisionMapSprite.getTexture()->copyToImage();
+	sf::Vector2f boundingBoxLocalPos = sceneGame->PlayerBoundsWorldToLocal(boundingBoxWorldPos);
+
+	int startX = std::max(0, static_cast<int>(boundingBoxLocalPos.x));
+	int endX = std::min(static_cast<int>(MapImage.getSize().x),
+		static_cast<int>(boundingBoxLocalPos.x + 30));
+	int bottomY = static_cast<int>(boundingBoxLocalPos.y + 35);
+	if (startX >= 0 && bottomY >= 0 && bottomY <= 165)
+	{
+		for (int x = startX; x < endX; ++x)
+		{
+			sf::Color pixelColor = MapImage.getPixel(x, bottomY);
+			std::cout << x << "/" << bottomY << std::endl;
+			if (pixelColor == collisionColor)
+			{
+				//std::cout << "in!!" << std::endl;
+				velocity.y = 0;
+				isColliding = true;
+			}
+			if (pixelColor != collisionColor)
+			{
+				//std::cout << "out!!" << std::endl;
+				isColliding = false;
+			}
+		}
+		isGrounded = isColliding;
 	}
 }
 

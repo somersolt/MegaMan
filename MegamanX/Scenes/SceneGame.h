@@ -18,12 +18,18 @@ protected:
 	Status currentStatus;
 
 	Player* player = nullptr;
-	SpriteGo* backgroundtest = nullptr;
-	SpriteGo* backgroundtestLayer = nullptr;
-
 public:
 	SceneGame(SceneIds id);
 	~SceneGame() override = default;
+
+	SpriteGo* backgroundtest = nullptr;
+	SpriteGo* background = nullptr;
+
+	sf::Image collisionMapImage;
+	sf::Texture collisionMapTexture;
+	sf::Sprite collisionMapSprite;
+
+	sf::RectangleShape mapHitBox;  //충돌박스 표시
 
 	void SetStatus(Status newStatus);
 
@@ -41,6 +47,8 @@ public:
 
 
 	void Draw(sf::RenderWindow& window);
+
+	sf::Vector2f PlayerBoundsWorldToLocal(sf::Vector2f playerBounds);
 
 };
 

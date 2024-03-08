@@ -25,19 +25,34 @@ void SceneGame::Init()
 {
 
 	// ÀÓ½Ã ¸Ê 
-	backgroundtest = new SpriteGo("");
+	backgroundtest = new SpriteGo("testMap");
 	backgroundtest->SetTexture("graphics/test_stage.png");
 	AddGo(backgroundtest);
+	backgroundtest->SetPosition({ 1000, 0 });
 
-	backgroundtestLayer = new SpriteGo("");
-	backgroundtestLayer->SetTexture("graphics/test_stage_collision.png");
-	AddGo(backgroundtestLayer);
+	collisionMapImage.loadFromFile("graphics/test_stage_collision2.png");
+	collisionMapTexture.loadFromImage(collisionMapImage);
+	collisionMapSprite.setTexture(collisionMapTexture);
+	collisionMapSprite.setPosition({ 1000, 0 });
+
+	mapHitBox.setSize(static_cast<sf::Vector2f>(collisionMapTexture.getSize()));
+	mapHitBox.setFillColor(sf::Color::Red);
+	mapHitBox.setPosition({ 1000, 0 });
+
+
+	////ÁøÂ¥ ¸Ê
+	//background = new SpriteGo("Map");
+	//background->SetTexture("graphics/chill_penguin_stage.png");
+	//AddGo(background);
+	//background->SetPosition({ 1000, 0 });
+
+
 
 	// ÇÃ·¹ÀÌ¾î
 
 	player = new Player("player");
 	AddGo(player);
-	player->SetPosition({ 0,0 });
+	player->SetPosition({ 1000,0 });
 
 	Scene::Init();
 }
@@ -71,6 +86,8 @@ void SceneGame::Update(float dt)
 	worldViewCenter = player->GetPosition();
 	worldView.setSize({1920/3,1080/3});
 	worldView.setCenter(worldViewCenter);
+
+	//std::cout << player->GetPosition().x << "/" << player->GetPosition().y << std::endl;
 }
 
 void SceneGame::LateUpdate(float dt)
@@ -87,4 +104,14 @@ void SceneGame::FixedUpdate(float dt)
 void SceneGame::Draw(sf::RenderWindow& window)
 {
 	Scene::Draw(window);
+	window.draw(mapHitBox);
+}
+
+sf::Vector2f SceneGame::PlayerBoundsWorldToLocal(sf::Vector2f playerBoundsPos)
+{
+	sf::Vector2f imageWorldPos = collisionMapSprite.getPosition();
+	sf::Transform worldToLocal = collisionMapSprite.getInverseTransform();
+	sf::Vector2f boundingBoxLocalPos = worldToLocal.transformPoint(playerBoundsPos);
+
+	return boundingBoxLocalPos;
 }

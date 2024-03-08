@@ -24,6 +24,8 @@ public:
 	void SetFlipX(bool filp) override;
 	void SetFlipY(bool filp) override;
 
+	const sf::Texture* GetTexture() { return sprite.getTexture(); }
+
 	void Reset() override;
 	void Draw(sf::RenderWindow& window) override;
 

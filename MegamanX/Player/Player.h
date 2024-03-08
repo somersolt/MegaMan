@@ -24,7 +24,9 @@ protected:
 	SceneGame* sceneGame = nullptr;
 
 	Animator playerAnimation; // sprite와는 별개
-	sf::RectangleShape playerCollision; //충돌박스 (아직 안씀)
+	sf::RectangleShape playerHitBox;  //충돌박스 표시
+	sf::FloatRect playerBounds;
+	sf::Color collisionColor = { 255 , 0 , 0 }; // 충돌 색깔 - 빨간색!
 
 	sf::Sprite effect;
 	Animator playerEffectAnimation;
@@ -42,6 +44,8 @@ protected:
 
 
 	bool isDash = false; // 대시
+	bool isGrounded = false; // 서있는 상태
+	bool isColliding = false; // 충돌 처리
 
 	bool isCantFlip = false; // 입력방지 변수
 	bool isShooting = false; // 사격 모션으로 변경
@@ -56,7 +60,7 @@ protected:
 
 
 	float h; // 방향키 입력변수
- 	const float gravity = 1500.f;
+ 	const float gravity = 1000.f;
 		/*
 		맵 만든뒤에 반드시 중력 추가
 		*/
@@ -80,6 +84,7 @@ public:
 	void Init() override;
 	void Reset() override;
 	void Update(float dt) override;
+
 	void UpdateIdle(float dt);
 	void UpdateRun(float dt);
 	void UpdateJumpingUp(float dt);
@@ -88,6 +93,11 @@ public:
 	void UpdateDash(float dt);
 	void UpdateHit(float dt);
 	void UpdateDie(float dt);
+
+	void LateUpdate(float dt) override;
+	void FixedUpdate(float dt) override;
+
+
 
 	void Draw(sf::RenderWindow& window) override;
 };
