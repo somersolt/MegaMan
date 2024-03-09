@@ -30,13 +30,13 @@ void SceneGame::Init()
 	AddGo(backgroundtest);
 	backgroundtest->SetPosition({ 1000, 0 });
 
-	collisionMapImage.loadFromFile("graphics/test_stage_collision2.png");
+	collisionMapImage.loadFromFile("graphics/test_stage_collision3.png");
 	collisionMapTexture.loadFromImage(collisionMapImage);
 	collisionMapSprite.setTexture(collisionMapTexture);
 	collisionMapSprite.setPosition({ 1000, 0 });
 
 	mapHitBox = new SpriteGo("mapHitBox");
-	mapHitBox->SetTexture("graphics/test_stage_collision2.png");
+	mapHitBox->SetTexture("graphics/test_stage_collision3.png");
 	AddGo(mapHitBox);
 	mapHitBox->SetPosition({ 1000, 0 });
 

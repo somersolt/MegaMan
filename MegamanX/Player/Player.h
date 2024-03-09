@@ -30,7 +30,7 @@ protected:
 	sf::FloatRect playerBounds;
 	sf::Color collisionColor = { 255 , 0 , 0 }; // 충돌 색깔 - 빨간색
 	sf::Color sideCollisionColor = { 0 , 255 , 0 }; // 충돌 색깔 - 초록색
-	sf::Color UnCollisionColor = { 0 , 0 , 255 }; // 충돌 색깔 - 파란색
+	sf::Color slopeCollisionColor = { 0 , 0 , 255 }; // 충돌 색깔 - 파란색
 
 	sf::Sprite effect;
 	Animator playerEffectAnimation;
@@ -46,6 +46,7 @@ protected:
 	//sf::Vector2f preposition;
 	bool isBottomColliding = false; // 바닥면 충돌 처리
 	bool isTopColliding = false; // 바닥면 충돌 처리
+	bool isSlopeColliding = false; // 경사로 충돌 처리
 
 	bool isBottomLeftColliding = false; // 좌측 하단 
 	bool isBottomRightColliding = false; // 우측 하단
@@ -56,11 +57,14 @@ protected:
 	bool isMiddleLeftColliding = false; // 좌측 충돌 처리
 	bool isMiddleRightColliding = false; // 우측 충돌 처리
 
-
+	bool isBottomLeftSlopeColliding = false;
+	bool isBottomRightSlopeColliding = false;
+	bool isBottomSlopeColliding = false;
 
 	bool isDash = false; // 대시
 
 	bool isGrounded = false; // 서있는 상태
+	bool isSlopeGrounded = false; // 경사에 서있는 상태
 
 	bool isCantFlip = false; // 방향변경 불가 변수
 	
@@ -78,7 +82,7 @@ protected:
 
 
 	float h = 0; // 방향키 입력변수
- 	const float gravity = 1000.f;
+ 	 float gravity = 1000.f;
 		/*
 		맵 만든뒤에 반드시 중력 추가
 		*/
@@ -104,6 +108,8 @@ protected:
 	int rollBackTopLeft;
 	int rollBackTopRight;
 
+	int rollBackSlope;
+	int rollBackSideSlope;
 
 public:
 
@@ -140,6 +146,7 @@ public:
 	void CheckRightCollision();
 	void CheckLeftCollision();
 	void CheckTopCollision();
+	void CheckSlopeCollision();
 
 	void Draw(sf::RenderWindow& window) override;
 };
