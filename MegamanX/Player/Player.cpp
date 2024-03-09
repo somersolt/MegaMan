@@ -61,6 +61,7 @@ void Player::Reset()
 	SetOrigin(Origins::BC);
 	SetPosition({ 1250,0 });
 	SetFlipX(false);
+	side = Sides::Right;
 	// 플레이어 애니메이션 세팅
 
 	playerHitBox.setSize({ 30.f, 35.f });
@@ -117,6 +118,7 @@ void Player::Update(float dt)
 
 
 	h = InputMgr::GetAxisRaw(Axis::Horizontal);
+
 	shootTimer += dt;
 	effect.setPosition(position);
 	effect.setOrigin({ effect.getLocalBounds().width / 2 , effect.getLocalBounds().height - 30});
@@ -146,10 +148,20 @@ void Player::Update(float dt)
 			side = Sides::Right;
 		}
 	}
-	if (!isDash)
+
+	if (isDash)
 	{
-		velocity.x = h * speed * dt;
+		if (side == Sides::Left)
+		{
+			h = -1;
+		}
+		else if (side == Sides::Right)
+		{
+			h = 1;
+		}
 	}
+	velocity.x = h * speed * dt;
+
 	if (!isCharge)
 	{
 		chargeTimer = 0;
@@ -274,8 +286,6 @@ void Player::UpdateIdle(float dt)
 
 	if (InputMgr::GetKeyDown(sf::Keyboard::Space))
 	{
-		isColliding = false;
-		isGrounded = false;
 		velocity.y = -600.f;
 		SetPlayerStatus(Status::JumpingUp);
 		playerAnimation.Play("animations/JumpUp.csv");
@@ -368,7 +378,6 @@ void Player::UpdateRun(float dt)
 
 void Player::UpdateJumpingUp(float dt)
 {
-	isGrounded = false;
 
 	if (isShootingMode)
 	{
@@ -387,7 +396,7 @@ void Player::UpdateJumpingUp(float dt)
 
 	}//점프 상승 중 사격
 
-	if (velocity.y > 0)
+	if (velocity.y >= 0)
 	{
 		SetPlayerStatus(Status::FallingDown);
 		playerAnimation.Play("animations/JumpDown.csv");
@@ -398,6 +407,7 @@ void Player::UpdateJumpingUp(float dt)
 
 void Player::UpdateFallingDown(float dt)
 {
+
 
 	if (isShootingMode)
 	{
@@ -435,24 +445,17 @@ void Player::UpdateLanding(float dt)
 
 void Player::UpdateDash(float dt)
 {
-	if (!isFlipX)
-	{
-		velocity.x = 0.5f;
-	}
-	else if (isFlipX)
-	{
-		velocity.x = -0.5f;
-	}
+
+	speed = 400;
 	isCantFlip = true;
 	isDash = true;
 
 
 	if (InputMgr::GetKeyDown(sf::Keyboard::Space))
 	{
-		isColliding = false;
-		isGrounded = false;
 		velocity.y = -600.f;
 
+		isCantFlip = false;
 		SetPlayerStatus(Status::JumpingUp);
 		playerAnimation.Play("animations/JumpUp.csv");
 		return;
@@ -470,7 +473,7 @@ void Player::UpdateDash(float dt)
 
 void Player::UpdateClimbing(float dt)
 {
-
+	speed = 200;
 }
 
 
@@ -485,9 +488,19 @@ void Player::UpdateDie(float dt)
 
 void Player::LateUpdate(float dt)
 {
-	std::cout << position.y << "/" << preposition.y << std::endl;
+	std::cout << startX << "/" << endX << "/" << startY << "/" << endY << std::endl;
 
 	preposition = position;
+	if (velocity.y > 800.f)
+	{
+		velocity.y = 800.f;
+	}
+
+	if (isMiddleRightColliding)
+	{
+		velocity.x = std::min(0.f, velocity.x);
+	}
+
 	position += sf::Vector2f(velocity.x, velocity.y * dt);
 	playerHitBox.setPosition(position);
 	playerBounds = playerHitBox.getGlobalBounds();
@@ -496,13 +509,13 @@ void Player::LateUpdate(float dt)
 	boundingBoxLocalPos = sceneGame->PlayerBoundsWorldToLocal(boundingBoxWorldPos);
 
 	startX = std::max(0, static_cast<int>(boundingBoxLocalPos.x));
-	endX = std::min(static_cast<int>(MapImage.getSize().x - 30),
+	endX = std::min(static_cast<int>(MapImage.getSize().x),
 		static_cast<int>(boundingBoxLocalPos.x + 30));
 	startY = std::max(0, static_cast<int>(boundingBoxLocalPos.y));
-	endY = std::min(static_cast<int>(MapImage.getSize().y - 35),
+	endY = std::min(static_cast<int>(MapImage.getSize().y),
 		static_cast<int>(boundingBoxLocalPos.y + 35));
 
-	if (startX > 0 && endX < 350 && startY > 0 && endY < 200)  // TO-DO 맵의 로컬좌표 크기임. 큰맵으로 만들면 크게 *오류방지*
+	//if (startX > 0 && endX < 350 && startY > 0 && endY < 200)  // TO-DO 맵의 로컬좌표 크기임. 큰맵으로 만들면 크게 *오류방지*
 	{
 		CheckBottomCollision();
 		CheckRightCollision();
@@ -510,28 +523,25 @@ void Player::LateUpdate(float dt)
 	}
 
 
-	if (isPreMiddleRightColliding && isMiddleRightColliding && side == Sides::Right) // 우측 보정
+	if (isMiddleRightColliding) // 우측 보정
 	{
-		position.x -= rollBackMiddleRight;
+		position.x -= rollBackMiddleRight - 1;
 		rollBackMiddleRight = 0;
-		SetPosition(position);
-		playerHitBox.setPosition(position);
-		SetOrigin(Origins::BC);
+		isPreMiddleRightColliding = false;
+	}
+	else
+	{
+		isPreMiddleRightColliding = isMiddleRightColliding;
 	}
 
-	if(PreColliding && isColliding && PreGrounded && isGrounded) // 하단 보정
+	if(/*PreColliding && */isColliding && PreGrounded && isGrounded) // 하단 보정
 	{
-		position.y -= std::max(rollBackBottomLeft, rollBackBottomRight);
+		position.y -= std::max(rollBackBottomLeft, rollBackBottomRight) - 1;
 		rollBackBottomLeft = 0;
 		rollBackBottomRight = 0;
-		SetPosition(position); // 중력을 포함한 위치 적용
-		playerHitBox.setPosition(position);
-		SetOrigin(Origins::BC);
-
+		isColliding = false;
 	}
 
-
-	isPreMiddleRightColliding = isMiddleRightColliding;
 	PreColliding = isColliding;
 	PreGrounded = isGrounded;
 	SetPosition(position); // 중력을 포함한 위치 적용
@@ -545,6 +555,10 @@ void Player::FixedUpdate(float dt)
 	if (!isGrounded)
 	{
 		velocity.y += gravity * dt;
+	}
+	else
+	{
+		velocity.y = 0;
 	}
 }
 
@@ -594,7 +608,7 @@ void Player::CheckBottomCollision()
 
 void Player::CheckRightCollision()
 {
-	sf::Color MiddleRightPixel = MapImage.getPixel(endX, endY / 2);
+	sf::Color MiddleRightPixel = MapImage.getPixel(endX, startY + 17);
 	if (MiddleRightPixel == sideCollisionColor)
 	{
 		isMiddleRightColliding = true;
@@ -603,7 +617,7 @@ void Player::CheckRightCollision()
 		while (MiddleRightPixel == sideCollisionColor)
 		{
 			temp++;
-			MiddleRightPixel = MapImage.getPixel(endX - temp, endY / 2);
+			MiddleRightPixel = MapImage.getPixel(endX - temp, endY);
 		}
 		rollBackMiddleRight = temp;
 
