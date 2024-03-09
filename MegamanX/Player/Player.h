@@ -17,6 +17,7 @@ public:
 		Landing,
 		Dash,
 		Climbing,
+		WallJump,
 		Hit,
 		Die,
 	};
@@ -39,19 +40,20 @@ protected:
 	Status preStatus = Status::None;
 	Status currentStatus = Status::None;
 	Sides side = Sides::None;
+	Sides oppsetSide = Sides::None;
 	sf::Image MapImage;
 
-	sf::Vector2f preposition;
-	bool PreColliding = false; // 이전 충돌 처리
-	bool isColliding = false; // 충돌 처리
+	//sf::Vector2f preposition;
+	bool isBottomColliding = false; // 바닥면 충돌 처리
+	bool isTopColliding = false; // 바닥면 충돌 처리
 
-	bool isBottomLeftColliding = false;
-	bool isBottomRightColliding = false;
+	bool isBottomLeftColliding = false; // 좌측 하단 
+	bool isBottomRightColliding = false; // 우측 하단
 
-	bool isPreMiddleLeftColliding = false; // 이전 좌측 충돌 처리
+	bool isTopLeftColliding = false; // 좌측 상단
+	bool isTopRightColliding = false; // 우측 상단
+
 	bool isMiddleLeftColliding = false; // 좌측 충돌 처리
-
-	bool isPreMiddleRightColliding = false; // 이전 우측 충돌 처리
 	bool isMiddleRightColliding = false; // 우측 충돌 처리
 
 
@@ -59,7 +61,6 @@ protected:
 	bool isDash = false; // 대시
 
 	bool isGrounded = false; // 서있는 상태
-	bool PreGrounded = false; // 이전 프레임에 서있는 상태
 
 	bool isCantFlip = false; // 방향변경 불가 변수
 	
@@ -100,6 +101,9 @@ protected:
 	int rollBackBottomLeft;
 	int rollBackBottomRight;
 
+	int rollBackTopLeft;
+	int rollBackTopRight;
+
 
 public:
 
@@ -125,6 +129,7 @@ public:
 	void UpdateLanding(float dt);
 	void UpdateDash(float dt);
 	void UpdateClimbing(float dt);
+	void UpdateWallJump(float dt);
 	void UpdateHit(float dt);
 	void UpdateDie(float dt);
 
@@ -133,6 +138,8 @@ public:
 
 	void CheckBottomCollision();
 	void CheckRightCollision();
+	void CheckLeftCollision();
+	void CheckTopCollision();
 
 	void Draw(sf::RenderWindow& window) override;
 };

@@ -1,0 +1,7 @@
+ID,FPS,"LOOPTYPE (0: Single, 1: Loop, 2: PingPong)",,
+WallJumpShot,30,0,,
+,,,,
+TEXTURE ID,LEFT,TOP,WIDTH,HEIGHT
+graphics/xsheet.png,235,525,33,47
+graphics/xsheet.png,344,525,33,47
+graphics/xsheet.png,377,525,35,47

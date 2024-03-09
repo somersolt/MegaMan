@@ -22,7 +22,28 @@ void Player::Shoot()
 	buster->Init();
 	buster->Reset();
 	buster->SetPosition({ position.x, position.y - 16 });
-	buster->Fire({1.f,0.f}, 600, 1 ,side);
+
+	if (GetCurrentStatus() == Status::Climbing)
+	{
+		buster->SetPosition({ position.x, position.y - 25 });
+	}
+	if (GetCurrentStatus() == Status::WallJump)
+	{
+		buster->SetPosition({ position.x, position.y - 30 });
+	}
+	if (GetCurrentStatus() == Status::JumpingUp || GetCurrentStatus() == Status::FallingDown)
+	{
+		buster->SetPosition({ position.x, position.y - 30});
+	}
+
+	if (GetCurrentStatus() == Status::Climbing)
+	{
+		buster->Fire({ 1.f,0.f }, 600, 1, oppsetSide);
+	}
+	else
+	{
+		buster->Fire({ 1.f,0.f }, 600, 1, side);
+	}
 	sceneGame->AddGo(buster);
 	isShooting = false;
 }
@@ -33,7 +54,27 @@ void Player::ChargeShoot()
 	chargeBuster->Init();
 	chargeBuster->Reset();
 	chargeBuster->SetPosition({ position.x, position.y - 30 });
-	chargeBuster->ChargeFire({ 1.f,0.f }, 600, 5, side);
+
+	if (GetCurrentStatus() == Status::Climbing)
+	{
+		chargeBuster->SetPosition({ position.x, position.y - 25 });
+	}
+	if (GetCurrentStatus() == Status::WallJump)
+	{
+		chargeBuster->SetPosition({ position.x, position.y - 30 });
+	}
+	if (GetCurrentStatus() == Status::JumpingUp || GetCurrentStatus() == Status::FallingDown)
+	{
+		chargeBuster->SetPosition({ position.x, position.y - 46 });
+	}
+	if (GetCurrentStatus() == Status::Climbing)
+	{
+		chargeBuster->ChargeFire({ 1.f,0.f }, 600, 5, oppsetSide);
+	}
+	else
+	{
+		chargeBuster->ChargeFire({ 1.f,0.f }, 600, 5, side);
+	}
 	sceneGame->AddGo(chargeBuster);
 	isShooting = false;
 }
@@ -125,28 +166,21 @@ void Player::Update(float dt)
 	playerHitBox.setPosition(position);
 	playerBounds = playerHitBox.getGlobalBounds();
 
-	if (isShootingMode) // 실제 사격과 관계없이 총을 꺼내들고 있는 시간
-	{
-		ShootingModeTimer += dt;
 
-		if (ShootingModeTimer > ShootingModeInterval)
-		{
-			isShootingMode = false;
-			ShootingModeTimer = 0;
-		}
-	}
 
 	if (h != 0.f && !isCantFlip)
 	{
-		SetFlipX(h < 0);
 		if (h < 0)
 		{
 			side = Sides::Left;
+			oppsetSide = Sides::Right;
 		}
 		else if (h > 0)
 		{
 			side = Sides::Right;
+			oppsetSide = Sides::Left;
 		}
+		SetFlipX(side == Sides::Left);
 	}
 
 	if (isDash)
@@ -160,8 +194,22 @@ void Player::Update(float dt)
 			h = 1;
 		}
 	}
-	velocity.x = h * speed * dt;
+	if (currentStatus != Status::WallJump && currentStatus != Status::Climbing)
+	velocity.x = h * speed  * dt;
+	if(currentStatus == Status::WallJump || currentStatus == Status::Climbing)
+	velocity.x += h * speed * dt * 0.01;
 
+	////////////////////////
+	if (isShootingMode) // 실제 사격과 관계없이 총을 꺼내들고 있는 시간
+	{
+		ShootingModeTimer += dt;
+
+		if (ShootingModeTimer > ShootingModeInterval)
+		{
+			isShootingMode = false;
+			ShootingModeTimer = 0;
+		}
+	}
 	if (!isCharge)
 	{
 		chargeTimer = 0;
@@ -172,7 +220,6 @@ void Player::Update(float dt)
 		playerEffectAnimation.Play("animations/Charge.csv");
 		chargeEffectMode = true;
 	}
-
 	if (1.f > chargeTimer && chargeTimer > 0.5f)
 	{
 		sf::Color color(255, 255, 100, 255); 
@@ -184,12 +231,11 @@ void Player::Update(float dt)
 		sprite.setColor(color);
 		chargeTimer = 0;
 	}
-
-
+	
 	// 사격
 	if (InputMgr::GetKeyDown(sf::Keyboard::X) && shootTimer > shootInterval)
 	{
-		Shoot();
+		//Shoot();
 		chargeTimer = 0;
 		isShooting = true;
 		isShootingMode = true;
@@ -244,6 +290,9 @@ void Player::Update(float dt)
 	case Player::Climbing:
 		UpdateClimbing(dt);
 		break;
+	case Player::WallJump:
+		UpdateWallJump(dt);
+		break;
 	case Player::Hit:
 		UpdateHit(dt);
 		break;
@@ -259,7 +308,7 @@ void Player::Update(float dt)
 	{
 		velocity.x = 0;
 		velocity.y = 0;
-		SetPosition({ 1250,0 });
+		SetPosition({ 1450,200 });
 		isGrounded = false;
 	}
 }
@@ -277,7 +326,7 @@ void Player::UpdateIdle(float dt)
 
 	} // 대기 -> 사격
 
-	if (!isGrounded && !isColliding && velocity.y > 0)
+	if (!isGrounded && !isBottomColliding && velocity.y > 0)
 	{
 		SetPlayerStatus(Status::FallingDown);
 		playerAnimation.Play("animations/JumpDown.csv");
@@ -286,7 +335,15 @@ void Player::UpdateIdle(float dt)
 
 	if (InputMgr::GetKeyDown(sf::Keyboard::Space))
 	{
-		velocity.y = -600.f;
+		if(isMiddleRightColliding)
+		{
+			position.x -= 1;
+		}
+		if (isMiddleLeftColliding)
+		{
+			position.x += 1;
+		}
+		velocity.y = -400.f;
 		SetPlayerStatus(Status::JumpingUp);
 		playerAnimation.Play("animations/JumpUp.csv");
 		return;
@@ -342,7 +399,7 @@ void Player::UpdateRun(float dt)
 
 	} // 달리기 사격 -> 달리기
 
-	if (!isGrounded && !isColliding && velocity.y > 0)
+	if (!isGrounded && !isBottomColliding && velocity.y > 0)
 	{
 		SetPlayerStatus(Status::FallingDown);
 		playerAnimation.Play("animations/JumpDown.csv");
@@ -351,8 +408,15 @@ void Player::UpdateRun(float dt)
 
 	if (InputMgr::GetKeyDown(sf::Keyboard::Space))
 	{
-		velocity.y = -600.f;
-		isGrounded = false;
+		if (isMiddleRightColliding)
+		{
+			position.x -= 1;
+		}
+		if (isMiddleLeftColliding)
+		{
+			position.x += 1;
+		}
+		velocity.y = -400.f;
 		SetPlayerStatus(Status::JumpingUp);
 		playerAnimation.Play("animations/JumpUp.csv");
 		return;
@@ -396,6 +460,13 @@ void Player::UpdateJumpingUp(float dt)
 
 	}//점프 상승 중 사격
 
+	if (isMiddleLeftColliding || isMiddleRightColliding)
+	{
+		SetPlayerStatus(Status::Climbing);
+		playerAnimation.Play("animations/Climbing.csv");
+		return;
+	}//점프 중 벽타기
+
 	if (velocity.y >= 0)
 	{
 		SetPlayerStatus(Status::FallingDown);
@@ -418,6 +489,24 @@ void Player::UpdateFallingDown(float dt)
 
 	} // 점프 하강 중 사격
 
+	if (isMiddleLeftColliding)
+	{
+		SetPlayerStatus(Status::Climbing);
+		side = Sides::Left;
+		SetFlipX(side == Sides::Left);
+		playerAnimation.Play("animations/Climbing.csv");
+		return;
+	}
+		
+	if(isMiddleRightColliding)
+	{
+		SetPlayerStatus(Status::Climbing);
+		side = Sides::Right;
+		SetFlipX(side == Sides::Left);
+		playerAnimation.Play("animations/Climbing.csv");
+		return;
+	} //하강 중 벽타기
+
 	if (isGrounded && velocity.y >= 0)
 	{
 		SetPlayerStatus(Status::Landing);
@@ -433,14 +522,40 @@ void Player::UpdateLanding(float dt)
 {
 	h = 0;
 	velocity.x /= 2;
-	isCantFlip = true;
+	isCantFlip = false;
 	if (isShootingMode)
 	{
 		int i = playerAnimation.GetCurrentFrame();
 		playerAnimation.Play("animations/LandingShot.csv", true, true);
 		playerAnimation.SetCurrentFrame(i);
 
-	} // 점프 하강 중 사격
+	} // 착지 중 사격
+
+
+	if (InputMgr::GetKeyDown(sf::Keyboard::Space))
+	{
+		if (isMiddleRightColliding)
+		{
+			position.x -= 1;
+		}
+		if (isMiddleLeftColliding)
+		{
+			position.x += 1;
+		}
+		velocity.y = -400.f;
+		SetPlayerStatus(Status::JumpingUp);
+		playerAnimation.Play("animations/JumpUp.csv");
+		return;
+
+	} // 착지 -> 점프
+
+	if (InputMgr::GetKeyDown(sf::Keyboard::C))
+	{
+		SetPlayerStatus(Status::Dash);
+		playerAnimation.Play("animations/Dash.csv");
+		return;
+
+	} // 착지 -> 대시
 }
 
 void Player::UpdateDash(float dt)
@@ -453,7 +568,7 @@ void Player::UpdateDash(float dt)
 
 	if (InputMgr::GetKeyDown(sf::Keyboard::Space))
 	{
-		velocity.y = -600.f;
+		velocity.y = -400.f;
 
 		isCantFlip = false;
 		SetPlayerStatus(Status::JumpingUp);
@@ -473,7 +588,144 @@ void Player::UpdateDash(float dt)
 
 void Player::UpdateClimbing(float dt)
 {
+	isCantFlip = true;
+	isDash = false;
+	velocity.y = Utils::Clamp(velocity.y, 0.f, 200.f);
 	speed = 200;
+	
+
+	if (isShootingMode)
+	{
+		int i = playerAnimation.GetCurrentFrame();
+		playerAnimation.Play("animations/ClimbingShot.csv", true, true);
+		playerAnimation.SetCurrentFrame(i);
+	} // 벽타기 -> 벽타기 사격
+
+	if (!isShootingMode)
+	{
+		int i = playerAnimation.GetCurrentFrame();
+		playerAnimation.Play("animations/Climbing.csv", true, true);
+		playerAnimation.SetCurrentFrame(i);
+
+	} // 벽타기 사격 -> 벽타기
+
+
+	if (InputMgr::GetKeyDown(sf::Keyboard::Space))
+	{
+		velocity.y = -400.f;
+		if (isMiddleRightColliding)
+		{
+			position.x -= 1;
+			velocity.x -= 0.4;
+			SetPlayerStatus(Status::WallJump);
+			playerAnimation.Play("animations/Walljump.csv");
+			return;
+		}
+
+		if (isMiddleLeftColliding)
+		{
+			position.x += 1;
+			velocity.x += 0.4;
+			SetPlayerStatus(Status::WallJump);
+			playerAnimation.Play("animations/Walljump.csv");
+			return;
+		}
+
+	} // 벽타기 -> 점프
+
+
+
+	if (!isMiddleLeftColliding && !isMiddleRightColliding)
+	{
+		isCantFlip = false;
+		SetPlayerStatus(Status::FallingDown);
+		playerAnimation.Play("animations/JumpDown.csv");
+		return;
+	} // 벽타기 -> 착지
+
+
+	if (isGrounded && velocity.y >= 0)
+	{
+		isCantFlip = false;
+		SetPlayerStatus(Status::Landing);
+		playerAnimation.Play("animations/Landing.csv");
+		return;
+
+	} // 벽타기 중 착지
+}
+
+
+void Player::UpdateWallJump(float dt)
+{
+
+
+	if (isShootingMode)
+	{
+		int i = playerAnimation.GetCurrentFrame();
+		playerAnimation.Play("animations/WallJumpShot.csv", true, true);
+		playerAnimation.SetCurrentFrame(i);
+	} // 벽점프 -> 벽점프 사격
+
+	if (!isShootingMode)
+	{
+		int i = playerAnimation.GetCurrentFrame();
+		playerAnimation.Play("animations/WallJump.csv", true, true);
+		playerAnimation.SetCurrentFrame(i);
+
+	} // 벽점프 사격 -> 벽점프
+
+
+	if (side == Sides::Right)
+	{
+		if (h < 0.f)
+		{
+			isCantFlip = false;
+			velocity.x = h * speed * dt;
+			SetPlayerStatus(Status::JumpingUp);
+			playerAnimation.Play("animations/JumpUp.csv");
+			return;
+		}
+	}
+	if (side == Sides::Left)
+	{
+		if (h > 0.f)
+		{
+			isCantFlip = false;
+			velocity.x = h * speed * dt;
+			SetPlayerStatus(Status::JumpingUp);
+			playerAnimation.Play("animations/JumpUp.csv");
+			return;
+		}
+	}
+
+	if (isMiddleLeftColliding || isMiddleRightColliding)
+	{
+		if(side==Sides::Left && isMiddleRightColliding)
+		{
+			side = Sides::Right;
+			oppsetSide = Sides::Left;
+		}
+		if (side == Sides::Right && isMiddleLeftColliding)
+		{
+			side = Sides::Left;
+			oppsetSide = Sides::Right;
+		}
+		SetFlipX(side == Sides::Left);
+		SetPlayerStatus(Status::Climbing);
+		playerAnimation.Play("animations/Climbing.csv");
+		return;
+	}//벽점프 중 벽타기
+
+	if (velocity.y >= 0)
+	{
+		isCantFlip = false;
+		SetPlayerStatus(Status::FallingDown);
+		playerAnimation.Play("animations/JumpDown.csv");
+		return;
+
+	} // 벽점프 중 하강
+
+
 }
 
 
@@ -488,9 +740,7 @@ void Player::UpdateDie(float dt)
 
 void Player::LateUpdate(float dt)
 {
-	std::cout << startX << "/" << endX << "/" << startY << "/" << endY << std::endl;
 
-	preposition = position;
 	if (velocity.y > 800.f)
 	{
 		velocity.y = 800.f;
@@ -499,6 +749,14 @@ void Player::LateUpdate(float dt)
 	if (isMiddleRightColliding)
 	{
 		velocity.x = std::min(0.f, velocity.x);
+	}
+	if (isMiddleLeftColliding)
+	{
+		velocity.x = std::max(0.f, velocity.x);
+	}
+	if (isTopColliding)
+	{
+		velocity.y = std::max(0.f, velocity.y);
 	}
 
 	position += sf::Vector2f(velocity.x, velocity.y * dt);
@@ -517,33 +775,35 @@ void Player::LateUpdate(float dt)
 
 	//if (startX > 0 && endX < 350 && startY > 0 && endY < 200)  // TO-DO 맵의 로컬좌표 크기임. 큰맵으로 만들면 크게 *오류방지*
 	{
+		CheckTopCollision();
 		CheckBottomCollision();
 		CheckRightCollision();
-
+		CheckLeftCollision();
 	}
-
 
 	if (isMiddleRightColliding) // 우측 보정
 	{
 		position.x -= rollBackMiddleRight - 1;
 		rollBackMiddleRight = 0;
-		isPreMiddleRightColliding = false;
 	}
-	else
+	if (isMiddleLeftColliding) // 좌측 보정
 	{
-		isPreMiddleRightColliding = isMiddleRightColliding;
+		position.x += rollBackMiddleLeft - 1;
+		rollBackMiddleLeft = 0;
 	}
-
-	if(/*PreColliding && */isColliding && PreGrounded && isGrounded) // 하단 보정
+	if (isTopColliding) // 상단 보정
+	{
+		position.y += std::max(rollBackTopLeft, rollBackTopRight) - 1;
+		rollBackTopLeft = 0;
+		rollBackTopRight = 0;
+	}
+	if (isBottomColliding && isGrounded) // 하단 보정
 	{
 		position.y -= std::max(rollBackBottomLeft, rollBackBottomRight) - 1;
 		rollBackBottomLeft = 0;
 		rollBackBottomRight = 0;
-		isColliding = false;
 	}
 
-	PreColliding = isColliding;
-	PreGrounded = isGrounded;
 	SetPosition(position); // 중력을 포함한 위치 적용
 	SetOrigin(Origins::BC);
 
@@ -602,10 +862,9 @@ void Player::CheckBottomCollision()
 		isBottomRightColliding = false;
 		rollBackBottomRight = 0;
 	}
-	isColliding = (isBottomLeftColliding || isBottomRightColliding);
-	isGrounded = isColliding;
+	isBottomColliding = (isBottomLeftColliding || isBottomRightColliding);
+	isGrounded = isBottomColliding;
 }
-
 void Player::CheckRightCollision()
 {
 	sf::Color MiddleRightPixel = MapImage.getPixel(endX, startY + 17);
@@ -624,6 +883,67 @@ void Player::CheckRightCollision()
 		return;
 	}
 	isMiddleRightColliding = false;
+}
+void Player::CheckLeftCollision()
+{
+	sf::Color MiddleLeftPixel = MapImage.getPixel(startX, startY + 17);
+	if (MiddleLeftPixel == sideCollisionColor)
+	{
+		isMiddleLeftColliding = true;
+
+		int temp = 0;
+		while (MiddleLeftPixel == sideCollisionColor)
+		{
+			temp++;
+			MiddleLeftPixel = MapImage.getPixel(startX + temp, endY);
+		}
+		rollBackMiddleLeft = temp;
+
+		return;
+	}
+	isMiddleLeftColliding = false;
+}
+void Player::CheckTopCollision()
+{
+
+	sf::Color TopLeftPixel = MapImage.getPixel(startX + 1, startY);
+	if (TopLeftPixel == collisionColor)
+	{
+		isTopLeftColliding = true;
+
+		int temp = 0;
+		while (TopLeftPixel == collisionColor)
+		{
+			temp++;
+			TopLeftPixel = MapImage.getPixel(startX + 1, startY + temp);
+		}
+		rollBackTopLeft = temp;
+
+	}
+	else
+	{
+		isTopLeftColliding = false;
+		rollBackTopLeft = 0;
+	}
+
+	sf::Color TopRightPixel = MapImage.getPixel(endX - 1, startY);
+	if (TopRightPixel == collisionColor)
+	{
+		isTopRightColliding = true;
+		int temp = 0;
+		while (TopRightPixel == collisionColor)
+		{
+			temp++;
+			TopRightPixel = MapImage.getPixel(endX - 1, startY + temp);
+		}
+		rollBackTopRight = temp;
+	}
+	else
+	{
+		isTopRightColliding = false;
+		rollBackTopRight = 0;
+	}
+	isTopColliding = (isTopLeftColliding || isTopRightColliding);
 }
 
 void Player::Draw(sf::RenderWindow& window)
