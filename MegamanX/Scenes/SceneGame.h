@@ -22,8 +22,9 @@ public:
 	SceneGame(SceneIds id);
 	~SceneGame() override = default;
 
-	SpriteGo* backgroundtest = nullptr;
 	SpriteGo* background = nullptr;
+	SpriteGo* maptest = nullptr;
+	SpriteGo* map = nullptr;
 
 	sf::Image collisionMapImage;
 	sf::Texture collisionMapTexture;

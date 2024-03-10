@@ -34,6 +34,8 @@ void Scene::Init()
 	sf::Vector2f windowSize = (sf::Vector2f)FRAMEWORK.GetWindowSize();
 	sf::Vector2f centerPos = (sf::Vector2f)FRAMEWORK.GetWindowSize() * 0.5f;
 
+	backgroundView.setSize(windowSize);
+	backgroundView.setCenter({ 0.f ,0.f });
 	worldView.setSize(windowSize);
 	worldView.setCenter({ 0.f ,0.f });
 	uiView.setSize((windowSize));
@@ -43,7 +45,10 @@ void Scene::Init()
 	{
 		obj->Init();
 	}
-
+	for (auto obj : backGroundObjects)
+	{
+		obj->Init();
+	}
 	for (auto obj : uiGameObjects)
 	{
 		obj->Init();
@@ -58,6 +63,13 @@ void Scene::Release()
 	}
 	gameObjects.clear();
 
+	for (auto obj : backGroundObjects)
+	{
+		delete obj;
+	}
+	gameObjects.clear();
+
+
 	for (auto obj : uiGameObjects)
 	{
 		delete obj;
@@ -71,6 +83,10 @@ void Scene::Enter()
 	{
 		obj->Reset();
 	}
+	for (auto obj : backGroundObjects)
+	{
+		obj->Reset();
+	}
 	for (auto obj : uiGameObjects)
 	{
 		obj->Reset();
@@ -80,6 +96,13 @@ void Scene::Enter()
 void Scene::Update(float dt)
 {
 	for (auto obj : gameObjects)
+	{
+		if (obj->GetActive())
+		{
+			obj->Update(dt);
+		}
+	}
+	for (auto obj : backGroundObjects)
 	{
 		if (obj->GetActive())
 		{
@@ -105,6 +128,13 @@ void Scene::LateUpdate(float dt)
 				obj->LateUpdate(dt);
 			}
 		}
+		for (auto obj : backGroundObjects)
+		{
+			if (obj->GetActive())
+			{
+				obj->LateUpdate(dt);
+			}
+		}
 		for (auto obj : uiGameObjects)
 		{
 			if (obj->GetActive())
@@ -124,6 +154,14 @@ void Scene::LateUpdate(float dt)
 				continue;
 			}
 
+			it = std::find(backGroundObjects.begin(), backGroundObjects.end(), obj);
+			if (it != backGroundObjects.end())
+			{
+				backGroundObjects.remove(obj);
+				AddGo(obj, Layers::BackGround);
+				continue;
+			}
+
 			it = std::find(uiGameObjects.begin(), uiGameObjects.end(), obj);
 			if (it != uiGameObjects.end())
 			{
@@ -139,6 +177,7 @@ void Scene::LateUpdate(float dt)
 		{
 			gameObjects.remove(obj);
 			uiGameObjects.remove(obj);
+			backGroundObjects.remove(obj);
 
 			delete obj;
 		}
@@ -154,6 +193,13 @@ void Scene::FixedUpdate(float dt)
 
 	{
 		for (auto obj : gameObjects)
+		{
+			if (obj->GetActive())
+			{
+				obj->FixedUpdate(dt);
+			}
+		}
+		for (auto obj : backGroundObjects)
 		{
 			if (obj->GetActive())
 			{
@@ -192,6 +238,15 @@ void Scene::Draw(sf::RenderWindow& window)
 
 	const sf::View& saveView = window.getView();
 
+	window.setView(backgroundView);
+	for (auto obj : backGroundObjects)
+	{
+		if (obj->GetActive())
+		{
+			obj->Draw(window);
+		}
+	}
+
 	window.setView(worldView);
 	for (auto obj : gameObjects)
 	{
@@ -223,6 +278,16 @@ GameObject* Scene::FindGo(const std::string& name, Layers layer)
 				return obj;
 			}
 		}
+
+	if ((layer & Layers::BackGround) == Layers::BackGround)
+		for (auto obj : backGroundObjects)
+		{
+			if (obj->name == name)
+			{
+				return obj;
+			}
+		}
+
 	if ((layer & Layers::Ui) == Layers::Ui)
 	{
 		for (auto obj : uiGameObjects)
@@ -243,6 +308,17 @@ int Scene::FindGoAll(const std::string& name, std::list<GameObject*>& list, Laye
 	if ((layer & Layers::World) == Layers::World)
 	{
 		for (auto obj : gameObjects)
+		{
+			if (obj->name == name)
+			{
+				list.push_back(obj);
+			}
+		}
+	}
+
+	if ((layer & Layers::BackGround) == Layers::BackGround)
+	{
+		for (auto obj : backGroundObjects)
 		{
 			if (obj->name == name)
 			{
@@ -282,6 +358,25 @@ GameObject* Scene::AddGo(GameObject* obj, Layers layer)
 				++it;
 			}
 			gameObjects.push_back(obj);
+			return obj;
+		}
+	}
+
+	if ((layer & Layers::BackGround) == Layers::BackGround)
+	{
+		if (std::find(backGroundObjects.begin(), backGroundObjects.end(), obj) == backGroundObjects.end())
+		{
+			auto it = backGroundObjects.begin();
+			while (it != backGroundObjects.end())
+			{
+				if (GameObject::CompareDrawOrder(obj, *it))
+				{
+					backGroundObjects.insert(it, obj);
+					return obj;
+				}
+				++it;
+			}
+			backGroundObjects.push_back(obj);
 			return obj;
 		}
 	}

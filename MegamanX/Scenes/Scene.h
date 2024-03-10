@@ -10,19 +10,22 @@ public:
 		None = 0,
 		World = 1,
 		Ui = 2,
+		BackGround = 3,
 		EveryThing = 0xfffffff,
 	};
 protected:
 	SceneIds id;
 	std::list<GameObject*> gameObjects;
+	std::list<GameObject*> backGroundObjects;
 	std::list<GameObject*> uiGameObjects;
 
 	std::list<GameObject*> resortingGameObjects;
 	std::list<GameObject*> removeGameObjects;
 
-
+	sf::View backgroundView;
 	sf::View worldView;
 	sf::View uiView;
+
 
 	ResourceMgr<sf::Texture>& texResMgr;
 	ResourceMgr<sf::Font>& fontResMgr;

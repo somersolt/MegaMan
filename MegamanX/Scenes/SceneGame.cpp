@@ -24,6 +24,13 @@ void SceneGame::SetStatus(Status newStatus)
 void SceneGame::Init()
 {
 
+	background = new SpriteGo("background");
+	background->SetTexture("graphics/background_ice.png");
+	AddGo(background, Scene::BackGround );
+	background->SetScale({ 1, 2 });
+	background->SetOrigin({ background->GetGlobalBounds().width / 2 , background->GetGlobalBounds().height / 2 - 70 });
+
+
 	//// ÀÓ½Ã ¸Ê 
 	//backgroundtest = new SpriteGo("testMap");
 	//backgroundtest->SetTexture("graphics/test_stage.png");
@@ -31,10 +38,10 @@ void SceneGame::Init()
 	//backgroundtest->SetPosition({ 1000, 0 });
 	 
 	// ÁøÂ¥ ¸Ê 
-	background = new SpriteGo("Map");
-	background->SetTexture("graphics/chill_penguin_stage.png");
-	AddGo(background);
-	background->SetPosition({ 0, 0 });
+	map = new SpriteGo("Map");
+	map->SetTexture("graphics/chill_penguin_stage.png");
+	AddGo(map);
+	map->SetPosition({ 0, 0 });
 
 
 	collisionMapImage.loadFromFile("graphics/chill_penguin_stage_collision.png");
@@ -46,7 +53,7 @@ void SceneGame::Init()
 	mapHitBox->SetTexture("graphics/chill_penguin_stage_collision.png");
 	AddGo(mapHitBox);
 	mapHitBox->SetPosition({ 0, 0 });
-
+	mapHitBox->SetActive(false);
 
 
 	// ÇÃ·¹ÀÌ¾î
@@ -95,10 +102,17 @@ void SceneGame::Update(float dt)
 void SceneGame::LateUpdate(float dt)
 {
 	Scene::LateUpdate(dt);
+	sf::Vector2f backgroundViewCenter = player->GetPosition();
+	backgroundView.setSize({ 1920 ,1080 });
+	backgroundView.setCenter(backgroundViewCenter);
+
 	sf::Vector2f worldViewCenter = worldView.getCenter();
-	worldViewCenter = player->GetPosition();
-	worldView.setSize({ 1920 / 3,1080 / 3 });
+	worldViewCenter = { player->GetPosition().x , player->GetPosition().y - 50 };
+	worldView.setSize({ 1920 / 3 , 1080 / 3 });
 	worldView.setCenter(worldViewCenter);
+
+
+	background->SetPosition({ backgroundViewCenter });
 }
 
 void SceneGame::FixedUpdate(float dt)

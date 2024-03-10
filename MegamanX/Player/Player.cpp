@@ -99,7 +99,7 @@ void Player::Reset()
 	playerAnimation.Play("animations/Idle.csv");
 	SetPlayerStatus(Status::Idle);
 	SetOrigin(Origins::BC);
-	SetPosition({ 200,500 });
+	SetPosition({ 200,900 });
 	SetFlipX(false);
 	side = Sides::Right;
 	// 플레이어 애니메이션 세팅
@@ -313,7 +313,7 @@ void Player::Update(float dt)
 	{
 		velocity.x = 0;
 		velocity.y = 0;
-		SetPosition({ 200,500 });
+		SetPosition({ 200,900 });
 	}
 }
 
@@ -605,7 +605,7 @@ void Player::UpdateClimbing(float dt)
 {
 	isCantFlip = true;
 	isDash = false;
-	velocity.y = Utils::Clamp(velocity.y, 0.f, 200.f);
+	velocity.y = Utils::Clamp(velocity.y, 0.f, 100.f);
 
 
 	if (isShootingMode)

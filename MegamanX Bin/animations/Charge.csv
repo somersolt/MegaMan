@@ -1,7 +1,12 @@
 ID,FPS,"LOOPTYPE (0: Single, 1: Loop, 2: PingPong)",,
-Charge,10,1,,
+Charge,20,1,,
 ,,,,
 TEXTURE ID,LEFT,TOP,WIDTH,HEIGHT
+graphics/chargeEffect.png,5,110,92,100
 graphics/chargeEffect.png,105,110,92,100
+graphics/chargeEffect.png,205,110,88,100
 graphics/chargeEffect.png,300,110,85,100
+graphics/chargeEffect.png,396,110,80,100
 graphics/chargeEffect.png,490,110,80,100
+graphics/chargeEffect.png,575,110,70,100
+graphics/chargeEffect.png,655,110,45,100
