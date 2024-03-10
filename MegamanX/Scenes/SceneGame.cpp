@@ -24,27 +24,28 @@ void SceneGame::SetStatus(Status newStatus)
 void SceneGame::Init()
 {
 
-	// ÀÓ½Ã ¸Ê 
-	backgroundtest = new SpriteGo("testMap");
-	backgroundtest->SetTexture("graphics/test_stage.png");
-	AddGo(backgroundtest);
-	backgroundtest->SetPosition({ 1000, 0 });
+	//// ÀÓ½Ã ¸Ê 
+	//backgroundtest = new SpriteGo("testMap");
+	//backgroundtest->SetTexture("graphics/test_stage.png");
+	//AddGo(backgroundtest);
+	//backgroundtest->SetPosition({ 1000, 0 });
+	 
+	// ÁøÂ¥ ¸Ê 
+	background = new SpriteGo("Map");
+	background->SetTexture("graphics/chill_penguin_stage.png");
+	AddGo(background);
+	background->SetPosition({ 0, 0 });
 
-	collisionMapImage.loadFromFile("graphics/test_stage_collision3.png");
+
+	collisionMapImage.loadFromFile("graphics/chill_penguin_stage_collision.png");
 	collisionMapTexture.loadFromImage(collisionMapImage);
 	collisionMapSprite.setTexture(collisionMapTexture);
-	collisionMapSprite.setPosition({ 1000, 0 });
+	collisionMapSprite.setPosition({ 0, 0 });
 
 	mapHitBox = new SpriteGo("mapHitBox");
-	mapHitBox->SetTexture("graphics/test_stage_collision3.png");
+	mapHitBox->SetTexture("graphics/chill_penguin_stage_collision.png");
 	AddGo(mapHitBox);
-	mapHitBox->SetPosition({ 1000, 0 });
-
-	////ÁøÂ¥ ¸Ê
-	//background = new SpriteGo("Map");
-	//background->SetTexture("graphics/chill_penguin_stage.png");
-	//AddGo(background);
-	//background->SetPosition({ 1000, 0 });
+	mapHitBox->SetPosition({ 0, 0 });
 
 
 
@@ -52,7 +53,7 @@ void SceneGame::Init()
 
 	player = new Player("player");
 	AddGo(player);
-	player->SetPosition({ 1000,0 });
+	player->SetPosition({ 0,0 });
 
 	Scene::Init();
 }
@@ -80,7 +81,15 @@ void SceneGame::Exit()
 void SceneGame::Update(float dt)
 {
 	Scene::Update(dt);
-	//std::cout << player->GetPosition().x << "/" << player->GetPosition().y << std::endl;
+
+	if (InputMgr::GetKeyDown(sf::Keyboard::F5))
+	{
+		mapHitBox->SetActive(false);
+	}
+	if (InputMgr::GetKeyDown(sf::Keyboard::F6))
+	{
+		mapHitBox->SetActive(true);
+	}
 }
 
 void SceneGame::LateUpdate(float dt)

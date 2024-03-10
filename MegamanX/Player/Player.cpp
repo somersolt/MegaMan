@@ -99,7 +99,7 @@ void Player::Reset()
 	playerAnimation.Play("animations/Idle.csv");
 	SetPlayerStatus(Status::Idle);
 	SetOrigin(Origins::BC);
-	SetPosition({ 1250,0 });
+	SetPosition({ 200,500 });
 	SetFlipX(false);
 	side = Sides::Right;
 	// 플레이어 애니메이션 세팅
@@ -199,7 +199,7 @@ void Player::Update(float dt)
 	}
 	else
 	{
-		velocity.x = h * speed * dt;
+		velocity.x = h * speed * dt * 0.5;
 	}
 
 	velocity.x = Utils::Clamp(velocity.x, -100, 100);
@@ -313,7 +313,7 @@ void Player::Update(float dt)
 	{
 		velocity.x = 0;
 		velocity.y = 0;
-		SetPosition({ 1450,200 });
+		SetPosition({ 200,500 });
 	}
 }
 
@@ -453,22 +453,22 @@ void Player::UpdateJumpingUp(float dt)
 		}
 
 	}//점프 상승 중 사격
-	if ( h > 0 && isMiddleRightColliding)
-	{
-		speed = 200;
-		isDash = false;
-		SetPlayerStatus(Status::Climbing);
-		playerAnimation.Play("animations/Climbing.csv");
-		return;
-	}//점프 상승 중 벽타기
-	if (h < 0 && isMiddleLeftColliding)
-	{
-		speed = 200;
-		isDash = false;
-		SetPlayerStatus(Status::Climbing);
-		playerAnimation.Play("animations/Climbing.csv");
-		return;
-	}//점프 상승 중 벽타기
+	//if ( h > 0 && isMiddleRightColliding)
+	//{
+	//	speed = 200;
+	//	isDash = false;
+	//	SetPlayerStatus(Status::Climbing);
+	//	playerAnimation.Play("animations/Climbing.csv");
+	//	return;
+	//}//점프 상승 중 벽타기
+	//if (h < 0 && isMiddleLeftColliding)
+	//{
+	//	speed = 200;
+	//	isDash = false;
+	//	SetPlayerStatus(Status::Climbing);
+	//	playerAnimation.Play("animations/Climbing.csv");
+	//	return;
+	//}//점프 상승 중 벽타기
 
 	if (velocity.y >= 0)
 	{
@@ -541,6 +541,10 @@ void Player::UpdateLanding(float dt)
 
 	if (InputMgr::GetKeyDown(sf::Keyboard::Space))
 	{
+
+		position.y -= rollBackSideSlope + 3;
+		rollBackSideSlope = 0;
+		position.y -= 2;
 		isDash = false;
 		if (isMiddleRightColliding)
 		{
@@ -861,12 +865,6 @@ void Player::LateUpdate(float dt)
 	
 	SetPosition(position); // 중력을 포함한 위치 적용
 	SetOrigin(Origins::BC);
-
-
-	std::cout << position.y << std::endl;
-
-
-
 }
 
 
