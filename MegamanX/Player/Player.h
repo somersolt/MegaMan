@@ -35,7 +35,9 @@ protected:
 	sf::Sprite effect;
 	Animator playerEffectAnimation;
 
+	int HP = 5; // TO-DO 체력 제대로 설정해놓기
 	float speed = 200.f;
+	float damageTimer = 0.f; // 무적 타이머
 	sf::Vector2f velocity;
 	Status preStatus = Status::None;
 	Status currentStatus = Status::None;
@@ -43,7 +45,7 @@ protected:
 	Sides oppsetSide = Sides::None;
 	sf::Image MapImage;
 
-	//sf::Vector2f preposition;
+
 	bool isBottomColliding = false; // 바닥면 충돌 처리
 	bool isTopColliding = false; // 바닥면 충돌 처리
 	bool isSlopeColliding = false; // 경사로 충돌 처리
@@ -62,7 +64,7 @@ protected:
 	bool isBottomSlopeColliding = false;
 
 	bool isDash = false; // 대시
-	bool isJump = false; // 대시
+	bool isJump = false; // 점프
 
 	bool isGrounded = false; // 서있는 상태
 	bool isSlopeGrounded = false; // 경사에 서있는 상태
@@ -139,6 +141,8 @@ public:
 	void UpdateWallJump(float dt);
 	void UpdateHit(float dt);
 	void UpdateDie(float dt);
+
+	void OnDamage(int damage);
 
 	void LateUpdate(float dt) override;
 	void FixedUpdate(float dt) override;

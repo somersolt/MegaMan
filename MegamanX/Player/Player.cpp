@@ -115,8 +115,11 @@ void Player::Reset()
 	playerAnimation.AddEvent("animations/LandingShot.csv", 2, ToIdle);
 	playerAnimation.AddEvent("animations/Dash.csv", 3, ToIdle);
 	playerAnimation.AddEvent("animations/Shot.csv", 6, ToIdle);
+	playerAnimation.AddEvent("animations/Hit.csv", 7, ToIdle);
+
 	std::function<void()> ToShot = std::bind(&Player::ShotAnimation, this);
 	playerAnimation.AddEvent("animations/DashShot.csv", 3, ToShot);
+
 }
 
 void Player::IdleAnimation()
@@ -145,7 +148,10 @@ void Player::Update(float dt)
 	playerAnimation.Update(dt);
 	playerEffectAnimation.Update(dt);
 
-	h = InputMgr::GetAxisRaw(Axis::Horizontal);
+	if (currentStatus != Status::Hit) 
+	{
+		h = InputMgr::GetAxisRaw(Axis::Horizontal);
+	}
 
 	shootTimer += dt;
 	effect.setPosition(position);
@@ -226,37 +232,39 @@ void Player::Update(float dt)
 	}
 	
 	// 사격
-	if (InputMgr::GetKeyDown(sf::Keyboard::X) && shootTimer > shootInterval)
+	if (currentStatus != Status::Hit && currentStatus != Status::Die)
 	{
-		//Shoot();
-		chargeTimer = 0;
-		isShooting = true;
-		isShootingMode = true;
-	}
-	if (InputMgr::GetKey(sf::Keyboard::X))
-	{
-		isCharge = true;
-		chargeTimer += dt;
-	}
+		if (InputMgr::GetKeyDown(sf::Keyboard::X) && shootTimer > shootInterval)
+		{
+			//Shoot();
+			chargeTimer = 0;
+			isShooting = true;
+			isShootingMode = true;
+		}
+		if (InputMgr::GetKey(sf::Keyboard::X))
+		{
+			isCharge = true;
+			chargeTimer += dt;
+		}
 
-	if (InputMgr::GetKeyUp(sf::Keyboard::X))
-	{
-		if (!chargeEffectMode)
+		if (InputMgr::GetKeyUp(sf::Keyboard::X))
 		{
-			Shoot();
+			if (!chargeEffectMode)
+			{
+				Shoot();
+			}
+			if (chargeEffectMode)
+			{
+				ChargeShoot();
+			}
+			isCharge = false;
+			shootTimer = 0;
+			isShooting = true;
+			isShootingMode = true;
+			sf::Color color(255, 255, 255, 255); // 원래 색으로 돌아옴
+			sprite.setColor(color);
 		}
-		if (chargeEffectMode)
-		{
-			ChargeShoot();
-		}
-		isCharge = false;
-		shootTimer = 0;
-		isShooting = true;
-		isShootingMode = true;
-		sf::Color color(255, 255, 255, 255); // 원래 색으로 돌아옴
-		sprite.setColor(color);
 	}
-	
 
 	if (isGrounded)
 	{
@@ -268,12 +276,11 @@ void Player::Update(float dt)
 		velocity.y += gravity * dt;
 	}
 
-	/*if (!isGrounded && isSlopeGrounded)
+	if (HP <= 0)
 	{
-		velocity.y = 0;
-		isGrounded = true;
-	}*/
-
+		SetPlayerStatus(Status::Die);
+	}
+	damageTimer += dt;
 
 	switch (currentStatus)
 	{
@@ -759,22 +766,72 @@ void Player::UpdateWallJump(float dt)
 		return;
 
 	} // 벽점프 중 하강
-
-
 }
 
 
 void Player::UpdateHit(float dt)
 {
+	isCantFlip = true;
+	isDash = false;
+	speed = 200;
+	damageTimer = 0;
+	if (side == Sides::Right)
+	{
+		h = -1;
+	}
+	if (side == Sides::Left)
+	{
+		h = 1;
+	}
+
+	if (velocity.y >= 0)
+	{
+		isJump = false;
+	}
 }
 
 void Player::UpdateDie(float dt)
 {
+	isCantFlip = true;
+	velocity.x = 0;
+	velocity.y = 0;
+	sprite.setTextureRect({ 50 , 637 , 27 , 40 });
+	sceneGame->SetStatus(SceneGame::Status::Pause);
+}
+
+
+
+
+void Player::OnDamage(int damage)
+{
+	
+	if (side == Sides::Right)
+	{
+		velocity.x -= 40;
+		velocity.y = -80;
+		isJump = true;
+		isGrounded = false;
+	}
+	if (side == Sides::Left)
+	{
+		velocity.x += 40;
+		velocity.y = -80;
+		isJump = true;
+		isGrounded = false;
+	}
+	SetPlayerStatus(Status::Hit);
+	HP -= damage;
+	playerAnimation.Play("animations/Hit.csv");
+
 }
 
 
 void Player::LateUpdate(float dt)
 {
+	if (InputMgr::GetKeyDown(sf::Keyboard::Q))
+	{
+		OnDamage(1);
+	}
 
 	if (InputMgr::GetKeyDown(sf::Keyboard::F1))
 	{
@@ -983,6 +1040,8 @@ void Player::CheckBottomCollision()
 	isGrounded = isBottomColliding;
 	isBottomSlopeColliding = (isBottomLeftSlopeColliding || isBottomRightSlopeColliding);
 }
+
+
 void Player::CheckRightCollision()
 {
 	sf::Color MiddleRightPixel = MapImage.getPixel(endX, startY + 17);
