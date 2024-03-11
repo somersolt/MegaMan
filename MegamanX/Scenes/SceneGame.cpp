@@ -30,7 +30,6 @@ void SceneGame::Init()
 	background->SetScale({ 1, 2 });
 	background->SetOrigin({ background->GetGlobalBounds().width / 2 , background->GetGlobalBounds().height / 2 - 70 });
 
-
 	//// 임시 맵 
 	//backgroundtest = new SpriteGo("testMap");
 	//backgroundtest->SetTexture("graphics/test_stage.png");
@@ -54,7 +53,6 @@ void SceneGame::Init()
 	AddGo(mapHitBox);
 	mapHitBox->SetPosition({ 0, 0 });
 	mapHitBox->SetActive(false);
-
 
 	// 플레이어
 
@@ -91,11 +89,11 @@ void SceneGame::Update(float dt)
 
 	if (InputMgr::GetKeyDown(sf::Keyboard::F5))
 	{
-		mapHitBox->SetActive(false);
+		mapHitBox->SetActive(true);
 	}
 	if (InputMgr::GetKeyDown(sf::Keyboard::F6))
 	{
-		mapHitBox->SetActive(true);
+		mapHitBox->SetActive(false);
 	}
 }
 

@@ -144,19 +144,6 @@ void Player::Update(float dt)
 	playerAnimation.Update(dt);
 	playerEffectAnimation.Update(dt);
 
-	///  히트박스 테스트 코드
-
-	if (InputMgr::GetKeyDown(sf::Keyboard::T))
-	{
-		playerHitBox.setFillColor(sf::Color::Transparent);
-	}
-	if (InputMgr::GetKeyDown(sf::Keyboard::R))
-	{
-		playerHitBox.setFillColor(sf::Color::Blue);
-	}
-	/// 히트박스 테스트 코드
-
-
 	h = InputMgr::GetAxisRaw(Axis::Horizontal);
 
 	shootTimer += dt;
@@ -309,12 +296,6 @@ void Player::Update(float dt)
 	}
 
 
-	if (InputMgr::GetKeyDown(sf::Keyboard::Z))
-	{
-		velocity.x = 0;
-		velocity.y = 0;
-		SetPosition({ 200,900 });
-	}
 }
 
 
@@ -453,22 +434,7 @@ void Player::UpdateJumpingUp(float dt)
 		}
 
 	}//점프 상승 중 사격
-	//if ( h > 0 && isMiddleRightColliding)
-	//{
-	//	speed = 200;
-	//	isDash = false;
-	//	SetPlayerStatus(Status::Climbing);
-	//	playerAnimation.Play("animations/Climbing.csv");
-	//	return;
-	//}//점프 상승 중 벽타기
-	//if (h < 0 && isMiddleLeftColliding)
-	//{
-	//	speed = 200;
-	//	isDash = false;
-	//	SetPlayerStatus(Status::Climbing);
-	//	playerAnimation.Play("animations/Climbing.csv");
-	//	return;
-	//}//점프 상승 중 벽타기
+
 
 	if (velocity.y >= 0)
 	{
@@ -774,6 +740,40 @@ void Player::UpdateDie(float dt)
 
 void Player::LateUpdate(float dt)
 {
+
+	if (InputMgr::GetKeyDown(sf::Keyboard::F1))
+	{
+		velocity.x = 0;
+		velocity.y = 0;
+		SetPosition({ 200,900 });
+	}
+	if (InputMgr::GetKeyDown(sf::Keyboard::F2))
+	{
+		velocity.x = 0;
+		velocity.y = 0;
+		SetPosition({ 2440,680 });
+	}
+	if (InputMgr::GetKeyDown(sf::Keyboard::F3))
+	{
+		velocity.x = 0;
+		velocity.y = 0;
+		SetPosition({ 4678,675 });
+	}
+
+	///  히트박스 테스트 코드
+
+	if (InputMgr::GetKeyDown(sf::Keyboard::F8))
+	{
+		playerHitBox.setFillColor(sf::Color::Transparent);
+	}
+	if (InputMgr::GetKeyDown(sf::Keyboard::F7))
+	{
+		playerHitBox.setFillColor(sf::Color::Blue);
+	}
+	/// 히트박스 테스트 코드
+
+	//std::cout << position.x << "/" << position.y << std::endl; // 위치 설정 테스트 코드
+
 	if (velocity.y > 800.f)
 	{
 		velocity.y = 800.f;
@@ -851,10 +851,6 @@ void Player::LateUpdate(float dt)
 		rollBackSlope = 0;
 	}
 
-	//if (InputMgr::GetKeyDown(sf::Keyboard::Space))
-	//{
-	//	position.y -= rollBackSideSlope - 1;
-	//}
 
 	if (isBottomColliding && isGrounded) // 하단 보정
 	{
