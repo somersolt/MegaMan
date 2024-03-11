@@ -27,8 +27,8 @@ void SceneGame::Init()
 	background = new SpriteGo("background");
 	background->SetTexture("graphics/background_ice.png");
 	AddGo(background, Scene::BackGround );
-	background->SetScale({ 1, 2 });
-	background->SetOrigin({ background->GetGlobalBounds().width / 2 , background->GetGlobalBounds().height / 2 - 70 });
+	background->SetOrigin({ background->GetGlobalBounds().left , background->GetGlobalBounds().height / 2 });
+	background->SetPosition({ 0,850 });
 
 	//// юс╫ц ╦й 
 	//backgroundtest = new SpriteGo("testMap");
@@ -61,6 +61,9 @@ void SceneGame::Init()
 	player->SetPosition({ 0,0 });
 
 	Scene::Init();
+
+	worldView.setSize({ 1920 / 3, 1080 / 3 });
+	backgroundView.setSize({ 1920 /3 ,1080 /3 });
 }
 
 void SceneGame::Release()
@@ -100,17 +103,20 @@ void SceneGame::Update(float dt)
 void SceneGame::LateUpdate(float dt)
 {
 	Scene::LateUpdate(dt);
-	sf::Vector2f backgroundViewCenter = player->GetPosition();
-	backgroundView.setSize({ 1920 ,1080 });
-	backgroundView.setCenter(backgroundViewCenter);
 
-	sf::Vector2f worldViewCenter = worldView.getCenter();
-	worldViewCenter = { player->GetPosition().x , player->GetPosition().y - 50 };
-	worldView.setSize({ 1920 / 3 , 1080 / 3 });
+	sf::Vector2f preWorldViewCenter = worldView.getCenter();
+	sf::Vector2f worldViewCenter = player->GetPosition();
+	worldViewCenter.y -= 50;
 	worldView.setCenter(worldViewCenter);
 
+	sf::Vector2f worldViewMoment = worldViewCenter - preWorldViewCenter;
 
-	background->SetPosition({ backgroundViewCenter });
+	sf::Vector2f backgroundViewMoment = worldViewMoment * 0.5f;
+	sf::Vector2f backgroundViewCenter = backgroundView.getCenter() + backgroundViewMoment;
+	backgroundViewCenter.y = worldViewCenter.y;
+	backgroundView.setCenter(backgroundViewCenter);
+
+
 }
 
 void SceneGame::FixedUpdate(float dt)

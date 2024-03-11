@@ -343,7 +343,7 @@ int Scene::FindGoAll(const std::string& name, std::list<GameObject*>& list, Laye
 
 GameObject* Scene::AddGo(GameObject* obj, Layers layer)
 {
-	if ((layer & Layers::World) == Layers::World)
+	if (layer == Layers::World)
 	{
 		if (std::find(gameObjects.begin(), gameObjects.end(), obj) == gameObjects.end())
 		{
@@ -362,7 +362,7 @@ GameObject* Scene::AddGo(GameObject* obj, Layers layer)
 		}
 	}
 
-	if ((layer & Layers::BackGround) == Layers::BackGround)
+	if (layer == Layers::BackGround)
 	{
 		if (std::find(backGroundObjects.begin(), backGroundObjects.end(), obj) == backGroundObjects.end())
 		{
@@ -381,7 +381,7 @@ GameObject* Scene::AddGo(GameObject* obj, Layers layer)
 		}
 	}
 
-	if ((layer & Layers::Ui) == Layers::Ui)
+	if (layer == Layers::Ui)
 	{
 		if (std::find(uiGameObjects.begin(), uiGameObjects.end(), obj) == uiGameObjects.end())
 		{

@@ -100,6 +100,7 @@ void Player::Reset()
 	SetPlayerStatus(Status::Idle);
 	SetOrigin(Origins::BC);
 	SetPosition({ 200,900 });
+	isGrounded = true;
 	SetFlipX(false);
 	side = Sides::Right;
 	// 플레이어 애니메이션 세팅
@@ -182,7 +183,7 @@ void Player::Update(float dt)
 	}
 	if (currentStatus == Status::WallJump)
 	{
-		velocity.x += h * speed * dt * 4;
+		velocity.x += h * speed * dt * 4.f;
 	}
 	else
 	{
@@ -257,6 +258,23 @@ void Player::Update(float dt)
 	}
 	
 
+	if (isGrounded)
+	{
+		velocity.y = 0;
+	}
+
+	if (!isGrounded && !isSlopeGrounded)
+	{
+		velocity.y += gravity * dt;
+	}
+
+	/*if (!isGrounded && isSlopeGrounded)
+	{
+		velocity.y = 0;
+		isGrounded = true;
+	}*/
+
+
 	switch (currentStatus)
 	{
 	case Player::None:
@@ -295,7 +313,6 @@ void Player::Update(float dt)
 		break;
 	}
 
-
 }
 
 
@@ -320,6 +337,9 @@ void Player::UpdateIdle(float dt)
 
 	if (InputMgr::GetKeyDown(sf::Keyboard::Space))
 	{
+		isJump = true;
+		isGrounded = false;
+		isSlopeGrounded = false;
 		position.y -= rollBackSideSlope + 3;
 		rollBackSideSlope = 0;
 		position.y -= 2;
@@ -387,6 +407,9 @@ void Player::UpdateRun(float dt)
 
 	if (InputMgr::GetKeyDown(sf::Keyboard::Space))
 	{
+		isJump = true;
+		isGrounded = false;
+		isSlopeGrounded = false;
 		position.y -= rollBackSideSlope + 3;
 		rollBackSideSlope = 0;
 		position.y -= 2;
@@ -416,6 +439,7 @@ void Player::UpdateRun(float dt)
 
 void Player::UpdateJumpingUp(float dt)
 {
+	isJump = false;
 	isSlopeColliding = false;
 
 	if (isShootingMode)
@@ -492,10 +516,10 @@ void Player::UpdateLanding(float dt)
 	speed = 200;
 	velocity.x /= 10;
 	isCantFlip = false;
-	if (isSlopeGrounded)
-	{
-		isGrounded = true;
-	}
+	//if (isSlopeGrounded)
+	//{
+	//	isGrounded = true;
+	//}
 	if (isShootingMode)
 	{
 		int i = playerAnimation.GetCurrentFrame();
@@ -511,6 +535,9 @@ void Player::UpdateLanding(float dt)
 		position.y -= rollBackSideSlope + 3;
 		rollBackSideSlope = 0;
 		position.y -= 2;
+		isJump = true;
+		isGrounded = false;
+		isSlopeGrounded = false;
 		isDash = false;
 		if (isMiddleRightColliding)
 		{
@@ -546,6 +573,9 @@ void Player::UpdateDash(float dt)
 
 	if (InputMgr::GetKeyDown(sf::Keyboard::Space))
 	{
+		isJump = true;
+		isGrounded = false;
+		isSlopeGrounded = false;
 		position.y -= rollBackSideSlope + 3;
 		rollBackSideSlope = 0;
 		position.y -= 2;
@@ -592,12 +622,15 @@ void Player::UpdateClimbing(float dt)
 
 	if (InputMgr::GetKeyDown(sf::Keyboard::Space))
 	{
+		isJump = true;
+
 
 		if (isMiddleRightColliding)
 		{
 			position.x -= 1.f;
 			velocity.x = -100.f;
 			velocity.y = -400.f;
+			isMiddleRightColliding = false;
 			SetPlayerStatus(Status::WallJump);
 			playerAnimation.Play("animations/Walljump.csv");
 			return;
@@ -608,6 +641,7 @@ void Player::UpdateClimbing(float dt)
 			position.x += 1.f;
 			velocity.x = 100.f;
 			velocity.y = -400.f;
+			isMiddleLeftColliding = false;
 			SetPlayerStatus(Status::WallJump);
 			playerAnimation.Play("animations/Walljump.csv");
 			return;
@@ -665,6 +699,7 @@ void Player::UpdateClimbing(float dt)
 
 void Player::UpdateWallJump(float dt)
 {
+	isJump = false;
 
 
 	if (isShootingMode)
@@ -772,7 +807,7 @@ void Player::LateUpdate(float dt)
 	}
 	/// 히트박스 테스트 코드
 
-	//std::cout << position.x << "/" << position.y << std::endl; // 위치 설정 테스트 코드
+	//std::cout << rollBackSlope << std::endl; // 위치 설정 테스트 코드
 
 	if (velocity.y > 800.f)
 	{
@@ -792,7 +827,6 @@ void Player::LateUpdate(float dt)
 		velocity.y = std::max(0.f, velocity.y);
 	}
 
-
 	if (currentStatus == Status::WallJump)
 	{
 		position += sf::Vector2f(velocity.x * dt, velocity.y * dt);
@@ -801,8 +835,8 @@ void Player::LateUpdate(float dt)
 	{
 		position += sf::Vector2f(velocity.x, velocity.y * dt);
 	}
-	playerHitBox.setPosition(position);
-	playerBounds = playerHitBox.getGlobalBounds();
+	//playerHitBox.setPosition(position);
+	//playerBounds = playerHitBox.getGlobalBounds();
 
 	boundingBoxWorldPos = playerBounds.getPosition();
 	boundingBoxLocalPos = sceneGame->PlayerBoundsWorldToLocal(boundingBoxWorldPos);
@@ -814,18 +848,12 @@ void Player::LateUpdate(float dt)
 	endY = std::min(static_cast<int>(MapImage.getSize().y),
 		static_cast<int>(boundingBoxLocalPos.y + 35));
 
-	//if (startX > 0 && endX < 350 && startY > 0 && endY < 200)  // TO-DO 맵의 로컬좌표 크기임. 큰맵으로 만들면 크게 *오류방지*
-	{
 		CheckTopCollision();
-		if (!isSlopeColliding)
-		{
-			CheckBottomCollision();
-		}
+		CheckBottomCollision();
 		CheckRightCollision();
 		CheckLeftCollision();
-
 		CheckSlopeCollision();
-	}
+
 
 	if (isMiddleRightColliding) // 우측 보정
 	{
@@ -843,42 +871,33 @@ void Player::LateUpdate(float dt)
 		rollBackTopLeft = 0;
 		rollBackTopRight = 0;
 	}
-
-	if (isSlopeColliding && isGrounded ) // 경사 보정
+	if (isSlopeColliding && isGrounded && velocity.y >= 0.f) // 경사 보정
 	{
  		position.y -= rollBackSlope - 1;
 		position.y = std::floor(position.y);
 		rollBackSlope = 0;
 	}
-
-
 	if (isBottomColliding && isGrounded) // 하단 보정
 	{
 		position.y -= std::max(rollBackBottomLeft, rollBackBottomRight) - 1;
 		rollBackBottomLeft = 0;
 		rollBackBottomRight = 0;
 	}
-	
+
+
+
+	playerHitBox.setPosition(position);
+	playerBounds = playerHitBox.getGlobalBounds();
+
 	SetPosition(position); // 중력을 포함한 위치 적용
 	SetOrigin(Origins::BC);
+	std::cout << currentStatus << "/" << isGrounded << "/" << isSlopeGrounded << "/" << velocity.x << "/" << velocity.y << std::endl; // 위치 설정 테스트 코드
+
 }
 
 
 void Player::FixedUpdate(float dt)
 {
-	if (!isGrounded)
-	{
-		velocity.y += gravity * dt;
-	}
-	if (isGrounded && !isSlopeGrounded)
-	{
-		velocity.y = 0;
-	}
-	if (!isGrounded && isSlopeGrounded)
-	{
-		velocity.y = 0;
-		isGrounded = true;
-	}
 }
 
 void Player::CheckBottomCollision()
@@ -960,6 +979,7 @@ void Player::CheckBottomCollision()
 	}
 
 	isBottomColliding = (isBottomLeftColliding || isBottomRightColliding);
+	if(!isJump)
 	isGrounded = isBottomColliding;
 	isBottomSlopeColliding = (isBottomLeftSlopeColliding || isBottomRightSlopeColliding);
 }
@@ -977,7 +997,10 @@ void Player::CheckRightCollision()
 			MiddleRightPixel = MapImage.getPixel(endX - temp, endY);
 		}
 		rollBackMiddleRight = temp;
-
+		if (isJump)
+		{
+			isMiddleRightColliding = false;
+		}
 		return;
 	}
 	isMiddleRightColliding = false;
@@ -996,7 +1019,10 @@ void Player::CheckLeftCollision()
 			MiddleLeftPixel = MapImage.getPixel(startX + temp, endY);
 		}
 		rollBackMiddleLeft = temp;
-
+		if (isJump)
+		{
+			isMiddleLeftColliding = false;
+		}
 		return;
 	}
 	isMiddleLeftColliding = false;

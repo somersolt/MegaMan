@@ -62,6 +62,7 @@ protected:
 	bool isBottomSlopeColliding = false;
 
 	bool isDash = false; // 대시
+	bool isJump = false; // 대시
 
 	bool isGrounded = false; // 서있는 상태
 	bool isSlopeGrounded = false; // 경사에 서있는 상태
