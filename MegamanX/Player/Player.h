@@ -47,17 +47,25 @@ protected:
 
 
 	bool isBottomColliding = false; // 바닥면 충돌 처리
-	bool isTopColliding = false; // 바닥면 충돌 처리
+	bool isTopColliding = false; // 윗면 충돌 처리
 	bool isSlopeColliding = false; // 경사로 충돌 처리
 
 	bool isBottomLeftColliding = false; // 좌측 하단 
+	bool isBottomCenterColliding = false; // 중앙 하단 
 	bool isBottomRightColliding = false; // 우측 하단
 
 	bool isTopLeftColliding = false; // 좌측 상단
+	bool isTopCenterColliding = false; // 중앙 상단
 	bool isTopRightColliding = false; // 우측 상단
 
 	bool isMiddleLeftColliding = false; // 좌측 충돌 처리
+	bool isMiddleLeftHighColliding = false; // 좌측 충돌 처리
+	bool isMiddleLeftLowColliding = false; // 좌측 충돌 처리
+
 	bool isMiddleRightColliding = false; // 우측 충돌 처리
+	bool isMiddleRightHighColliding = false; // 우측 충돌 처리
+	bool isMiddleRightLowColliding = false; // 우측 충돌 처리
+
 
 	bool isBottomLeftSlopeColliding = false;
 	bool isBottomRightSlopeColliding = false;
@@ -102,13 +110,18 @@ protected:
 	int startY;
 	int endY;
 	
-	int rollBackMiddleLeft;
-	int rollBackMiddleRight;
+	int rollBackMiddleHighLeft;
+	int rollBackMiddleLowLeft;
+	
+	int rollBackMiddleHighRight;
+	int rollBackMiddleLowRight;
 
 	int rollBackBottomLeft;
 	int rollBackBottomRight;
+	int rollBackBottomCenter;
 
 	int rollBackTopLeft;
+	int rollBackTopCenter;
 	int rollBackTopRight;
 
 	int rollBackSlope;

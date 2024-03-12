@@ -64,6 +64,11 @@ void SceneGame::Init()
 
 	worldView.setSize({ 1920 / 3, 1080 / 3 });
 	backgroundView.setSize({ 1920 /3 ,1080 /3 });
+
+	sf::RectangleShape pillar(sf::Vector2f(200, 600));
+	pillar.setPosition(0, 200);
+	pillar.setFillColor(sf::Color::Red);
+
 }
 
 void SceneGame::Release()
@@ -130,9 +135,9 @@ void SceneGame::Draw(sf::RenderWindow& window)
 	Scene::Draw(window);
 }
 
-sf::Vector2f SceneGame::PlayerBoundsWorldToLocal(sf::Vector2f playerBoundsPos)
+sf::Vector2f SceneGame::PlayerBoundsWorldToMapLocal(sf::Vector2f playerBoundsPos)
 {
-	sf::Vector2f imageWorldPos = collisionMapSprite.getPosition();
+	//sf::Vector2f imageWorldPos = collisionMapSprite.getPosition();
 	sf::Transform worldToLocal = collisionMapSprite.getInverseTransform();
 	sf::Vector2f boundingBoxLocalPos = worldToLocal.transformPoint(playerBoundsPos);
 

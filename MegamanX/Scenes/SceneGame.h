@@ -49,7 +49,7 @@ public:
 
 	void Draw(sf::RenderWindow& window);
 
-	sf::Vector2f PlayerBoundsWorldToLocal(sf::Vector2f playerBounds);
+	sf::Vector2f PlayerBoundsWorldToMapLocal(sf::Vector2f playerBounds);
 
 };
 
