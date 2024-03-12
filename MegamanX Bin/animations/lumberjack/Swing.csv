@@ -1,0 +1,11 @@
+ID,FPS,"LOOPTYPE (0: Single, 1: Loop, 2: PingPong)",,
+Swing,10,0,,
+,,,,
+TEXTURE ID,LEFT,TOP,WIDTH,HEIGHT
+graphics/lumberjack.png,143,105,46,41
+graphics/lumberjack.png,191,105,46,41
+graphics/lumberjack.png,240,105,46,41
+graphics/lumberjack.png,288,105,46,41
+graphics/lumberjack.png,335,105,46,41
+graphics/lumberjack.png,384,105,46,41
+graphics/lumberjack.png,431,105,46,41

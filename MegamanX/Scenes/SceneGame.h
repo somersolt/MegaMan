@@ -47,6 +47,8 @@ public:
 	void FixedUpdate(float dt);
 
 
+	void SetPixelToMap(int a, int b,int x, int y, sf::Color c);
+
 	void Draw(sf::RenderWindow& window);
 
 	sf::Vector2f PlayerBoundsWorldToMapLocal(sf::Vector2f playerBounds);

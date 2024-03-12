@@ -132,6 +132,8 @@ public:
 	Player(const std::string& name = "");
 	~Player() override = default;
 
+	void NewCollisionMap();
+
 	const Status GetPreStatus() { return preStatus; }
 	const Status GetCurrentStatus() {return currentStatus;}
 	void SetPlayerStatus(Status status);

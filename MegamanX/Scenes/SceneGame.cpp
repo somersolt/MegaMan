@@ -1,7 +1,7 @@
 #include "pch.h"
 #include "SceneGame.h"
 #include "Player/Player.h"
-
+#include "Enemy/Stump.h"
 
 SceneGame::SceneGame(SceneIds id) : Scene(id)
 {
@@ -59,6 +59,17 @@ void SceneGame::Init()
 	player = new Player("player");
 	AddGo(player);
 	player->SetPosition({ 0,0 });
+
+	Stump* stump = new Stump("stump");
+	AddGo(stump);
+	stump->SetOrigin(Origins::BC);
+	stump->SetPosition({ 400, 880 });
+
+	Stump* stump2 = new Stump("stump2");
+	AddGo(stump2);
+	stump2->SetOrigin(Origins::BC);
+	stump2->SetPosition({ 450, 850 });
+
 
 	Scene::Init();
 
@@ -129,6 +140,18 @@ void SceneGame::FixedUpdate(float dt)
 	Scene::FixedUpdate(dt);
 }
 
+
+void SceneGame::SetPixelToMap(int a, int b, int x, int y, sf::Color c)
+{
+	//if (c == sf::Color ({ 255,0,0 }))
+
+	for(int j = 0; j < 12; ++j)
+		for (int i = a; i < b + 1; i++)
+		{
+			collisionMapImage.setPixel(i, x+j, c);
+		}
+		player->NewCollisionMap();
+}
 
 void SceneGame::Draw(sf::RenderWindow& window)
 {

@@ -1152,6 +1152,11 @@ void Player::CheckSlopeCollision()
 	isSlopeGrounded = isSlopeColliding;
 }
 
+void Player::NewCollisionMap()
+{
+	MapImage = sceneGame->collisionMapImage;
+}
+
 void Player::Draw(sf::RenderWindow& window)
 {
 	window.draw(sprite);
