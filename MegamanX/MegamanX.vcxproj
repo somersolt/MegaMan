@@ -167,6 +167,7 @@
     <ClCompile Include="Framework\SoundMgr.cpp" />
     <ClCompile Include="GameObjects\SpriteGoEffect.cpp" />
     <ClCompile Include="Enemy\Stump.cpp" />
+    <ClCompile Include="Enemy\Tree.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Enemy\Enemy.h" />
@@ -194,6 +195,7 @@
     <ClInclude Include="Framework\SoundMgr.h" />
     <ClInclude Include="GameObjects\SpriteGoEffect.h" />
     <ClInclude Include="Enemy\Stump.h" />
+    <ClInclude Include="Enemy\Tree.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

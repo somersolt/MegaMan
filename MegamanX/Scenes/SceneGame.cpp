@@ -39,6 +39,7 @@ void SceneGame::Init()
 	// 진짜 맵 
 	map = new SpriteGo("Map");
 	map->SetTexture("graphics/chill_penguin_stage.png");
+	map->sortOrder = -3;
 	AddGo(map);
 	map->SetPosition({ 0, 0 });
 
@@ -56,19 +57,19 @@ void SceneGame::Init()
 
 	// 플레이어
 
-	player = new Player("player");
+	player = new Player("player" , collisionMapImage);
 	AddGo(player);
 	player->SetPosition({ 0,0 });
 
-	Stump* stump = new Stump("stump");
+	Stump* stump = new Stump("stump1");
 	AddGo(stump);
 	stump->SetOrigin(Origins::BC);
-	stump->SetPosition({ 400, 880 });
+	stump->SetPosition({ 400, 910 });
 
 	Stump* stump2 = new Stump("stump2");
 	AddGo(stump2);
 	stump2->SetOrigin(Origins::BC);
-	stump2->SetPosition({ 450, 850 });
+	stump2->SetPosition({ 470, 900 });
 
 
 	Scene::Init();
@@ -105,7 +106,7 @@ void SceneGame::Exit()
 void SceneGame::Update(float dt)
 {
 	Scene::Update(dt);
-
+	FindGoAll("enemy", enemyList, Scene::Layers::World);
 	if (InputMgr::GetKeyDown(sf::Keyboard::F5))
 	{
 		mapHitBox->SetActive(true);
@@ -143,14 +144,47 @@ void SceneGame::FixedUpdate(float dt)
 
 void SceneGame::SetPixelToMap(int a, int b, int x, int y, sf::Color c)
 {
-	//if (c == sf::Color ({ 255,0,0 }))
-
-	for(int j = 0; j < 12; ++j)
-		for (int i = a; i < b + 1; i++)
+	if (c == sf::Color({ 255,0,0 }))
+	{
+		for (int j = 0; j < 12; ++j)
 		{
-			collisionMapImage.setPixel(i, x+j, c);
+			for (int i = a; i < b + 1; i++)
+			{
+				collisionMapImage.setPixel(i, x + j, c);
+			}
 		}
-		player->NewCollisionMap();
+	}
+	if (c == sf::Color({ 0,255,0 }))
+	{
+		for (int j = 0; j < 5; ++j)
+		{
+			for (int i = x; i < y + 1; i++)
+			{
+				collisionMapImage.setPixel(a + j, i, c);
+			}
+		}
+		for (int j = 0; j < 5; ++j)
+		{
+			for (int i = x; i < y + 1; i++)
+			{
+				collisionMapImage.setPixel(b - j, i, c);
+			}
+		}
+	}
+
+	if (c == sf::Color({ 0,0,0,0 }))
+	{
+		for (int j = x; j < y + 1; ++j)
+		{
+			for (int i = a; i < b + 1; i++)
+			{
+				collisionMapImage.setPixel(i, j, c);
+			}
+		}
+	}
+
+	player->NewCollisionMap();
+
 }
 
 void SceneGame::Draw(sf::RenderWindow& window)

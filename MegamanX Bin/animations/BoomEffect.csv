@@ -1,0 +1,12 @@
+ID,FPS,"LOOPTYPE (0: Single, 1: Loop, 2: PingPong)",,
+BoomEffect,20,0,,
+,,,,
+TEXTURE ID,LEFT,TOP,WIDTH,HEIGHT
+graphics/effects.png,103,60,17,33
+graphics/effects.png,125,60,34,33
+graphics/effects.png,168,60,29,33
+graphics/effects.png,212,60,30,33
+graphics/effects.png,255,60,34,33
+graphics/effects.png,295,60,33,33
+graphics/effects.png,342,60,33,33
+graphics/effects.png,0,0,0,0

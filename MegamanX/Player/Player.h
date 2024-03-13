@@ -43,7 +43,7 @@ protected:
 	Status currentStatus = Status::None;
 	Sides side = Sides::None;
 	Sides oppsetSide = Sides::None;
-	sf::Image MapImage;
+	sf::Image& MapImage;
 
 
 	bool isBottomColliding = false; // 바닥면 충돌 처리
@@ -129,7 +129,7 @@ protected:
 
 public:
 
-	Player(const std::string& name = "");
+	Player(const std::string& name, sf::Image& mapImage);
 	~Player() override = default;
 
 	void NewCollisionMap();

@@ -1,0 +1,8 @@
+ID,FPS,"LOOPTYPE (0: Single, 1: Loop, 2: PingPong)",,
+ChargeBusterHit,20,0,,
+,,,,
+TEXTURE ID,LEFT,TOP,WIDTH,HEIGHT
+graphics/buster.png,60,16,15,24
+graphics/buster.png,86,16,24,24
+graphics/buster.png,60,16,15,24
+graphics/buster.png,0,0,0,0

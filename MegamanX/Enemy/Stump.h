@@ -14,7 +14,11 @@ protected:
 
 	sf::Color collisionColor = { 255 , 0 , 0 }; 
 	sf::Color sideCollisionColor = { 0 , 255 , 0 }; 
-	int stumpCount = 3;
+	bool firstTree = false;
+	bool secondTree = false;
+
+	bool treeChange = true;
+	float stumpTimer;
 
 public:
 
@@ -25,19 +29,14 @@ public:
 	void Reset() override;
 	void Update(float dt) override;
 
+	void SetTreeChange(bool s) { treeChange = s; }
+	void SetFirstTree(bool t);
+	void SetSecondTree(bool t);
 
 	int startX;
 	int endX;
 	int startY;
 	int endY;
-
-
-	// 
-	// TO-DO 그리는 함수
-	// -> 이거 플레이어가 들고있는 맵에 동기화 처리 해야됨
-	// getimage 받아서 셋 해야겟네
-	//
-
 
 };
 

@@ -9,13 +9,22 @@ SpriteGoEffect::~SpriteGoEffect()
 {
 }
 
+void SpriteGoEffect::Init()
+{
+	effectAnimation.SetTarget(&sprite);
+
+	SpriteGo::Init();
+}
+
 void SpriteGoEffect::Reset()
 {
 	timer = 0.f;
+	effectAnimation.Play("animations/BoomEffect.csv");
 }
 
 void SpriteGoEffect::Update(float dt)
 {
+	effectAnimation.Update(dt);
 	timer += dt;
 	if (timer > duration)
 	{

@@ -16,11 +16,12 @@ public:
 protected:
 
 	Status currentStatus;
-
 	Player* player = nullptr;
 public:
 	SceneGame(SceneIds id);
 	~SceneGame() override = default;
+
+	std::list<GameObject*> enemyList;
 
 	SpriteGo* background = nullptr;
 	SpriteGo* maptest = nullptr;
@@ -31,6 +32,8 @@ public:
 	sf::Sprite collisionMapSprite;
 
 	SpriteGo* mapHitBox = nullptr;  //충돌박스 표시
+
+	const std::list<GameObject*>& GetEnemyList() const { return enemyList; }
 
 	void SetStatus(Status newStatus);
 

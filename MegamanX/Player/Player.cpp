@@ -4,8 +4,9 @@
 #include "Buster.h"
 #include <algorithm>
 
-Player::Player(const std::string& name) : SpriteGo(name)
+Player::Player(const std::string& name, sf::Image& mapImage) : SpriteGo(name) , MapImage(mapImage)
 {
+
 }
 
 
@@ -755,15 +756,6 @@ void Player::LateUpdate(float dt)
 		SetPosition({ 4678,675 });
 	}
 
-	if (InputMgr::GetKeyDown(sf::Keyboard::F4))
-	{
-		for (int i = 0; i < 100; ++i)
-		{
-			MapImage.setPixel(endX + 10, startY + i, sideCollisionColor);
-		}
-
-	}
-
 	///  히트박스 테스트 코드
 
 	if (InputMgr::GetKeyDown(sf::Keyboard::F8))
@@ -802,8 +794,6 @@ void Player::LateUpdate(float dt)
 	{
 		position += sf::Vector2f(velocity.x, velocity.y * dt);
 	}
-	//playerHitBox.setPosition(position);
-	//playerBounds = playerHitBox.getGlobalBounds();
 
 	boundingBoxWorldPos = playerBounds.getPosition();
 	boundingBoxLocalPos = sceneGame->PlayerBoundsWorldToMapLocal(boundingBoxWorldPos);
@@ -862,8 +852,6 @@ void Player::LateUpdate(float dt)
 
 	SetPosition(position); // 중력을 포함한 위치 적용
 	SetOrigin(Origins::BC);
-	std::cout << currentStatus << "/" << isGrounded << "/" << isSlopeGrounded << "/" << velocity.x << "/" << velocity.y << std::endl; // 위치 설정 테스트 코드
-
 }
 
 
