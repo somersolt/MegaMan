@@ -93,7 +93,7 @@ protected:
 
 
 	float h = 0; // 방향키 입력변수
- 	 float gravity = 1000.f;
+ 	float gravity = 1000.f;
 		/*
 		맵 만든뒤에 반드시 중력 추가
 		*/
@@ -131,8 +131,6 @@ public:
 
 	Player(const std::string& name, sf::Image& mapImage);
 	~Player() override = default;
-
-	void NewCollisionMap();
 
 	const Status GetPreStatus() { return preStatus; }
 	const Status GetCurrentStatus() {return currentStatus;}

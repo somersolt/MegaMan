@@ -12,7 +12,7 @@ public:
 	sf::FloatRect GetLocalBounds() override;
 	sf::FloatRect GetGlobalBounds() override;
 
-	void SetTexture(const std::string& textureId);
+	void SetTexture(const std::string& textureId, bool resetRect = false);
 
 	void SetPosition(const sf::Vector2f& pos) override;
 	void Translate(const sf::Vector2f& delta) override;

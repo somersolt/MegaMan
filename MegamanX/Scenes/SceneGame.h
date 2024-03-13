@@ -36,7 +36,7 @@ public:
 	const std::list<GameObject*>& GetEnemyList() const { return enemyList; }
 
 	void SetStatus(Status newStatus);
-
+	sf::Vector2f GetPlayerPostion();
 
 	void Init() override;
 	void Release() override;

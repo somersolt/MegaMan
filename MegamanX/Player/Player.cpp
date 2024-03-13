@@ -854,10 +854,8 @@ void Player::LateUpdate(float dt)
 	SetOrigin(Origins::BC);
 }
 
-
 void Player::FixedUpdate(float dt)
-{
-}
+{}
 
 void Player::CheckBottomCollision()
 {
@@ -1138,11 +1136,6 @@ void Player::CheckSlopeCollision()
 		rollBackSlope = 0;
 	}
 	isSlopeGrounded = isSlopeColliding;
-}
-
-void Player::NewCollisionMap()
-{
-	MapImage = sceneGame->collisionMapImage;
 }
 
 void Player::Draw(sf::RenderWindow& window)

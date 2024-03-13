@@ -16,10 +16,10 @@ sf::FloatRect SpriteGo::GetGlobalBounds()
 	return sprite.getGlobalBounds();
 }
 
-void SpriteGo::SetTexture(const std::string& textureId)
+void SpriteGo::SetTexture(const std::string& textureId, bool resetRect)
 {
 	this->textureId = textureId;
-	sprite.setTexture(RES_MGR_TEXTURE.Get(textureId));
+	sprite.setTexture(RES_MGR_TEXTURE.Get(textureId), resetRect);
 }
 
 

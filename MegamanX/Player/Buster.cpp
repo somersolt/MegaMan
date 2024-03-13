@@ -2,8 +2,8 @@
 #include "Buster.h"
 #include "SceneGame.h"
 #include "Enemy/Tree.h"
+#include "Enemy/Enemy.h"
 
-//TO-DO #include enemy
 
 Buster::Buster(const std::string& name) : SpriteGo(name)
 {
@@ -100,13 +100,17 @@ void Buster::FixedUpdate(float dt)
 
 			Tree* tree = dynamic_cast<Tree*>(go);
 			if (tree != nullptr)
+			{
 				tree->OnDamage(damage);
+				break;
+			}
+
+			Enemy* enemy = dynamic_cast<Enemy*>(go);
+			if (enemy != nullptr)
+				enemy->OnDamage(damage);
 			break;
 		}
 	}
-	// 적과 충돌처리
-	// 
-	//scenegame에 접속해서? 아무튼 적을 찾아서 닿으면 데미지주고삭제
 }
 
 void Buster::Reset()

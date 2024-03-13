@@ -2,6 +2,7 @@
 #include "SceneGame.h"
 #include "Player/Player.h"
 #include "Enemy/Stump.h"
+#include "Enemy/Rabbit.h"
 
 SceneGame::SceneGame(SceneIds id) : Scene(id)
 {
@@ -28,21 +29,13 @@ void SceneGame::Init()
 	background->SetTexture("graphics/background_ice.png");
 	AddGo(background, Scene::BackGround );
 	background->SetOrigin({ background->GetGlobalBounds().left , background->GetGlobalBounds().height / 2 });
-	background->SetPosition({ 0,850 });
-
-	//// ÀÓ½Ã ¸Ê 
-	//backgroundtest = new SpriteGo("testMap");
-	//backgroundtest->SetTexture("graphics/test_stage.png");
-	//AddGo(backgroundtest);
-	//backgroundtest->SetPosition({ 1000, 0 });
-	 
-	// ÁøÂ¥ ¸Ê 
+	background->SetPosition({ -100,850 });
+	  
 	map = new SpriteGo("Map");
 	map->SetTexture("graphics/chill_penguin_stage.png");
 	map->sortOrder = -3;
 	AddGo(map);
 	map->SetPosition({ 0, 0 });
-
 
 	collisionMapImage.loadFromFile("graphics/chill_penguin_stage_collision.png");
 	collisionMapTexture.loadFromImage(collisionMapImage);
@@ -64,13 +57,17 @@ void SceneGame::Init()
 	Stump* stump = new Stump("stump1");
 	AddGo(stump);
 	stump->SetOrigin(Origins::BC);
-	stump->SetPosition({ 400, 910 });
+	stump->SetPosition({ 440, 900 });
 
 	Stump* stump2 = new Stump("stump2");
 	AddGo(stump2);
 	stump2->SetOrigin(Origins::BC);
-	stump2->SetPosition({ 470, 900 });
+	stump2->SetPosition({ 950, 865 });
 
+	Rabbit* rabbit1 = new Rabbit("enemy" , collisionMapImage);
+	AddGo(rabbit1);
+	rabbit1->SetOrigin(Origins::BC);
+	rabbit1->SetPosition({ 300, 900 });
 
 	Scene::Init();
 
@@ -81,6 +78,11 @@ void SceneGame::Init()
 	pillar.setPosition(0, 200);
 	pillar.setFillColor(sf::Color::Red);
 
+}
+
+sf::Vector2f SceneGame::GetPlayerPostion()
+{
+	return player->GetPosition();
 }
 
 void SceneGame::Release()
@@ -105,8 +107,9 @@ void SceneGame::Exit()
 
 void SceneGame::Update(float dt)
 {
-	Scene::Update(dt);
 	FindGoAll("enemy", enemyList, Scene::Layers::World);
+	Scene::Update(dt);
+
 	if (InputMgr::GetKeyDown(sf::Keyboard::F5))
 	{
 		mapHitBox->SetActive(true);
@@ -114,6 +117,16 @@ void SceneGame::Update(float dt)
 	if (InputMgr::GetKeyDown(sf::Keyboard::F6))
 	{
 		mapHitBox->SetActive(false);
+	}
+
+	if (InputMgr::GetKeyDown(sf::Keyboard::R))
+	{
+		Rabbit* rabbit2 = new Rabbit("enemy", collisionMapImage);
+		rabbit2->Init();
+		rabbit2->Reset();
+		AddGo(rabbit2);
+		rabbit2->SetOrigin(Origins::BC);
+		rabbit2->SetPosition({ 300, 900 });
 	}
 }
 
@@ -141,6 +154,10 @@ void SceneGame::FixedUpdate(float dt)
 	Scene::FixedUpdate(dt);
 }
 
+void SceneGame::Draw(sf::RenderWindow& window)
+{
+	Scene::Draw(window);
+}
 
 void SceneGame::SetPixelToMap(int a, int b, int x, int y, sf::Color c)
 {
@@ -183,15 +200,7 @@ void SceneGame::SetPixelToMap(int a, int b, int x, int y, sf::Color c)
 		}
 	}
 
-	player->NewCollisionMap();
-
 }
-
-void SceneGame::Draw(sf::RenderWindow& window)
-{
-	Scene::Draw(window);
-}
-
 sf::Vector2f SceneGame::PlayerBoundsWorldToMapLocal(sf::Vector2f playerBoundsPos)
 {
 	//sf::Vector2f imageWorldPos = collisionMapSprite.getPosition();

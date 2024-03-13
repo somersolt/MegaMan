@@ -1,0 +1,8 @@
+ID,FPS,"LOOPTYPE (0: Single, 1: Loop, 2: PingPong)",,
+Jump,20,0,,
+,,,,
+TEXTURE ID,LEFT,TOP,WIDTH,HEIGHT
+graphics/rabbit1.png,0,0,27,31
+graphics/rabbit2.png,0,0,28,20
+graphics/rabbit3.png,0,0,31,27
+graphics/rabbit4.png,0,0,28,39
