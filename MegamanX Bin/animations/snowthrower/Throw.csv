@@ -1,11 +1,12 @@
 ID,FPS,"LOOPTYPE (0: Single, 1: Loop, 2: PingPong)",,
-Swing,15,0,,
+Throw,15,0,,
 ,,,,
 TEXTURE ID,LEFT,TOP,WIDTH,HEIGHT
-graphics/lumberjack.png,143,105,46,41
-graphics/lumberjack.png,191,105,46,41
-graphics/lumberjack.png,240,105,46,41
-graphics/lumberjack.png,288,105,46,41
-graphics/lumberjack.png,335,105,46,41
-graphics/lumberjack.png,384,105,46,41
-graphics/lumberjack.png,431,105,46,41
+graphics/snowthrower/snowthrower.png,0,0,21,46
+graphics/snowthrower/snowthrower2.png,0,0,21,46
+graphics/snowthrower/snowthrower3.png,0,0,21,47
+graphics/snowthrower/snowthrower4.png,0,0,44,51
+graphics/snowthrower/snowthrower5.png,0,0,50,53
+graphics/snowthrower/snowthrower6.png,0,0,50,53
+graphics/snowthrower/snowthrower7.png,0,0,50,56
+graphics/snowthrower/snowthrower.png,0,0,21,46

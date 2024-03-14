@@ -37,10 +37,6 @@ void Enemy::Reset()
 
 }
 
-void Enemy::Update(float dt)
-{
-		SpriteGo::Update(dt);
-}
 
 void Enemy::OnDamage(int damage)
 {
@@ -54,8 +50,9 @@ void Enemy::LateUpdate(float dt)
 
 	EnemyHitBox.setPosition(position);
 	EnemyBounds = EnemyHitBox.getGlobalBounds();
-	if(!isCantFlip)
-	SetFlipX(h > 0 ? true : false);
+
+	if (!isCantFlip)
+		SetFlipX(h > 0 ? true : false);
 
 	velocity.x = h * speed * dt * 0.5;
 	velocity.x = Utils::Clamp(velocity.x, -100, 100);
@@ -72,7 +69,7 @@ void Enemy::LateUpdate(float dt)
 	{
 		SpriteGoEffect* boom = new SpriteGoEffect("boom");
 		sceneGame->AddGo(boom);
-		boom->SetOrigin({ EnemyHitBox.getLocalBounds().width / 2, EnemyHitBox.getLocalBounds().height });
+		boom->SetOrigin({ EnemyHitBox.getGlobalBounds().width / 2, EnemyHitBox.getGlobalBounds().height });
 		boom->SetPosition(position);
 		boom->Init();
 		boom->Reset();
@@ -109,6 +106,10 @@ void Enemy::LateUpdate(float dt)
 	startY = std::max(0, static_cast<int>(boundingBoxLocalPos.y));
 	endY = std::min(static_cast<int>(MapImage.getSize().y),
 		static_cast<int>(boundingBoxLocalPos.y + EnemyHitBox.getSize().y));
+
+
+
+
 
 
 	CheckRightCollision();
@@ -161,7 +162,6 @@ void Enemy::FixedUpdate(float dt)
 		player->OnDamage(1);
 		Release();
 	}
-
 }
 
 void Enemy::CheckRightCollision()
@@ -190,7 +190,7 @@ void Enemy::CheckRightCollision()
 }
 void Enemy::CheckLeftCollision()
 {
-	sf::Color MiddleLeftPixel = MapImage.getPixel(startX, (EnemyHitBox.getSize().y / 2));
+	sf::Color MiddleLeftPixel = MapImage.getPixel(startX, startY + (EnemyHitBox.getSize().y / 2));
 	if (MiddleLeftPixel == sideCollisionColor)
 	{
 		isMiddleLeftColliding = true;
@@ -199,7 +199,7 @@ void Enemy::CheckLeftCollision()
 		while (MiddleLeftPixel == sideCollisionColor)
 		{
 			temp++;
-			MiddleLeftPixel = MapImage.getPixel(startX + temp, (EnemyHitBox.getSize().y / 2));
+			MiddleLeftPixel = MapImage.getPixel(startX + temp, startY + (EnemyHitBox.getSize().y / 2));
 		}
 		rollBackMiddleLeft = temp;
 		if (isJump)

@@ -1,0 +1,6 @@
+ID,FPS,"LOOPTYPE (0: Single, 1: Loop, 2: PingPong)",,
+Idle,10,1,,
+,,,,
+TEXTURE ID,LEFT,TOP,WIDTH,HEIGHT
+graphics/bat/bat1.png,0,0,14,22
+graphics/bat/bat1.png,0,0,14,22

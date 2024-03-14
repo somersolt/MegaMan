@@ -70,7 +70,6 @@ public:
 
 	virtual void Init() override;
 	virtual void Reset() override;
-	virtual void Update(float dt) = 0;
 
 	virtual void OnDamage(int damage);
 

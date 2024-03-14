@@ -137,6 +137,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Enemy\Bat.cpp" />
     <ClCompile Include="Enemy\EnemyShot.cpp" />
     <ClCompile Include="Enemy\Enemy.cpp" />
     <ClCompile Include="Enemy\Lumberjack.cpp" />
@@ -171,8 +172,12 @@
     <ClCompile Include="GameObjects\SpriteGoEffect.cpp" />
     <ClCompile Include="Enemy\Stump.cpp" />
     <ClCompile Include="Enemy\Tree.cpp" />
+    <ClCompile Include="Enemy\SnowThrower.cpp" />
+    <ClCompile Include="Enemy\Snow.cpp" />
+    <ClCompile Include="Enemy\Wheeler.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Enemy\Bat.h" />
     <ClInclude Include="Enemy\EnemyShot.h" />
     <ClInclude Include="Enemy\Enemy.h" />
     <ClInclude Include="Enemy\Lumberjack.h" />
@@ -202,6 +207,9 @@
     <ClInclude Include="GameObjects\SpriteGoEffect.h" />
     <ClInclude Include="Enemy\Stump.h" />
     <ClInclude Include="Enemy\Tree.h" />
+    <ClInclude Include="Enemy\SnowThrower.h" />
+    <ClInclude Include="Enemy\Snow.h" />
+    <ClInclude Include="Enemy\Wheeler.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

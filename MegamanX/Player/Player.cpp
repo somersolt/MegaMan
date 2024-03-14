@@ -824,7 +824,7 @@ void Player::LateUpdate(float dt)
 	{
 		velocity.x = 0;
 		velocity.y = 0;
-		SetPosition({ 4678,675 });
+		SetPosition({ 6678,275 });
 	}
 
 	///  히트박스 테스트 코드

@@ -1,0 +1,7 @@
+ID,FPS,"LOOPTYPE (0: Single, 1: Loop, 2: PingPong)",,
+Idle,10,1,,
+,,,,
+TEXTURE ID,LEFT,TOP,WIDTH,HEIGHT
+graphics/wheeler/wheeler1.png,0,0,37,37
+graphics/wheeler/wheeler2.png,0,0,37,37
+graphics/wheeler/wheeler3.png,0,0,37,37

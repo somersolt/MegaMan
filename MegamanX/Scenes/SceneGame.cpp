@@ -4,6 +4,9 @@
 #include "Enemy/Stump.h"
 #include "Enemy/Rabbit.h"
 #include "Enemy/Lumberjack.h"
+#include "Enemy/SnowThrower.h"
+#include "Enemy/Wheeler.h"
+#include "Enemy/Bat.h"
 
 SceneGame::SceneGame(SceneIds id) : Scene(id)
 {
@@ -81,6 +84,31 @@ void SceneGame::Init()
 	lumberjack2->SetOrigin(Origins::BC);
 	lumberjack2->SetPosition({ 1005, 865 });
 
+	SnowThrower* snowThrower1 = new SnowThrower("enemy", collisionMapImage);
+	AddGo(snowThrower1);
+	snowThrower1->SetOrigin(Origins::BC);
+	snowThrower1->SetPosition({ 6611, 353 });
+
+	SnowThrower* snowThrower2 = new SnowThrower("enemy", collisionMapImage);
+	AddGo(snowThrower2);
+	snowThrower2->SetOrigin(Origins::BC);
+	snowThrower2->SetPosition({ 6759, 368 });
+
+	SnowThrower* snowThrower3 = new SnowThrower("enemy", collisionMapImage);
+	AddGo(snowThrower3);
+	snowThrower3->SetOrigin(Origins::BC);
+	snowThrower3->SetPosition({ 6873, 314 });
+
+	SnowThrower* snowThrower4 = new SnowThrower("enemy", collisionMapImage);
+	AddGo(snowThrower4);
+	snowThrower4->SetOrigin(Origins::BC);
+	snowThrower4->SetPosition({ 7091, 225 });
+
+	SnowThrower* snowThrower5 = new SnowThrower("enemy", collisionMapImage);
+	AddGo(snowThrower5);
+	snowThrower5->SetOrigin(Origins::BC);
+	snowThrower5->SetPosition({ 7315, 145 });
+
 	Scene::Init();
 
 	worldView.setSize({ 1920 / 3, 1080 / 3 });
@@ -118,8 +146,11 @@ void SceneGame::Exit()
 
 
 void SceneGame::Update(float dt)
-{
+{/*
+	std::cout << GetPlayerPostion().x << "/" << GetPlayerPostion().y << std::endl;*/
+
 	FindGoAll("enemy", enemyList, Scene::Layers::World);
+
 	viewBounds.left = worldView.getCenter().x - worldView.getSize().x / 2.f;
 	viewBounds.top = worldView.getCenter().y - worldView.getSize().y / 2.f;
 	viewBounds.width = worldView.getSize().x;
@@ -138,15 +169,31 @@ void SceneGame::Update(float dt)
 
 	if (InputMgr::GetKeyDown(sf::Keyboard::R))
 	{
-		Rabbit* rabbit2 = new Rabbit("enemy", collisionMapImage);
-		rabbit2->Init();
-		rabbit2->Reset();
-		AddGo(rabbit2);
-		rabbit2->SetOrigin(Origins::BC);
-		rabbit2->SetPosition({ 300, 900 });
+		Wheeler* wheeler = new Wheeler("enemy", collisionMapImage);
+		wheeler->Init();
+		wheeler->Reset();
+		AddGo(wheeler);
+		wheeler->SetOrigin(Origins::BC);
+		wheeler->SetPosition({ 300, 900 });
 	}
-
-
+	if (InputMgr::GetKeyDown(sf::Keyboard::Y))
+	{
+		Bat* bat = new Bat("enemy", collisionMapImage);
+		bat->Init();
+		bat->Reset({ 300, 900 });
+		AddGo(bat);
+		bat->SetOrigin(Origins::BC);
+		bat->SetPosition({ 300, 900 });
+	}
+	if (InputMgr::GetKeyDown(sf::Keyboard::T))
+	{
+		Wheeler* wheeler = new Wheeler("enemy", collisionMapImage);
+		wheeler->Init();
+		wheeler->Reset();
+		AddGo(wheeler);
+		wheeler->SetOrigin(Origins::BC);
+		wheeler->SetPosition({ 2440, 680 });
+	}
 }
 
 void SceneGame::LateUpdate(float dt)
@@ -170,6 +217,7 @@ void SceneGame::LateUpdate(float dt)
 
 void SceneGame::FixedUpdate(float dt)
 {
+	FindGoAll("enemy", enemyList, Scene::Layers::World);
 	Scene::FixedUpdate(dt);
 }
 

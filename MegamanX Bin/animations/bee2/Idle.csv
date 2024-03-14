@@ -1,0 +1,8 @@
+ID,FPS,"LOOPTYPE (0: Single, 1: Loop, 2: PingPong)",,
+Idle,10,1,,
+,,,,
+TEXTURE ID,LEFT,TOP,WIDTH,HEIGHT
+graphics/bee2/bee2_1.png,0,0,29,32
+graphics/bee2/bee2_2.png,0,0,29,32
+graphics/bee2/bee2_3.png,0,0,31,32
+graphics/bee2/bee2_4.png,0,0,29,32

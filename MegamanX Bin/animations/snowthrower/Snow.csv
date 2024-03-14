@@ -1,6 +1,9 @@
 ID,FPS,"LOOPTYPE (0: Single, 1: Loop, 2: PingPong)",,
-Bullet,10,0,,
+Snow,10,0,,
 ,,,,
 TEXTURE ID,LEFT,TOP,WIDTH,HEIGHT
-graphics/LogShot.png,0,0,32,18
-graphics/LogShot.png,0,0,32,18
+graphics/snowthrower/snow.png,0,0,8,8
+graphics/snowthrower/snow.png,0,0,8,8
+graphics/snowthrower/snow.png,0,0,8,8
+graphics/snowthrower/snow.png,0,0,8,8
+graphics/snowthrower/snow.png,0,0,8,8
