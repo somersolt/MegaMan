@@ -38,11 +38,11 @@ void Player::Shoot()
 
 	if (GetCurrentStatus() == Status::Climbing)
 	{
-		buster->Fire({ 1.f,0.f }, 600, 1, oppsetSide);
+		buster->Fire({ 1.f,0.f }, 600, oppsetSide);
 	}
 	else
 	{
-		buster->Fire({ 1.f,0.f }, 600, 1, side);
+		buster->Fire({ 1.f,0.f }, 600, side);
 	}
 	sceneGame->AddGo(buster);
 	isShooting = false;
@@ -66,18 +66,62 @@ void Player::ChargeShoot()
 	if (GetCurrentStatus() == Status::JumpingUp || GetCurrentStatus() == Status::FallingDown)
 	{
 		chargeBuster->SetPosition({ position.x, position.y - 46 });
-	}
+	} // 위치조정
+
+
 	if (GetCurrentStatus() == Status::Climbing)
 	{
-		chargeBuster->ChargeFire({ 1.f,0.f }, 600, 5, oppsetSide);
+		chargeBuster->ChargeFire({ 1.f,0.f }, 600, oppsetSide);
 	}
 	else
 	{
-		chargeBuster->ChargeFire({ 1.f,0.f }, 600, 5, side);
+		chargeBuster->ChargeFire({ 1.f,0.f }, 600, side);
 	}
+
+	//발사
+
+
 	sceneGame->AddGo(chargeBuster);
 	isShooting = false;
 }
+
+void Player::MaxChargeShoot()
+{
+	Buster* maxChargeBuster = new Buster("maxChargeBuster");
+	maxChargeBuster->Init();
+	maxChargeBuster->Reset();
+	maxChargeBuster->SetPosition({ position.x, position.y - 30 });
+
+	if (GetCurrentStatus() == Status::Climbing)
+	{
+		maxChargeBuster->SetPosition({ position.x, position.y - 25 });
+	}
+	if (GetCurrentStatus() == Status::WallJump)
+	{
+		maxChargeBuster->SetPosition({ position.x, position.y - 30 });
+	}
+	if (GetCurrentStatus() == Status::JumpingUp || GetCurrentStatus() == Status::FallingDown)
+	{
+		maxChargeBuster->SetPosition({ position.x, position.y - 46 });
+	} // 위치조정
+
+
+	if (GetCurrentStatus() == Status::Climbing)
+	{
+		maxChargeBuster->MaxChargeFire({ 1.f,0.f }, 600, oppsetSide);
+	}
+	else
+	{
+		maxChargeBuster->MaxChargeFire({ 1.f,0.f }, 600, side);
+	}
+
+	//발사
+
+
+	sceneGame->AddGo(maxChargeBuster);
+	isShooting = false;
+}
+
 
 void Player::Init()
 {
@@ -211,7 +255,7 @@ void Player::Update(float dt)
 	}
 	if (isCharge && !chargeEffectMode && chargeTimer > 0.5f)
 	{
-		playerEffectAnimation.Play("animations/Charge.csv");
+		playerEffectAnimation.Play("animations/ChargeEffect.csv");
 		chargeEffectMode = true;
 	}
 	if (1.f > chargeTimer && chargeTimer > 0.5f)
@@ -224,6 +268,10 @@ void Player::Update(float dt)
 		sf::Color color(255, 255, 255, 255);
 		sprite.setColor(color);
 		chargeTimer = 0;
+	}
+	if (maxChargeTimer > 1.5f)
+	{
+		effect.setColor({ 255, 150, 0, 255 });
 	}
 	// 사격
 	if (currentStatus != Status::Hit && currentStatus != Status::Die)
@@ -239,6 +287,7 @@ void Player::Update(float dt)
 		{
 			isCharge = true;
 			chargeTimer += dt;
+			maxChargeTimer += dt;
 		}
 		if (InputMgr::GetKeyUp(sf::Keyboard::X))
 		{
@@ -246,16 +295,22 @@ void Player::Update(float dt)
 			{
 				Shoot();
 			}
-			if (chargeEffectMode)
+			if (chargeEffectMode && maxChargeTimer < 1.5f)
 			{
 				ChargeShoot();
 			}
+			if (chargeEffectMode && maxChargeTimer >= 1.5f)
+			{
+				MaxChargeShoot();
+			}
 			isCharge = false;
+			maxChargeTimer = 0;
 			shootTimer = 0;
 			isShooting = true;
 			isShootingMode = true;
 			sf::Color color(255, 255, 255, 255); // 원래 색으로 돌아옴
 			sprite.setColor(color);
+			effect.setColor(color);
 		}
 	}
 

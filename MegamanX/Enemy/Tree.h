@@ -17,7 +17,7 @@ private:
 	sf::Color collisionColor = { 255 , 0 , 0 };
 	sf::Color sideCollisionColor = { 0 , 255 , 0 };
 	int stumpCount = 3;
-	int Hp = 5;
+	int Hp = 2;
 	int GrowUpCount = 0;
 	bool isGrow = true;
 	bool fallDown = false;

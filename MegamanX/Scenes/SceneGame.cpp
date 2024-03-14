@@ -108,6 +108,11 @@ void SceneGame::Exit()
 void SceneGame::Update(float dt)
 {
 	FindGoAll("enemy", enemyList, Scene::Layers::World);
+	viewBounds.left = worldView.getCenter().x - worldView.getSize().x / 2.f;
+	viewBounds.top = worldView.getCenter().y - worldView.getSize().y / 2.f;
+	viewBounds.width = worldView.getSize().x;
+	viewBounds.height = worldView.getSize().y;
+
 	Scene::Update(dt);
 
 	if (InputMgr::GetKeyDown(sf::Keyboard::F5))
@@ -128,6 +133,8 @@ void SceneGame::Update(float dt)
 		rabbit2->SetOrigin(Origins::BC);
 		rabbit2->SetPosition({ 300, 900 });
 	}
+
+
 }
 
 void SceneGame::LateUpdate(float dt)

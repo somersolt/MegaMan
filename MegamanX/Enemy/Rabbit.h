@@ -13,5 +13,9 @@ public:
 	void Init() override;
 	void Reset() override;
 	void Update(float dt) override;
+
+	void Jump();
+	void Fire();
+
 };
 

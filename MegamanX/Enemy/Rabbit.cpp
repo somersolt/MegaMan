@@ -2,6 +2,8 @@
 #include "Rabbit.h"
 #include "SceneGame.h"
 #include "SpriteGoEffect.h"
+#include "EnemyShot.h"
+#include "Player/Player.h"
 
 
 
@@ -21,6 +23,7 @@ void Rabbit::Reset()
 	SpriteGo::Reset();
 	SetTexture(textureId);
 	sceneGame = dynamic_cast<SceneGame*>(SCENE_MGR.GetCurrentScene());
+	player = dynamic_cast<Player*>(SCENE_MGR.GetCurrentScene()->FindGo("player"));
 	MapImage = sceneGame->collisionMapImage;
 	//게임 씬 동기화
 
@@ -29,6 +32,7 @@ void Rabbit::Reset()
 	SetOrigin(Origins::BC);
 	isGrounded = true;
 	speed = 0;
+	Hp = 2;
 	// 애니메이션 세팅
 
 	EnemyHitBox.setSize({ 27.f, 31.f });
@@ -59,38 +63,10 @@ void Rabbit::Update(float dt)
 	case 0:
 	case 1:
 	case 2:
-		if (sceneGame->GetPlayerPostion().x - position.x > 0)
-		{
-			h = 1;
-		}
-		else
-		{
-			h = -1;
-		}
-		EnemyAnimation.Play("animations/rabbit/Jump.csv");
-		skillTimer = 0;
-		onSkill = true;
-		isJump = true;
-		isGrounded = false;
-		isSlopeGrounded = false;
-		speed = 200;
-		position.y -= rollBackSideSlope + 3;
-		rollBackSideSlope = 0;
-		position.y -= 2;
-		velocity.y = -400.f;
+		Jump();
 		break;
 	case 3:
-		if (sceneGame->GetPlayerPostion().x - position.x > 0)
-		{
-			h = 1;
-		}
-		else
-		{
-			h = -1;
-		}
-		skillTimer = 0;
-		onSkill = true;
-		EnemyAnimation.Play("animations/rabbit/Shot.csv");
+		Fire();
 		break;
 	default:
 		break;
@@ -103,4 +79,52 @@ void Rabbit::Update(float dt)
 
 		SetOrigin(Origins::BC);
 	}
+}
+
+void Rabbit::Jump()
+{
+	if (sceneGame->GetPlayerPostion().x - position.x > 0)
+	{
+		h = 1;
+	}
+	else
+	{
+		h = -1;
+	}
+	onSkill = true;
+	EnemyAnimation.Play("animations/rabbit/Jump.csv");
+	skillTimer = 0;
+	isJump = true;
+	isGrounded = false;
+	isSlopeGrounded = false;
+	speed = 200;
+	position.y -= rollBackSideSlope + 3;
+	rollBackSideSlope = 0;
+	position.y -= 2;
+	velocity.y = -300.f;
+}
+
+void Rabbit::Fire()
+{
+	if (player->GetPosition().x - position.x > 0)
+	{
+		h = 1;
+	}
+	else
+	{
+		h = -1;
+	}
+	onSkill = true;
+	skillTimer = 0;
+	EnemyAnimation.Play("animations/rabbit/Shot.csv");
+
+	sf::Vector2f dir({ player->GetPosition().x - position.x,  player->GetPosition().y - position.y });
+	Utils::Normalize(dir);
+
+	EnemyShot* rabbitShot = new EnemyShot("rabbitShot");
+	rabbitShot->Init("animations/rabbit/Bullet.csv");
+	rabbitShot->Reset();
+	rabbitShot->SetPosition(position);
+	rabbitShot->EnemyFire(dir, 100.f, 1, h);
+	sceneGame->AddGo(rabbitShot);
 }

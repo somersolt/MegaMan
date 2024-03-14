@@ -3,6 +3,7 @@
 
 class SceneGame;
 class Player;
+class EnemyShot;
 
 class Enemy : public SpriteGo
 {

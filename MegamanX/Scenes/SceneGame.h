@@ -17,6 +17,8 @@ protected:
 
 	Status currentStatus;
 	Player* player = nullptr;
+	sf::FloatRect viewBounds;
+
 public:
 	SceneGame(SceneIds id);
 	~SceneGame() override = default;
@@ -37,7 +39,7 @@ public:
 
 	void SetStatus(Status newStatus);
 	sf::Vector2f GetPlayerPostion();
-
+	sf::FloatRect GetViewBounds() const { return viewBounds; }
 	void Init() override;
 	void Release() override;
 

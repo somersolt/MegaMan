@@ -2,6 +2,8 @@
 #include "Enemy.h"
 #include "SceneGame.h"
 #include "SpriteGoEffect.h"
+#include "EnemyShot.h"
+#include "Player/Player.h"
 
 Enemy::Enemy(const std::string& name, sf::Image& mapImage) : SpriteGo(name), MapImage(mapImage)
 {
@@ -19,6 +21,7 @@ void Enemy::Reset()
 
 	SpriteGo::Reset();
 	sceneGame = dynamic_cast<SceneGame*>(SCENE_MGR.GetCurrentScene());
+	player = dynamic_cast<Player*>(SCENE_MGR.GetCurrentScene()->FindGo("player"));
 	MapImage = sceneGame->collisionMapImage;
 	//게임 씬 동기화
 
@@ -151,6 +154,13 @@ void Enemy::LateUpdate(float dt)
 
 void Enemy::FixedUpdate(float dt)
 {
+
+	if (GetGlobalBounds().intersects(player->GetGlobalBounds()) && player->GetDamageTimer() > 2.f)
+	{
+		player->OnDamage(1);
+		Release();
+	}
+
 }
 
 void Enemy::CheckRightCollision()

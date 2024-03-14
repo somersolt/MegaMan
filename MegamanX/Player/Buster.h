@@ -13,7 +13,7 @@ protected:
 	int damage = 1;
 	bool hit = false;
 	SceneGame* sceneGame = nullptr;
-
+	BusterTypes busterType = BusterTypes::Buster;
 	float timer = 0.f;
 	float duration = 3.f;
 	
@@ -21,9 +21,11 @@ public:
 	Buster(const std::string& name = "");
 	~Buster() override = default;
 
-	void Fire(const sf::Vector2f dir, float s, int d, Sides side);
-	void ChargeFire(const sf::Vector2f dir, float s, int d, Sides side);
+	void Fire(const sf::Vector2f dir, float s, Sides side);
+	void ChargeFire(const sf::Vector2f dir, float s, Sides side);
+	void MaxChargeFire(const sf::Vector2f dir, float s, Sides side);
 
+	void SetBuster(BusterTypes b) { busterType = b; }
 	void Release() override;
 
 	void Init() override;

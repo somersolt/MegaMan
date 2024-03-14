@@ -9,12 +9,11 @@ Buster::Buster(const std::string& name) : SpriteGo(name)
 {
 }
 
-void Buster::Fire(const sf::Vector2f dir, float s, int d, Sides side)
+void Buster::Fire(const sf::Vector2f dir, float s, Sides side)
 {
-	
+	busterType = BusterTypes::Buster;
 	sprite.setTextureRect({ 61,0, 10,16 });
 	SetOrigin({ GetLocalBounds().width - 20, GetLocalBounds().height / 2});
-
 	direction = dir;
 	speed = s;
 	if (side == Sides::Left)
@@ -24,17 +23,32 @@ void Buster::Fire(const sf::Vector2f dir, float s, int d, Sides side)
 	}
 }
 
-void Buster::ChargeFire(const sf::Vector2f dir, float s, int d, Sides side)
+void Buster::ChargeFire(const sf::Vector2f dir, float s, Sides side)
 {
+	busterType = BusterTypes::ChargeBuster;
 	direction = dir;
 	speed = s;
-	damage = d;
+
 	if (side == Sides::Left)
 	{
 		direction = -direction;
 		SetFlipX(true);
 	}
-	busterAnimation.Play("animations/Buster.csv");
+	busterAnimation.Play("animations/ChargeBuster.csv");
+}
+
+void Buster::MaxChargeFire(const sf::Vector2f dir, float s, Sides side)
+{
+	busterType = BusterTypes::MaxChargeBuster;
+	direction = dir;
+	speed = s;
+
+	if (side == Sides::Left)
+	{
+		direction = -direction;
+		SetFlipX(true);
+	}
+	busterAnimation.Play("animations/MaxChargeBuster.csv");
 }
 
 void Buster::Release()
@@ -59,11 +73,24 @@ void Buster::Update(float dt)
 	GameObject::Update(dt);
 	busterAnimation.Update(dt);
 	sf::Vector2f pos = position + direction * speed * dt;
-
-	//TO-DO 카메라 벗어나면 삭제
-
 	SetPosition(pos);
+	if(busterType == BusterTypes::Buster)
+	{
+		damage = 1;
+	}
+	if (busterType == BusterTypes::ChargeBuster)
+	{
+		damage = 2;
+	}
+	if (busterType == BusterTypes::MaxChargeBuster)
+	{
+		damage = 4;
+	}
 
+	if (!GetGlobalBounds().intersects(sceneGame->GetViewBounds()))
+	{
+		Release();
+	}
 }
 
 void Buster::FixedUpdate(float dt)
@@ -81,11 +108,11 @@ void Buster::FixedUpdate(float dt)
 		{
 			hit = true;
 			speed = 0;
-			if (damage == 1)
+			if (busterType == BusterTypes::Buster)
 			{
 				busterAnimation.Play("animations/BusterHit.csv");
 			}
-			if (damage == 5)
+			if (busterType == BusterTypes::ChargeBuster)
 			{
 				if (direction.x > 0)
 				{
@@ -97,6 +124,19 @@ void Buster::FixedUpdate(float dt)
 				}
 				busterAnimation.Play("animations/ChargeBusterHit.csv");
 			}
+			if (busterType == BusterTypes::MaxChargeBuster)
+			{
+				if (direction.x > 0)
+				{
+					SetPosition({ position.x + 10 , position.y });
+				}
+				else
+				{
+					SetPosition({ position.x - 10 , position.y });
+				}
+				busterAnimation.Play("animations/MaxChargeBusterHit.csv");
+			}
+
 
 			Tree* tree = dynamic_cast<Tree*>(go);
 			if (tree != nullptr)

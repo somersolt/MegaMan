@@ -9,8 +9,14 @@ enum class Origins
 
 enum class Sides
 {
-	None = -1, Left, Right, Count
+	None = -1, Left, Right, Count,
 };
+
+enum class BusterTypes
+{
+	None = -1, Buster, ChargeBuster, MaxChargeBuster,
+};
+
 
 enum class Languages
 {

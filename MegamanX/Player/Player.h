@@ -90,7 +90,7 @@ protected:
 	bool isCharge = false; // 차지 사격 변수
 	bool chargeEffectMode = false;
 	float chargeTimer = 0.f;
-
+	float maxChargeTimer = 0.f;
 
 	float h = 0; // 방향키 입력변수
  	float gravity = 1000.f;
@@ -135,10 +135,11 @@ public:
 	const Status GetPreStatus() { return preStatus; }
 	const Status GetCurrentStatus() {return currentStatus;}
 	void SetPlayerStatus(Status status);
+	const float GetDamageTimer() { return damageTimer; }
 
 	void Shoot();
 	void ChargeShoot();
-
+	void MaxChargeShoot();
 
 	void Init() override;
 	void Reset() override;
