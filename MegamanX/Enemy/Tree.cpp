@@ -52,7 +52,8 @@ void Tree::Release()
 	{
 		stump->SetSecondTree(false);
 	}
-
+	SetActive(false);
+	sceneGame->RemoveGo(this);
 }
 
 void Tree::Update(float dt)
@@ -96,7 +97,6 @@ void Tree::Update(float dt)
 		boom->Init();
 		boom->Reset();
 		Release();
-		sceneGame->RemoveGo(this);
 	}
 
 	if (fallDown && (GrowTimer > 0.01f) && GrowUpCount > 4)

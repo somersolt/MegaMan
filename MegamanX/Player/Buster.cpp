@@ -100,9 +100,9 @@ void Buster::FixedUpdate(float dt)
 	auto& list = sceneGame->GetEnemyList();
 	for (auto go : list)
 	{
-		if (!go->GetActive())
+		if (go == nullptr)
 		{
-			continue;
+			break;
 		}
 		if (GetGlobalBounds().intersects(go->GetGlobalBounds()) && !hit)
 		{

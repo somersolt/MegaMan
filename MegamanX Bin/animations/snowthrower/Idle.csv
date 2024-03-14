@@ -1,0 +1,7 @@
+ID,FPS,"LOOPTYPE (0: Single, 1: Loop, 2: PingPong)",,
+Idle,10,1,,
+,,,,
+TEXTURE ID,LEFT,TOP,WIDTH,HEIGHT
+graphics/snowthrower/snowthrower.png,0,0,21,46
+graphics/snowthrower/snowthrower.png,0,0,21,46
+graphics/snowthrower/snowthrower.png,0,0,21,46

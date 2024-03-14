@@ -136,6 +136,8 @@ public:
 	const Status GetCurrentStatus() {return currentStatus;}
 	void SetPlayerStatus(Status status);
 	const float GetDamageTimer() { return damageTimer; }
+	void SetDamageTimer(float t) { damageTimer = t; }
+	const sf::FloatRect GetPlayerBounds() { return playerBounds; }
 
 	void Shoot();
 	void ChargeShoot();

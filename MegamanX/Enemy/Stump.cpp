@@ -82,8 +82,10 @@ void Stump::Update(float dt)
 				}
 			}
 		}
+	
 	}
-
+	//if (name == "stump1")
+	//	std::cout << firstTree << "/" << secondTree << std::endl;
 	if (InputMgr::GetKeyDown(sf::Keyboard::E))
 	{
 		treeChange = true;

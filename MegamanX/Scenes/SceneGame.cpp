@@ -3,6 +3,7 @@
 #include "Player/Player.h"
 #include "Enemy/Stump.h"
 #include "Enemy/Rabbit.h"
+#include "Enemy/Lumberjack.h"
 
 SceneGame::SceneGame(SceneIds id) : Scene(id)
 {
@@ -27,10 +28,10 @@ void SceneGame::Init()
 
 	background = new SpriteGo("background");
 	background->SetTexture("graphics/background_ice.png");
-	AddGo(background, Scene::BackGround );
+	AddGo(background, Scene::BackGround);
 	background->SetOrigin({ background->GetGlobalBounds().left , background->GetGlobalBounds().height / 2 });
 	background->SetPosition({ -100,850 });
-	  
+
 	map = new SpriteGo("Map");
 	map->SetTexture("graphics/chill_penguin_stage.png");
 	map->sortOrder = -3;
@@ -50,7 +51,7 @@ void SceneGame::Init()
 
 	// 플레이어
 
-	player = new Player("player" , collisionMapImage);
+	player = new Player("player", collisionMapImage);
 	AddGo(player);
 	player->SetPosition({ 0,0 });
 
@@ -64,15 +65,26 @@ void SceneGame::Init()
 	stump2->SetOrigin(Origins::BC);
 	stump2->SetPosition({ 950, 865 });
 
-	Rabbit* rabbit1 = new Rabbit("enemy" , collisionMapImage);
+	Rabbit* rabbit1 = new Rabbit("enemy", collisionMapImage);
 	AddGo(rabbit1);
 	rabbit1->SetOrigin(Origins::BC);
 	rabbit1->SetPosition({ 300, 900 });
 
+
+	Lumberjack* lumberjack = new Lumberjack("enemy", collisionMapImage, "stump1");
+	AddGo(lumberjack);
+	lumberjack->SetOrigin(Origins::BC);
+	lumberjack->SetPosition({ 495, 900 });
+
+	Lumberjack* lumberjack2 = new Lumberjack("enemy", collisionMapImage, "stump2");
+	AddGo(lumberjack2);
+	lumberjack2->SetOrigin(Origins::BC);
+	lumberjack2->SetPosition({ 1005, 865 });
+
 	Scene::Init();
 
 	worldView.setSize({ 1920 / 3, 1080 / 3 });
-	backgroundView.setSize({ 1920 /3 ,1080 /3 });
+	backgroundView.setSize({ 1920 / 3 ,1080 / 3 });
 
 	sf::RectangleShape pillar(sf::Vector2f(200, 600));
 	pillar.setPosition(0, 200);

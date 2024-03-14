@@ -155,8 +155,9 @@ void Enemy::LateUpdate(float dt)
 void Enemy::FixedUpdate(float dt)
 {
 
-	if (GetGlobalBounds().intersects(player->GetGlobalBounds()) && player->GetDamageTimer() > 2.f)
+	if (GetGlobalBounds().intersects(player->GetPlayerBounds()) && player->GetDamageTimer() < 0.f && player->GetCurrentStatus() != Player::Status::Die)
 	{
+		player->SetDamageTimer(0);
 		player->OnDamage(1);
 		Release();
 	}

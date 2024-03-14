@@ -27,7 +27,7 @@ public:
 
 	void Release() override;
 
-	void Init(std::string id);
+	void Init(std::string aniId , std::string texId);
 	void Update(float dt) override;
 	void FixedUpdate(float dt) override;
 	void Reset() override;

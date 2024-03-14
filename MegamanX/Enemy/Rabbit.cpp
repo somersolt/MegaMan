@@ -55,7 +55,7 @@ void Rabbit::Update(float dt)
 	int skill = -1;
 	if (skillTimer > 3 && !onSkill)
 	{
-		skill = Utils::RandomRange(3, 4);
+		skill = Utils::RandomRange(0, 4);
 	}
 
 	switch (skill)
@@ -122,9 +122,9 @@ void Rabbit::Fire()
 	Utils::Normalize(dir);
 
 	EnemyShot* rabbitShot = new EnemyShot("rabbitShot");
-	rabbitShot->Init("animations/rabbit/Bullet.csv");
+	rabbitShot->Init("animations/rabbit/Bullet.csv", "graphics/rabbitBullet.png");
 	rabbitShot->Reset();
-	rabbitShot->SetPosition(position);
+	rabbitShot->SetPosition({ position .x , position .y - 30});
 	rabbitShot->EnemyFire(dir, 100.f, 1, h);
 	sceneGame->AddGo(rabbitShot);
 }

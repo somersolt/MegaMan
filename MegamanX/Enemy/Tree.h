@@ -40,6 +40,8 @@ public:
 	void SetStump(std::string name) { stumpName = name; }
 	std::string GetStump() { return stumpName; }
 	void SetTreeNumber(int n) { treeNumber = n; }
+	int GetTreeNumber() const { return treeNumber; }
+	std::string GetStumpName() const { return stumpName; }
 	void SetFallDown(bool f) { fallDown = f; }
 	void OnDamage(int d);
 
@@ -50,7 +52,6 @@ public:
 
 	void GrowUp();
 	void FallDown();
-	void Boom();
 
 };
 

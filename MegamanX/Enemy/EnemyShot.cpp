@@ -26,12 +26,12 @@ void EnemyShot::Release()
 	sceneGame->RemoveGo(this);
 }
 
-void EnemyShot::Init(std::string id)
+void EnemyShot::Init(std::string aniId, std::string texid)
 {
 	GameObject::Init();
-	animationId = id;
+	animationId = aniId;
 	EnemyShotAnimation.SetTarget(&sprite);
-	textureId = "graphics/rabbitBullet.png";
+	textureId = texid;
 
 }
 
@@ -51,8 +51,9 @@ void EnemyShot::Update(float dt)
 void EnemyShot::FixedUpdate(float dt)
 {
 	SpriteGo::FixedUpdate(dt);
-	if (GetGlobalBounds().intersects(player->GetGlobalBounds()) && player->GetDamageTimer() > 2.f && player->GetCurrentStatus() != Player::Status::Die)
+	if (GetGlobalBounds().intersects(player->GetPlayerBounds()) && player->GetDamageTimer() < 0.f && player->GetCurrentStatus() != Player::Status::Die)
 	{
+		player->SetDamageTimer(0);
 		player->OnDamage(damage);
 		Release();
 	}

@@ -160,7 +160,7 @@ void Player::Reset()
 	playerAnimation.AddEvent("animations/LandingShot.csv", 2, ToIdle);
 	playerAnimation.AddEvent("animations/Dash.csv", 3, ToIdle);
 	playerAnimation.AddEvent("animations/Shot.csv", 6, ToIdle);
-	playerAnimation.AddEvent("animations/Hit.csv", 7, ToIdle);
+	playerAnimation.AddEvent("animations/Hit.csv", 5, ToIdle);
 
 	std::function<void()> ToShot = std::bind(&Player::ShotAnimation, this);
 	playerAnimation.AddEvent("animations/DashShot.csv", 3, ToShot);
@@ -258,6 +258,7 @@ void Player::Update(float dt)
 		playerEffectAnimation.Play("animations/ChargeEffect.csv");
 		chargeEffectMode = true;
 	}
+
 	if (1.f > chargeTimer && chargeTimer > 0.5f)
 	{
 		sf::Color color(255, 255, 100, 255); 
@@ -269,10 +270,25 @@ void Player::Update(float dt)
 		sprite.setColor(color);
 		chargeTimer = 0;
 	}
+
 	if (maxChargeTimer > 1.5f)
 	{
 		effect.setColor({ 255, 150, 0, 255 });
 	}
+
+	// 무적 효과
+
+	if (damageTimer > 0.5f && GetCurrentStatus() != Status::Hit && GetCurrentStatus() != Status::Die)
+	{
+		sf::Color color(255, 255, 255, 170);
+		sprite.setColor(color);
+	}
+	if (damageTimer <= 0.5f && damageTimer > 0)
+	{
+		sf::Color color(255, 255, 255, 255);
+		sprite.setColor(color);
+	}
+
 	// 사격
 	if (currentStatus != Status::Hit && currentStatus != Status::Die)
 	{
@@ -329,7 +345,7 @@ void Player::Update(float dt)
 		playerAnimation.Play("animations/Die.csv");
 		SetPlayerStatus(Status::Die);
 	}
-	damageTimer += dt;
+	damageTimer -= dt;
 
 	switch (currentStatus)
 	{
@@ -739,7 +755,7 @@ void Player::UpdateHit(float dt)
 	isCantFlip = true;
 	isDash = false;
 	speed = 200;
-	damageTimer = 0;
+	damageTimer = 1;
 	if (side == Sides::Right)
 	{
 		h = -1;
