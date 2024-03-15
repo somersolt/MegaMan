@@ -7,6 +7,9 @@
 #include "Enemy/SnowThrower.h"
 #include "Enemy/Wheeler.h"
 #include "Enemy/Bat.h"
+#include "Enemy/Bee.h"
+#include "Enemy/Bee2.h"
+#include "Enemy/Ostrich.h"
 
 SceneGame::SceneGame(SceneIds id) : Scene(id)
 {
@@ -29,11 +32,12 @@ void SceneGame::SetStatus(Status newStatus)
 void SceneGame::Init()
 {
 
+
 	background = new SpriteGo("background");
-	background->SetTexture("graphics/background_ice.png");
+	background->SetTexture("graphics/background.png");
 	AddGo(background, Scene::BackGround);
 	background->SetOrigin({ background->GetGlobalBounds().left , background->GetGlobalBounds().height / 2 });
-	background->SetPosition({ -100,850 });
+	background->SetPosition({ -100,750 });
 
 	map = new SpriteGo("Map");
 	map->SetTexture("graphics/chill_penguin_stage.png");
@@ -111,8 +115,9 @@ void SceneGame::Init()
 
 	Scene::Init();
 
-	worldView.setSize({ 1920 / 3, 1080 / 3 });
-	backgroundView.setSize({ 1920 / 3 ,1080 / 3 });
+	worldView.setSize(viewSize);
+	backgroundView.setSize(viewSize);
+
 
 	sf::RectangleShape pillar(sf::Vector2f(200, 600));
 	pillar.setPosition(0, 200);
@@ -146,37 +151,17 @@ void SceneGame::Exit()
 
 
 void SceneGame::Update(float dt)
-{/*
-	std::cout << GetPlayerPostion().x << "/" << GetPlayerPostion().y << std::endl;*/
-
+{
 	FindGoAll("enemy", enemyList, Scene::Layers::World);
 
 	viewBounds.left = worldView.getCenter().x - worldView.getSize().x / 2.f;
 	viewBounds.top = worldView.getCenter().y - worldView.getSize().y / 2.f;
-	viewBounds.width = worldView.getSize().x;
-	viewBounds.height = worldView.getSize().y;
+	viewBounds.width = worldView.getCenter().x + worldView.getSize().x / 2.f;
+	viewBounds.height = worldView.getCenter().y + worldView.getSize().y / 2.f;
 
 	Scene::Update(dt);
 
 	if (InputMgr::GetKeyDown(sf::Keyboard::F5))
-	{
-		mapHitBox->SetActive(true);
-	}
-	if (InputMgr::GetKeyDown(sf::Keyboard::F6))
-	{
-		mapHitBox->SetActive(false);
-	}
-
-	if (InputMgr::GetKeyDown(sf::Keyboard::R))
-	{
-		Wheeler* wheeler = new Wheeler("enemy", collisionMapImage);
-		wheeler->Init();
-		wheeler->Reset();
-		AddGo(wheeler);
-		wheeler->SetOrigin(Origins::BC);
-		wheeler->SetPosition({ 300, 900 });
-	}
-	if (InputMgr::GetKeyDown(sf::Keyboard::Y))
 	{
 		Bat* bat = new Bat("enemy", collisionMapImage);
 		bat->Init();
@@ -185,7 +170,37 @@ void SceneGame::Update(float dt)
 		bat->SetOrigin(Origins::BC);
 		bat->SetPosition({ 300, 900 });
 	}
-	if (InputMgr::GetKeyDown(sf::Keyboard::T))
+	if (InputMgr::GetKeyDown(sf::Keyboard::F6))
+	{
+		Bee* bee = new Bee("enemy", collisionMapImage);
+		bee->Init();
+		bee->Reset();
+		AddGo(bee);
+		bee->SetOrigin(Origins::BC);
+		bee->SetPosition({ 300, 850 });
+	}
+
+	if (InputMgr::GetKeyDown(sf::Keyboard::F7))
+	{
+		Bee2* bee2 = new Bee2("enemy", collisionMapImage);
+		bee2->Init();
+		bee2->Reset();
+		AddGo(bee2);
+		bee2->SetOrigin(Origins::BC);
+		bee2->SetPosition({ 300, 850 });
+	}
+
+	if (InputMgr::GetKeyDown(sf::Keyboard::F8))
+	{
+		Ostrich* ostrich = new Ostrich("enemy", collisionMapImage);
+		ostrich->Init();
+		ostrich->Reset();
+		AddGo(ostrich);
+		ostrich->SetOrigin(Origins::BC);
+		ostrich->SetPosition({ 300, 850 });
+	}
+
+	if (InputMgr::GetKeyDown(sf::Keyboard::F9))
 	{
 		Wheeler* wheeler = new Wheeler("enemy", collisionMapImage);
 		wheeler->Init();
@@ -200,19 +215,86 @@ void SceneGame::LateUpdate(float dt)
 {
 	Scene::LateUpdate(dt);
 
-	sf::Vector2f preWorldViewCenter = worldView.getCenter();
-	sf::Vector2f worldViewCenter = player->GetPosition();
-	worldViewCenter.y -= 50;
+	preWorldViewCenter = worldView.getCenter();
+	worldViewCenter = { player->GetPosition().x , player->GetPosition().y - 30 };
+
+
+	viewXMax = map->GetGlobalBounds().left + map->GetGlobalBounds().width - viewSize.x / 2;
+	viewXMin = map->GetGlobalBounds().left + viewSize.x / 2;
+	viewYMax = map->GetGlobalBounds().top + map->GetGlobalBounds().height - viewSize.y / 2 - 15;
+	viewYMin = map->GetGlobalBounds().top + viewSize.y / 2;
+
+
+	if (player->GetPosition().x > 0 && player->GetPosition().x < 1780)
+	{
+		viewYMin = 771 + viewSize.y / 2;
+	}
+	if (player->GetPosition().x > 0 && player->GetPosition().x < 1620)
+	{
+		viewYMax = 1015 - viewSize.y / 2;
+	}
+	// 1번 구역 카메라 제한
+
+	if (player->GetPosition().x > 1956 && player->GetPosition().x < 2235)
+	{
+		viewYMin = 1027 + viewSize.y / 2;
+	}
+
+	if (player->GetPosition().x > 2308 && player->GetPosition().x < 2820 && player->GetPosition().y > 450)
+	{
+		viewXMax = 2820 - viewSize.x / 2;
+	}
+
+	if (player->GetPosition().x > 2308 && player->GetPosition().x < 2820 && player-> GetPosition().y < 1020 && player->GetPosition().y > 450)
+	{
+		viewXMax = 2820 - viewSize.x / 2;
+		viewXMin = 2303 + viewSize.x / 2;
+	}
+	if (player->GetPosition().x > 2308)
+	{
+		viewXMin = 2303 + viewSize.x / 2;
+	}
+	if (player->GetPosition().y < 503 && player->GetPosition().x > 2308 && player->GetPosition().x < 4000)
+	{
+		viewYMin = 259 + viewSize.y / 2;
+	}
+	if (player->GetPosition().y < 503 && player->GetPosition().x > 2600 && player->GetPosition().x < 3339)
+	{
+		viewYMax = 503 - viewSize.y / 2;
+	}
+
+	if (player->GetPosition().x > 4070 && player->GetPosition().x < 4450)
+	{
+		viewYMin = 515 + viewSize.y / 2;
+	}
+
+	// 2번 구역 카메라 제한
+
+	if (player->GetPosition().x > 4710 && player->GetPosition().x < 5900)
+	{
+		viewYMin = 491 + viewSize.y / 2;
+		viewYMax = 735 - viewSize.y / 2;
+	}
+
+
+
+
+
+	worldViewCenter.x = Utils::Clamp(worldViewCenter.x, viewXMin, viewXMax);
+	worldViewCenter.y = Utils::Clamp(worldViewCenter.y, viewYMin, viewYMax);
+
 	worldView.setCenter(worldViewCenter);
+	std::cout << player->GetPosition().y << std::endl;
 
-	sf::Vector2f worldViewMoment = worldViewCenter - preWorldViewCenter;
-
-	sf::Vector2f backgroundViewMoment = worldViewMoment * 0.5f;
-	sf::Vector2f backgroundViewCenter = backgroundView.getCenter() + backgroundViewMoment;
-	backgroundViewCenter.y = worldViewCenter.y;
+	worldViewMoment = worldViewCenter - preWorldViewCenter;
+	backgroundViewMoment = worldViewMoment * 0.5f;
+	backgroundViewCenter = backgroundView.getCenter() + backgroundViewMoment;
+	if (isStart)
+	{
+		backgroundViewCenter.y = worldViewCenter.y + 30;
+		isStart = false;
+	}
 	backgroundView.setCenter(backgroundViewCenter);
-
-
 }
 
 void SceneGame::FixedUpdate(float dt)

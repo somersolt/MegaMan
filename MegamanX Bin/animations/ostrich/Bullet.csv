@@ -1,0 +1,6 @@
+ID,FPS,"LOOPTYPE (0: Single, 1: Loop, 2: PingPong)",,
+Bullet,20,1,,
+,,,,
+TEXTURE ID,LEFT,TOP,WIDTH,HEIGHT
+graphics/ostrich/ostrichShot.png,0,0,15,15
+graphics/ostrich/ostrichShot2.png,0,0,15,15

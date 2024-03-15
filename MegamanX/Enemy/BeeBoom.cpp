@@ -1,22 +1,21 @@
 #include "pch.h"
-#include "Snow.h"
+#include "BeeBoom.h"
 #include "SceneGame.h"
 #include "SpriteGoEffect.h"
 #include "Player/Player.h"
 
-Snow::Snow(const std::string& name, sf::Image& mapImage) : Enemy(name, mapImage)
+BeeBoom::BeeBoom(const std::string& name, sf::Image& mapImage) : Enemy(name, mapImage)
 {
-
 }
 
-void Snow::Init()
+void BeeBoom::Init()
 {
 	Enemy::Init();
 	EnemyAnimation.SetTarget(&sprite);
-	textureId = "graphics/snowthrower/snow.png";
+	textureId = "graphics/bee/beeBoom1.png";
 }
 
-void Snow::Reset()
+void BeeBoom::Reset(int g)
 {
 	Enemy::Reset();
 	SetTexture(textureId);
@@ -29,46 +28,47 @@ void Snow::Reset()
 
 	SetOrigin(Origins::BC);
 	isGrounded = true;
-	speed = 400;
-	gravity = 300;
-	h = -1;
-	Hp = 3;
+	speed = 100;
+	gravity = 600;
+	h = g;
+	Hp = 1;
 
 	// 애니메이션 세팅
 
-	EnemyHitBox.setSize({ 8.f, 8.f });
+	EnemyHitBox.setSize({ 10.f, 12.f });
 	EnemyHitBox.setOrigin({ EnemyHitBox.getLocalBounds().width / 2, EnemyHitBox.getLocalBounds().height });
 	EnemyHitBox.setFillColor(sf::Color::Transparent);
 	EnemyHitBox.setPosition(position);
-	EnemyAnimation.Play("animations/snowthrower/snow.csv");
-
-	EnemyAnimation.ClearEvent();
-	EnemyAnimation.AddEvent("animations/snowthrower/SnowRolling.csv", 4,
-		[=]() {speed = 200; });
+	EnemyAnimation.Play("animations/bee/Boom.csv");
 }
 
-void Snow::Update(float dt)
+void BeeBoom::Update(float dt)
 {
 	Enemy::Update(dt);
 
-	if (isBottomColliding && !onSkill)
-	{
-		onSkill = true;
-		EnemyAnimation.Play("animations/snowthrower/SnowRolling.csv");
-	}
+	skillTimer += dt;
 
-	if (isMiddleRightColliding || isMiddleLeftColliding)
+	if (skillTimer > 3.f)
 	{
 		Hp = 0;
 	}
+
+
+
+	if (isBottomColliding)
+	{
+		speed = 0;
+	}
+
 }
 
-void Snow::LateUpdate(float dt)
+void BeeBoom::LateUpdate(float dt)
 {
-
 	Enemy::LateUpdate(dt);
 
+	if (GetGlobalBounds().intersects(player->GetPlayerBounds()) && !onSkill)
+	{
+		skillTimer += 2.f;
+		onSkill = true;
+	}
 }
-
-
-

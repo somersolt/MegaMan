@@ -137,10 +137,14 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Enemy\Bee2.cpp" />
+    <ClCompile Include="Enemy\BeeBoom.cpp" />
+    <ClCompile Include="Enemy\Bee.cpp" />
     <ClCompile Include="Enemy\Bat.cpp" />
     <ClCompile Include="Enemy\EnemyShot.cpp" />
     <ClCompile Include="Enemy\Enemy.cpp" />
     <ClCompile Include="Enemy\Lumberjack.cpp" />
+    <ClCompile Include="Enemy\Ostrich.cpp" />
     <ClCompile Include="Player\Buster.cpp" />
     <ClCompile Include="Framework\DataTable.cpp" />
     <ClCompile Include="Framework\DataTableMgr.cpp" />
@@ -177,10 +181,14 @@
     <ClCompile Include="Enemy\Wheeler.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Enemy\Bee2.h" />
+    <ClInclude Include="Enemy\BeeBoom.h" />
+    <ClInclude Include="Enemy\Bee.h" />
     <ClInclude Include="Enemy\Bat.h" />
     <ClInclude Include="Enemy\EnemyShot.h" />
     <ClInclude Include="Enemy\Enemy.h" />
     <ClInclude Include="Enemy\Lumberjack.h" />
+    <ClInclude Include="Enemy\Ostrich.h" />
     <ClInclude Include="Player\Buster.h" />
     <ClInclude Include="Framework\DataTable.h" />
     <ClInclude Include="Framework\DataTableMgr.h" />

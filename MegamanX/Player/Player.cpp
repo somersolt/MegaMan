@@ -824,19 +824,19 @@ void Player::LateUpdate(float dt)
 	{
 		velocity.x = 0;
 		velocity.y = 0;
-		SetPosition({ 6678,275 });
+		SetPosition({ 7378,175 });
 	}
 
 	///  히트박스 테스트 코드
 
-	if (InputMgr::GetKeyDown(sf::Keyboard::F8))
-	{
-		playerHitBox.setFillColor(sf::Color::Transparent);
-	}
-	if (InputMgr::GetKeyDown(sf::Keyboard::F7))
-	{
-		playerHitBox.setFillColor(sf::Color::Blue);
-	}
+	//if (InputMgr::GetKeyDown(sf::Keyboard::F8))
+	//{
+	//	playerHitBox.setFillColor(sf::Color::Transparent);
+	//}
+	//if (InputMgr::GetKeyDown(sf::Keyboard::F7))
+	//{
+	//	playerHitBox.setFillColor(sf::Color::Blue);
+	//}
 	/// 히트박스 테스트 코드
 
 	if (velocity.y > 800.f)

@@ -1,25 +1,26 @@
 #include "pch.h"
-#include "Bat.h"
+#include "Bee.h"
 #include "SceneGame.h"
 #include "Player/Player.h"
 #include "SpriteGoEffect.h"
+#include "BeeBoom.h"
 
-Bat::Bat(const std::string& name, sf::Image& mapImage) : Enemy(name, mapImage)
+
+Bee::Bee(const std::string& name, sf::Image& mapImage) : Enemy(name, mapImage)
 {
 }
 
-void Bat::Init()
+void Bee::Init()
 {
 	SpriteGo::Init();
 	EnemyAnimation.SetTarget(&sprite);
-	textureId = "graphics/bat/bat1.png";
+	textureId = "graphics/bee/bee1.png";
 }
 
-void Bat::Reset(sf::Vector2f s)
+void Bee::Reset()
 {
 	SpriteGo::Reset();
 	SetTexture(textureId, true);
-	spawn = s;
 	sceneGame = dynamic_cast<SceneGame*>(SCENE_MGR.GetCurrentScene());
 	player = dynamic_cast<Player*>(SCENE_MGR.GetCurrentScene()->FindGo("player"));
 	MapImage = sceneGame->collisionMapImage;
@@ -27,81 +28,57 @@ void Bat::Reset(sf::Vector2f s)
 
 	EnemyAnimation.ClearEvent();
 
-	EnemyAnimation.Play("animations/bat/Idle.csv");
+	EnemyAnimation.Play("animations/bee/Idle.csv");
 
 	SetOrigin(Origins::BC);
 	isGrounded = true;
 	gravity = 0;
-	speed = 0;
+	speed = 100;
 	Hp = 1;
 	// 애니메이션 세팅
 
-	EnemyHitBox.setSize({ 14.f, 22.f });
+	EnemyHitBox.setSize({ 35.f, 36.f });
 	EnemyHitBox.setOrigin({ EnemyHitBox.getLocalBounds().width / 2, EnemyHitBox.getLocalBounds().height });
 	EnemyHitBox.setFillColor(sf::Color::Transparent);
 	EnemyHitBox.setPosition(position);
+
+	EnemyAnimation.AddEvent("animations/bee/Shot.csv", 9,
+		[this]() {Drop(1);});
+	EnemyAnimation.AddEvent("animations/bee/Shot.csv", 17,
+		[this]() {Drop(0); });
+	EnemyAnimation.AddEvent("animations/bee/Shot.csv", 22,
+		[this]() {Drop(-1); });
+	EnemyAnimation.AddEvent("animations/bee/Shot.csv", 28,
+		[=]() {speed = 100;});
 }
 
-void Bat::Update(float dt)
+void Bee::Update(float dt)
 {
 
 	SpriteGo::Update(dt);
 
 	playerPos = player->GetPosition();
 
-	float toPlayerDistance = Utils::Distance(playerPos, position);
+	float toPlayerDistance = std::abs(playerPos.x - position.x);
 
-	switch (status)
-	{
-	case Bat::None:
-		break;
-	case Bat::Idle:
-		speed = 0;
-		break;
-	case Bat::Follow:
-		speed = 70;
-		dir = playerPos - position;
-		Utils::Normalize(dir);
-		break;
-	case Bat::GoBack:
-		speed = 50;
-		dir = spawn - position;
-		Utils::Normalize(dir);
-		break;
-	default:
-		break;
-	}
-
-
-	if (!onSkill && toPlayerDistance < 100)
+	if (!onSkill && toPlayerDistance < 50)
 	{
 		onSkill = true;
-		EnemyAnimation.Play("animations/bat/Fly.csv");
-		status = Status::Follow;
+		EnemyAnimation.Play("animations/bee/Shot.csv");
+		speed = 0;
+
 	}
 
-
-	if (onSkill && toPlayerDistance > 100)
+	if (!GetGlobalBounds().intersects(sceneGame->GetViewBounds()) && onSkill)
 	{
-		onSkill = false;
-		goHome = true;
-		EnemyAnimation.Play("animations/bat/Fly.csv");
-		status = Status::GoBack;
-	}
-
-
-	if (Utils::Distance(position, spawn) < 1.f && goHome)
-	{
-		goHome = false;
-		status = Status::Idle;
-		EnemyAnimation.Play("animations/bat/Idle.csv");
+		Hp = 0;
 	}
 
 }
 
-void Bat::LateUpdate(float dt)
-
+void Bee::LateUpdate(float dt)
 {
+
 	SpriteGo::LateUpdate(dt);
 	EnemyAnimation.Update(dt);
 
@@ -160,4 +137,14 @@ void Bat::LateUpdate(float dt)
 
 	SetPosition(position); // 중력을 포함한 위치 적용
 	SetOrigin(Origins::BC);
+}
+
+void Bee::Drop(int g)
+{
+	BeeBoom* boom = new BeeBoom("enemy", sceneGame->collisionMapImage);
+	boom->Init();
+	boom->Reset(g);
+	boom->SetOrigin(Origins::BC);
+	boom->SetPosition(position);
+	sceneGame->AddGo(boom);
 }

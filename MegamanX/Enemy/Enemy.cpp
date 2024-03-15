@@ -160,7 +160,6 @@ void Enemy::FixedUpdate(float dt)
 	{
 		player->SetDamageTimer(0);
 		player->OnDamage(1);
-		Release();
 	}
 }
 

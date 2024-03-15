@@ -1,25 +1,25 @@
 #include "pch.h"
-#include "Bat.h"
+#include "Bee2.h"
 #include "SceneGame.h"
 #include "Player/Player.h"
 #include "SpriteGoEffect.h"
 
-Bat::Bat(const std::string& name, sf::Image& mapImage) : Enemy(name, mapImage)
+Bee2::Bee2(const std::string& name, sf::Image& mapImage) : Enemy(name, mapImage)
 {
 }
 
-void Bat::Init()
+void Bee2::Init()
 {
 	SpriteGo::Init();
 	EnemyAnimation.SetTarget(&sprite);
-	textureId = "graphics/bat/bat1.png";
+	textureId = "graphics/bee2/bee2_1.png";
 }
 
-void Bat::Reset(sf::Vector2f s)
+void Bee2::Reset()
 {
+
 	SpriteGo::Reset();
 	SetTexture(textureId, true);
-	spawn = s;
 	sceneGame = dynamic_cast<SceneGame*>(SCENE_MGR.GetCurrentScene());
 	player = dynamic_cast<Player*>(SCENE_MGR.GetCurrentScene()->FindGo("player"));
 	MapImage = sceneGame->collisionMapImage;
@@ -27,80 +27,67 @@ void Bat::Reset(sf::Vector2f s)
 
 	EnemyAnimation.ClearEvent();
 
-	EnemyAnimation.Play("animations/bat/Idle.csv");
+	EnemyAnimation.Play("animations/bee2/Idle.csv");
 
 	SetOrigin(Origins::BC);
 	isGrounded = true;
 	gravity = 0;
-	speed = 0;
-	Hp = 1;
+	speed = 400;
+	Hp = 2;
 	// 애니메이션 세팅
 
-	EnemyHitBox.setSize({ 14.f, 22.f });
+	EnemyHitBox.setSize({ 29.f, 32.f });
 	EnemyHitBox.setOrigin({ EnemyHitBox.getLocalBounds().width / 2, EnemyHitBox.getLocalBounds().height });
 	EnemyHitBox.setFillColor(sf::Color::Transparent);
 	EnemyHitBox.setPosition(position);
 }
 
-void Bat::Update(float dt)
+void Bee2::Update(float dt)
 {
-
 	SpriteGo::Update(dt);
 
 	playerPos = player->GetPosition();
-
 	float toPlayerDistance = Utils::Distance(playerPos, position);
+	dir = playerPos - position;
+	Utils::Normalize(dir);
 
 	switch (status)
 	{
-	case Bat::None:
+	case Bee2::None:
 		break;
-	case Bat::Idle:
-		speed = 0;
+	case Bee2::Far:
+		speed = 400;
 		break;
-	case Bat::Follow:
+	case Bee2::Medium:
 		speed = 70;
-		dir = playerPos - position;
-		Utils::Normalize(dir);
 		break;
-	case Bat::GoBack:
-		speed = 50;
-		dir = spawn - position;
-		Utils::Normalize(dir);
+	case Bee2::Close:
+		speed = 10;
 		break;
 	default:
 		break;
 	}
 
-
-	if (!onSkill && toPlayerDistance < 100)
+	if (toPlayerDistance < 100 && toPlayerDistance > 50)
 	{
 		onSkill = true;
-		EnemyAnimation.Play("animations/bat/Fly.csv");
-		status = Status::Follow;
+		status = Status::Medium;
 	}
 
 
-	if (onSkill && toPlayerDistance > 100)
+	if (toPlayerDistance < 50)
 	{
-		onSkill = false;
-		goHome = true;
-		EnemyAnimation.Play("animations/bat/Fly.csv");
-		status = Status::GoBack;
+		status = Status::Close;
 	}
 
-
-	if (Utils::Distance(position, spawn) < 1.f && goHome)
+	if (!GetGlobalBounds().intersects(sceneGame->GetViewBounds()) && onSkill)
 	{
-		goHome = false;
-		status = Status::Idle;
-		EnemyAnimation.Play("animations/bat/Idle.csv");
+		Hp = 0;
 	}
 
 }
 
-void Bat::LateUpdate(float dt)
-
+void Bee2::LateUpdate(float dt)
 {
 	SpriteGo::LateUpdate(dt);
 	EnemyAnimation.Update(dt);
