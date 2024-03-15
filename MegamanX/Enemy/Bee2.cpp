@@ -44,6 +44,14 @@ void Bee2::Reset()
 
 void Bee2::Update(float dt)
 {
+	if (Utils::Distance(player->GetPosition(), position) < 200)
+	{
+		isFight = true;
+	}
+	if (!isFight)
+	{
+		return;
+	}
 	SpriteGo::Update(dt);
 
 	playerPos = player->GetPosition();
@@ -89,6 +97,10 @@ void Bee2::Update(float dt)
 
 void Bee2::LateUpdate(float dt)
 {
+	if (!isFight)
+	{
+		return;
+	}
 	SpriteGo::LateUpdate(dt);
 	EnemyAnimation.Update(dt);
 

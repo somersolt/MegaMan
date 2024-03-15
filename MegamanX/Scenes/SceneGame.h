@@ -13,13 +13,20 @@ public:
 		Pause,
 	};
 
+	enum class monster
+	{
+		None = -1,
+		rabbit,
+		bee,
+		bee2
+	};
+
 protected:
 
 	Status currentStatus;
 	Player* player = nullptr;
 	sf::FloatRect viewBounds;
 	sf::Vector2f viewSize = { 284, 244 };
-	sf::Color collisionColor = { 255 , 0 , 0 }; // Ãæµ¹ »ö±ò - »¡°£»ö
 
 	sf::Vector2f preWorldViewCenter;
 	sf::Vector2f worldViewCenter;
@@ -32,26 +39,6 @@ protected:
 	float viewYMax;
 	float viewYMin;
 
-	int rollBackTop = 0;
-	bool isTopColliding = false;
-	bool isTopViewMax = false;
-
-	int rollBackBottom = 0;
-	bool isBottomColliding = false;
-	bool isBottomViewMax = false;
-
-	int rollBackRight = 0;
-	bool isRightColliding = false;
-	bool isRightViewMax = false;
-
-	int rollBackLeft = 0;
-	bool isLeftColliding = false;
-	bool isLeftViewMax = false;
-
-	int startX;
-	int endX;
-	int startY;
-	int endY;
 
 public:
 	SceneGame(SceneIds id);
@@ -93,5 +80,7 @@ public:
 
 	sf::Vector2f PlayerBoundsWorldToMapLocal(sf::Vector2f playerBounds);
 
+	void CreateMonster(monster monster, sf::Vector2f pos);
+	void CreateWheeler(int g , sf::Vector2f pos);
 };
 

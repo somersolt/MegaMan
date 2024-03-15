@@ -64,6 +64,10 @@ protected:
 
 	int rollBackSlope;
 	int rollBackSideSlope;
+
+
+	bool isFight = false;
+
 	Enemy(const std::string& name, sf::Image& mapImage);
 public:
 	

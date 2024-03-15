@@ -772,6 +772,7 @@ void Player::UpdateHit(float dt)
 void Player::UpdateDie(float dt)
 {
 	isCantFlip = true;
+	chargeEffectMode = false;
 	velocity.x = 0;
 	velocity.y = 0;
 	//sceneGame->SetStatus(SceneGame::Status::Pause);
@@ -803,10 +804,10 @@ void Player::OnDamage(int damage)
 
 void Player::LateUpdate(float dt)
 {
-	if (InputMgr::GetKeyDown(sf::Keyboard::Q) && currentStatus != Status::Die)
+	/*if (InputMgr::GetKeyDown(sf::Keyboard::Q) && currentStatus != Status::Die)
 	{
 		OnDamage(1);
-	}
+	}*/
 
 	if (InputMgr::GetKeyDown(sf::Keyboard::F1))
 	{
@@ -818,7 +819,7 @@ void Player::LateUpdate(float dt)
 	{
 		velocity.x = 0;
 		velocity.y = 0;
-		SetPosition({ 2440,680 });
+		SetPosition({ 2300,1100 });
 	}
 	if (InputMgr::GetKeyDown(sf::Keyboard::F3))
 	{

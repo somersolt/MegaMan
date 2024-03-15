@@ -10,7 +10,7 @@ public:
 	Wheeler(const std::string& name, sf::Image& mapImage);
 
 	void Init() override;
-	void Reset() override;
+	void Reset(int g);
 	void Update(float dt) override;
 
 	void Down();

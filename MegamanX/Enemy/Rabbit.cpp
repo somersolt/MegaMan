@@ -33,6 +33,7 @@ void Rabbit::Reset()
 	isGrounded = true;
 	speed = 0;
 	Hp = 2;
+	skillTimer = 3.f;
 	// 애니메이션 세팅
 
 	EnemyHitBox.setSize({ 27.f, 31.f });
@@ -48,6 +49,14 @@ void Rabbit::Reset()
 
 void Rabbit::Update(float dt)
 {
+	if (Utils::Distance(player->GetPosition(), position) < 200)
+	{
+		isFight = true;
+	}
+	if (!isFight)
+	{
+		return;
+	}
 	SpriteGo::Update(dt);
 
 	skillTimer += dt;

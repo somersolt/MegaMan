@@ -45,6 +45,14 @@ void Enemy::OnDamage(int damage)
 
 void Enemy::LateUpdate(float dt)
 {
+	if (Utils::Distance(player->GetPosition(), position) < 200)
+	{
+		isFight = true;
+	}
+	if (!isFight)
+	{
+		return;
+	}
 	SpriteGo::LateUpdate(dt);
 	EnemyAnimation.Update(dt);
 

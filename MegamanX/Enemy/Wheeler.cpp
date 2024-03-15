@@ -14,7 +14,7 @@ void Wheeler::Init()
 	textureId = "graphics/wheeler/wheeler1.png";
 }
 
-void Wheeler::Reset()
+void Wheeler::Reset(int g)
 {
 
 
@@ -32,8 +32,8 @@ void Wheeler::Reset()
 	SetOrigin(Origins::BC);
 	isGrounded = true;
 	speed = 200;
-	Hp = 4;
-	h = 1;
+	Hp = 2;
+	h = g;
 	// 애니메이션 세팅
 
 	EnemyHitBox.setSize({ 37.f, 37.f });
@@ -44,7 +44,14 @@ void Wheeler::Reset()
 
 void Wheeler::Update(float dt)
 {
-
+	if (Utils::Distance(player->GetPosition(), position) < 200)
+	{
+		isFight = true;
+	}
+	if (!isFight)
+	{
+		return;
+	}
 	SpriteGo::Update(dt);
 
 	skillTimer += dt;
