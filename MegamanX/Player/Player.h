@@ -94,9 +94,6 @@ protected:
 
 	float h = 0; // 방향키 입력변수
  	float gravity = 1000.f;
-		/*
-		맵 만든뒤에 반드시 중력 추가
-		*/
 
 	void IdleAnimation();
 	void ShotAnimation();
@@ -128,6 +125,8 @@ protected:
 	int rollBackSideSlope;
 
 	bool isWait = false;
+	bool wind = false;
+	Sides windSide = Sides::Left;
 
 public:
 
@@ -143,6 +142,8 @@ public:
 	const sf::FloatRect GetPlayerBounds() { return playerBounds; }
 	const int GetPlayerLife() { return HP; }
 	void SetWait(bool s) { isWait = s; }
+	void SetWind(bool s) { wind = s; }
+	void SetWindSide(Sides s) { windSide = s; }
 
 	void Shoot();
 	void ChargeShoot();

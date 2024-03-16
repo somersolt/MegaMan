@@ -1,5 +1,5 @@
 ID,FPS,"LOOPTYPE (0: Single, 1: Loop, 2: PingPong)",,
-Swing,10,0,,
+Swing,15,0,,
 ,,,,
 TEXTURE ID,LEFT,TOP,WIDTH,HEIGHT
 graphics/boss/breathe.png,0,0,12,12
@@ -16,4 +16,3 @@ graphics/boss/breathe11.png,0,0,16,16
 graphics/boss/breathe12.png,0,0,18,18
 graphics/boss/breathe13.png,0,0,14,15
 graphics/boss/breathe14.png,0,0,14,15
-graphics/boss/breathe15.png,0,0,16,17

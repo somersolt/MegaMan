@@ -1,5 +1,5 @@
 ID,FPS,"LOOPTYPE (0: Single, 1: Loop, 2: PingPong)",,
-Swing,10,0,,
+IceStatue,5,0,,
 ,,,,
 TEXTURE ID,LEFT,TOP,WIDTH,HEIGHT
 graphics/boss/iceStatue.png,0,0,13,16
@@ -11,4 +11,3 @@ graphics/boss/iceStatue2.png,0,0,19,24
 graphics/boss/iceStatue3.png,0,0,23,28
 graphics/boss/iceStatue3.png,0,0,23,28
 graphics/boss/iceStatue3.png,0,0,23,28
-graphics/boss/iceStatue4.png,0,0,28,32

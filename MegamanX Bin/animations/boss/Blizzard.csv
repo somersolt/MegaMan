@@ -1,0 +1,7 @@
+ID,FPS,"LOOPTYPE (0: Single, 1: Loop, 2: PingPong)",,
+Blizzard,20,1,,
+,,,,
+TEXTURE ID,LEFT,TOP,WIDTH,HEIGHT
+graphics/boss/blizzard1.png,0,0,284,244
+graphics/boss/blizzard2.png,0,0,284,244
+graphics/boss/blizzard3.png,0,0,284,244

@@ -5,6 +5,7 @@
 #include "EnemyShot.h"
 #include "BossShot.h"
 #include "Player/Player.h"
+#include "IceStatue.h"
 
 Boss::Boss(const std::string& name, sf::Image& mapImage) : Enemy(name, mapImage)
 {
@@ -31,8 +32,7 @@ void Boss::Reset()
 	bossCurrentStatus = BossStatus::Appear;
 	SetOrigin(Origins::BC);
 	speed = 0;
-	Hp = 32; // TO-DO 피 32
-	// 애니메이션 세팅
+	Hp = 32;
 
 	EnemyHitBox.setSize({ 38.f, 36.f });
 	EnemyHitBox.setOrigin({ EnemyHitBox.getLocalBounds().width / 2, EnemyHitBox.getLocalBounds().height });
@@ -41,6 +41,7 @@ void Boss::Reset()
 
 
 	std::function<void()> ToShot = std::bind(&Boss::Shot, this);
+	std::function<void()> ToBreath = std::bind(&Boss::IceBreath, this);
 	std::function<void()> ToIdle = std::bind(&Boss::ToIdle, this);
 
 	EnemyAnimation.AddEvent("animations/boss/Shot.csv", 3,
@@ -53,14 +54,45 @@ void Boss::Reset()
 		ToIdle);
 	EnemyAnimation.AddEvent("animations/boss/Appear.csv", 17,
 		[=]() {sceneGame->SetAppearAnimation(true); });
+	EnemyAnimation.AddEvent("animations/boss/Sliding.csv", 5,
+		[=]() {speed = 500; });
+	EnemyAnimation.AddEvent("animations/boss/Sliding.csv", 13,
+		[=]() {speed = 200; });
+	EnemyAnimation.AddEvent("animations/boss/Sliding.csv", 16,
+		[=]() {speed = 50; });
+	EnemyAnimation.AddEvent("animations/boss/Sliding.csv", 18,
+		ToIdle);
+	for (int i = 0; i < 12; i++)
+	{
+		EnemyAnimation.AddEvent("animations/boss/Breath.csv", 4 + i * 2,
+			ToBreath);
+	}
+	EnemyAnimation.AddEvent("animations/boss/Breath.csv", 28,
+		ToIdle);
+	EnemyAnimation.AddEvent("animations/boss/Hang.csv", 9, [=]() {
+		gravity = 1000;
+		EnemyAnimation.Stop();
+		SetBossStatus(BossStatus::FallingDown);
+		});
 }
 
 void Boss::Update(float dt)
 {
+	if (InputMgr::GetKeyDown(sf::Keyboard::P))
+	{
+		SummonIceStatue();
+	}
+	if (InputMgr::GetKeyDown(sf::Keyboard::O))
+	{
+		Hang();
+		sceneGame->BlizzardEffect();
+	}
 	SpriteGo::Update(dt);
 	skillTimer += dt;
 	hitTimer += dt;
-	if (bossCurrentStatus != BossStatus::Sliding && bossCurrentStatus != BossStatus::JumpingUp && bossCurrentStatus != BossStatus::FallingDown) {
+	if (bossCurrentStatus != BossStatus::Sliding && bossCurrentStatus != BossStatus::JumpingUp && bossCurrentStatus != BossStatus::FallingDown
+		&& bossCurrentStatus != BossStatus::Hanging
+		) {
 		if (playerPos.x - position.x > 0)
 		{
 			h = 1;
@@ -129,10 +161,11 @@ void Boss::UpdateAppear(float dt)
 void Boss::UpdateIdle(float dt)
 {
 	isCantFlip = false;
+	wind = false;
 	int skill = -1;
 	if (skillTimer > 2 && !onSkill)
 	{
-		skill = Utils::RandomRange(0, 5);
+		skill = Utils::RandomRange(0, 9);
 	}
 
 	switch (skill)
@@ -151,6 +184,25 @@ void Boss::UpdateIdle(float dt)
 		ToIdle();
 		skillTimer = 0;
 		break;
+	case 5:
+	case 6:
+
+		EnemyAnimation.Play("animations/boss/Sliding.csv");
+		skillTimer = 0;
+		onSkill = true;
+		SetBossStatus(BossStatus::Sliding);
+		break;
+
+	case 7:
+		EnemyAnimation.Play("animations/boss/Breath.csv");
+		skillTimer = 0;
+		onSkill = true;
+		SummonIceStatue();
+		SetBossStatus(BossStatus::Breath);
+		break;
+	case 8:
+		Hang();
+		break;
 	default:
 		break;
 	}
@@ -167,35 +219,86 @@ void Boss::UpdateJumpingUp(float dt)
 		return;
 	} // 점프 상승 중 하강
 }
-
 void Boss::UpdateFallingDown(float dt)
 {
+	SetTexture("graphics/boss/boss18.png", true);
 	if (isGrounded)
 	{
 		ToIdle();
 		speed = 0;
 	}
 }
-
 void Boss::UpdateSliding(float dt)
 {
+	isCantFlip = true;
 	isSuperArmor = true;
-}
 
+	if (isMiddleLeftColliding)
+	{
+		side = Sides::Right;
+		SetFlipX(true);
+		position.x += 2.f;
+		h = 1;
+	}
+	if (isMiddleRightColliding)
+	{
+		side = Sides::Left;
+		SetFlipX(false);
+		position.x -= 2.f;
+		h = -1;
+	}
+}
 void Boss::UpdateBreath(float dt)
 {
 	isSuperArmor = true;
-
 }
-
 void Boss::UpdateHanging(float dt)
 {
+	if (7823 - position.x > 0)
+	{
+		h = 1;
+	}
+	if (7823 - position.x == 0)
+	{
+		h = 0;
+	}
+	if (7823 - position.x < 0)
+	{
+		h = -1;
+	}
+	isJump = false;
+	isSlopeColliding = false;
+	if (Utils::Distance({ 7823,85 }, position) < 20 && !hanged)
+	{
+		SetPosition({ 7823, 85 });
+		hanged = true;
+		wind = true;
+		velocity.y = 0;
+		gravity = 0;
+		player->SetWind(true);
+		sceneGame->BlizzardEffect();
+		EnemyAnimation.Play("animations/boss/Hang.csv");
+		return;
+	}
+
+	if (velocity.y >= 0 && !hanged)
+	{
+		EnemyAnimation.Stop();
+		SetTexture("graphics/boss/boss18.png", true);
+		if (isGrounded && skillTimer > 2)
+		{
+			ToIdle();
+			return;
+		}
+	}
+
 }
 
 void Boss::UpdateHit(float dt)
 {
 	sprite.setColor({ 255,255,255,150 });
 	speed = 0;
+
 	if (velocity.y >= 0)
 	{
 		isJump = false;
@@ -209,9 +312,10 @@ void Boss::UpdateHit(float dt)
 
 void Boss::UpdateDie(float dt)
 {
+	speed = 0;
 	sprite.setColor({ 255,255,255,255 });
 	EnemyAnimation.Stop();
-	SetTexture("graphics/boss/boss19.png");
+	SetTexture("graphics/boss/boss19.png", true);
 	boomTimer += dt;
 	dieTimer += dt;
 	if (boomTimer > 0.3f && dieTimer < 5.f)
@@ -246,6 +350,7 @@ void Boss::OnDamage(int damage)
 		return;
 	}
 
+	gravity = 1000;
 	if (side == Sides::Right)
 	{
 		velocity.x = -40;
@@ -264,12 +369,10 @@ void Boss::OnDamage(int damage)
 	}
 	SetBossStatus(BossStatus::Hit);
 	EnemyAnimation.Stop();
-	SetTexture("graphics/boss/boss19.png");
+	SetTexture("graphics/boss/boss19.png", true);
 }
 
 void Boss::LateUpdate(float dt)
-
-
 {
 	SpriteGo::LateUpdate(dt);
 	EnemyAnimation.Update(dt);
@@ -280,12 +383,18 @@ void Boss::LateUpdate(float dt)
 	if (!isCantFlip)
 		SetFlipX(h > 0 ? true : false);
 
-
 	velocity.x = h * speed * dt * 0.5;
+
 	if (bossCurrentStatus == BossStatus::Hit)
 	{
 		float pushForce = 40 * exp(-5 * hitTimer);
 		velocity.x -= h * pushForce * dt;
+	}
+	if (bossCurrentStatus == BossStatus::Hanging)
+	{
+		float distanceToHook = 7823 - position.x;
+		float reductionFactor = exp(-0.1f * std::abs(distanceToHook));
+		velocity.x -= h * reductionFactor * dt;
 	}
 
 	velocity.x = Utils::Clamp(velocity.x, -100, 100);
@@ -332,10 +441,6 @@ void Boss::LateUpdate(float dt)
 	startY = std::max(0, static_cast<int>(boundingBoxLocalPos.y));
 	endY = std::min(static_cast<int>(MapImage.getSize().y),
 		static_cast<int>(boundingBoxLocalPos.y + EnemyHitBox.getSize().y));
-
-
-
-
 
 
 	CheckRightCollision();
@@ -389,7 +494,12 @@ void Boss::FixedUpdate(float dt)
 
 void Boss::ToIdle()
 {
+	speed = 0;
+	isSuperArmor = false;
+	hanged = false;
 	onSkill = false;
+	wind = false;
+	player->SetWind(false);
 	sprite.setColor({ 255,255,255,255 });
 	SetBossStatus(BossStatus::Idle);
 	EnemyAnimation.Play("animations/boss/Idle.csv");
@@ -397,6 +507,7 @@ void Boss::ToIdle()
 
 void Boss::Shot()
 {
+	isCantFlip = true;
 	onSkill = true;
 	BossShot* iceShot = new BossShot("enemy", sceneGame->collisionMapImage);
 	iceShot->Init();
@@ -427,6 +538,100 @@ void Boss::Jump()
 	position.y -= 2;
 	velocity.y = -450.f;
 	SetBossStatus(BossStatus::JumpingUp);
+	EnemyAnimation.Play("animations/boss/JumpUp.csv");
+	return;
+}
+
+void Boss::IceBreath()
+{
+	onSkill = true;
+	EnemyShot* iceBreat = new EnemyShot("iceBreat");
+	iceBreat->Init("animations/boss/BreathBullet.csv", "graphics/boss/breathe.png");
+	iceBreat->Reset();
+
+	if (side == Sides::Left)
+	{
+		iceBreat->EnemyFire({ -1,0 }, 100, 1, -1);
+		iceBreat->SetPosition({ position.x - 10, position.y - 20 });
+	}
+	if (side == Sides::Right)
+	{
+		iceBreat->EnemyFire({ 1,0 }, 100, 1, -1);
+		iceBreat->SetPosition({ position.x + 10, position.y - 20 });
+	}
+	sceneGame->AddGo(iceBreat);
+}
+
+void Boss::SummonIceStatue()
+{
+	IceStatue* iceStatue = new IceStatue("enemy", sceneGame->collisionMapImage);
+	iceStatue->Init();
+	if (side == Sides::Left)
+	{
+		iceStatue->Reset(-1);
+	}
+	if (side == Sides::Right)
+	{
+		iceStatue->Reset(1);
+	}
+	iceStatue->SetOrigin(Origins::BC);
+	if (side == Sides::Left)
+	{
+		iceStatue->SetPosition({ position.x - 30 , position.y - 30 });
+	}
+	if (side == Sides::Right)
+	{
+		iceStatue->SetPosition({ position.x + 30 , position.y - 30 });
+	}
+	sceneGame->AddGo(iceStatue);
+
+	IceStatue* iceStatue2 = new IceStatue("enemy", sceneGame->collisionMapImage);
+	iceStatue2->Init();
+	if (side == Sides::Left)
+	{
+		iceStatue2->Reset(-1);
+	}
+	if (side == Sides::Right)
+	{
+		iceStatue2->Reset(1);
+	}
+	iceStatue2->SetOrigin(Origins::BC);
+	if (side == Sides::Left)
+	{
+		iceStatue2->SetPosition({ position.x - 60 , position.y - 30 });
+	}
+	if (side == Sides::Right)
+	{
+		iceStatue2->SetPosition({ position.x + 60 , position.y - 30 });
+	}
+	sceneGame->AddGo(iceStatue2);
+
+
+}
+
+void Boss::Hang()
+{
+	onSkill = true;
+	skillTimer = 0;
+	isCantFlip = true;
+	speed = 400;
+	isJump = true;
+	isGrounded = false;
+	isSlopeGrounded = false;
+	position.y -= rollBackSideSlope + 3;
+	rollBackSideSlope = 0;
+	position.y -= 2;
+	velocity.y = -500;
+	if (playerPos.x - position.x < 0)
+	{
+		windSide = Sides::Left;
+	}
+	if (playerPos.x - position.x > 0)
+	{
+		windSide = Sides::Right;
+	}
+	player->SetWindSide(windSide);
+	SetBossStatus(BossStatus::Hanging);
 	EnemyAnimation.Play("animations/boss/JumpUp.csv");
 	return;
 }

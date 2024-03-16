@@ -824,7 +824,6 @@ void Player::OnDamage(int damage)
 
 void Player::LateUpdate(float dt)
 {
-
 	if (InputMgr::GetKeyDown(sf::Keyboard::F1))
 	{
 		velocity.x = 0;
@@ -881,6 +880,18 @@ void Player::LateUpdate(float dt)
 	else
 	{
 		position += sf::Vector2f(velocity.x, velocity.y * dt);
+	}
+
+	if (wind)
+	{
+		if (windSide == Sides::Left)
+		{
+			position.x -= 20 * dt;
+		}
+		if (windSide == Sides::Right)
+		{
+			position.x += 20 * dt;
+		}
 	}
 
 	boundingBoxWorldPos = playerBounds.getPosition();

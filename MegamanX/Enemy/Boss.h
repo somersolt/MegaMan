@@ -18,6 +18,7 @@ public:
 	};
 private:
 	Sides side = Sides::Left;
+	Sides windSide = Sides::Left;
 	float skillTimer = 3;
 	float boomTimer = 0.5;
 	float dieTimer = 0;
@@ -25,6 +26,8 @@ private:
 	bool onSkill = false;
 	bool isappear = false;
 	bool isSuperArmor = false;
+	bool hanged = false;
+	bool wind = false;
 
 	sf::Vector2f playerPos;
 	BossStatus bossCurrentStatus = BossStatus::Appear;
@@ -53,9 +56,16 @@ public:
 	void SetBossStatus(BossStatus b) { bossCurrentStatus = b; }
 	const int GetBossLife() { return Hp; }
 
+	bool GetWind() const { return wind; }
+	const BossStatus GetBossStatus() const { return bossCurrentStatus; }
+	const Sides GetWindSide() const { return windSide; }
+
 	void ToIdle();
 	void Shot();
 	void Jump();
+	void IceBreath();
+	void SummonIceStatue();
+	void Hang();
 
 };
 

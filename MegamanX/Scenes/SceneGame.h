@@ -40,9 +40,9 @@ protected:
 	float viewXMin;
 	float viewYMax;
 	float viewYMin;
-	bool onBoss = false;
-	bool onWatingRoom = false;
-
+	bool isBossRoom = false;
+	bool isWatingRoom = false;
+	bool BossAppear = false;
 
 public:
 	SceneGame(SceneIds id);
@@ -56,7 +56,13 @@ public:
 	int bossHp = 0;
 	int bossHPAnimationCount = 0;
 	bool appearAnimation = false;
-	bool bossFight = false;
+	bool isBossRoomView = false;
+
+	bool cameraWork = false;
+	float cameraWorkTimer = 0.f;
+	int cameraWorkCount = 0;
+	int waitingRoomCameraWorkCount = 129;
+	int bossRoomCameraWorkCount = 257;
 
 	SpriteGo* playerLife = nullptr;
 	SpriteGo* bossLife = nullptr;
@@ -68,6 +74,9 @@ public:
 	sf::Image collisionMapImage;
 	sf::Texture collisionMapTexture;
 	sf::Sprite collisionMapSprite;
+
+	sf::Image waitingCollisionMapImage;
+	sf::Image bossCollisionMapImage;
 
 	SpriteGo* mapHitBox = nullptr;  //충돌박스 표시
 
@@ -99,5 +108,6 @@ public:
 
 	void CreateMonster(monster monster, sf::Vector2f pos);
 	void CreateWheeler(int g , sf::Vector2f pos);
+	void BlizzardEffect();
 };
 

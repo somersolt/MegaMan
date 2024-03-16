@@ -137,6 +137,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="GameObjects\Blizzard.cpp" />
     <ClCompile Include="Enemy\BossShot.cpp" />
     <ClCompile Include="Enemy\Boss.cpp" />
     <ClCompile Include="Enemy\Bee2.cpp" />
@@ -147,6 +148,7 @@
     <ClCompile Include="Enemy\Enemy.cpp" />
     <ClCompile Include="Enemy\Lumberjack.cpp" />
     <ClCompile Include="Enemy\Ostrich.cpp" />
+    <ClCompile Include="Enemy\IceStatue.cpp" />
     <ClCompile Include="Player\Buster.cpp" />
     <ClCompile Include="Framework\DataTable.cpp" />
     <ClCompile Include="Framework\DataTableMgr.cpp" />
@@ -183,6 +185,7 @@
     <ClCompile Include="Enemy\Wheeler.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="GameObjects\Blizzard.h" />
     <ClInclude Include="Enemy\BossShot.h" />
     <ClInclude Include="Enemy\Boss.h" />
     <ClInclude Include="Enemy\Bee2.h" />
@@ -193,6 +196,7 @@
     <ClInclude Include="Enemy\Enemy.h" />
     <ClInclude Include="Enemy\Lumberjack.h" />
     <ClInclude Include="Enemy\Ostrich.h" />
+    <ClInclude Include="Enemy\IceStatue.h" />
     <ClInclude Include="Player\Buster.h" />
     <ClInclude Include="Framework\DataTable.h" />
     <ClInclude Include="Framework\DataTableMgr.h" />

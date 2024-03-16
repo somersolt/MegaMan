@@ -11,6 +11,7 @@
 #include "Enemy/Bee2.h"
 #include "Enemy/Ostrich.h"
 #include "Enemy/Boss.h"
+#include "Blizzard.h"
 
 SceneGame::SceneGame(SceneIds id) : Scene(id)
 {
@@ -50,6 +51,10 @@ void SceneGame::Init()
 	collisionMapTexture.loadFromImage(collisionMapImage);
 	collisionMapSprite.setTexture(collisionMapTexture);
 	collisionMapSprite.setPosition({ 0, 0 });
+	
+	waitingCollisionMapImage.loadFromFile("graphics/waitingroom_collision.png");
+	bossCollisionMapImage.loadFromFile("graphics/boss_collision.png");
+
 
 	mapHitBox = new SpriteGo("mapHitBox");
 	mapHitBox->SetTexture("graphics/chill_penguin_stage_collision.png");
@@ -306,7 +311,7 @@ void SceneGame::Update(float dt)
 		lifeGaugeList[i]->SetActive(true);
 	}
 
-	if (onBoss)
+	if (BossAppear)
 	{
 		bossLife->SetPosition(worldView.getCenter() - worldView.getSize() / 2.f + sf::Vector2f(260, 40));
 		for (auto& bosslifegauge : bossGaugeList) {
@@ -318,18 +323,17 @@ void SceneGame::Update(float dt)
 			++bossHPAnimationCount;
 			bossHp = bossHPAnimationCount;
 			bossGaugeTimer = 0;
-			if (bossHPAnimationCount == 32)
+			if (bossHPAnimationCount == 33)
 			{
 				appearAnimation = false;
-				bossFight = true;
+				isBossRoomView = true;
 				boss->SetBossStatus(Boss::BossStatus::Idle);
 				player->SetWait(false);
-				collisionMapImage.loadFromFile("graphics/boss_collision.png");
-				collisionMapTexture.loadFromImage(collisionMapImage);
+				collisionMapImage = bossCollisionMapImage;
 			}
 			
 		}
-		if (!appearAnimation && bossFight)
+		if (!appearAnimation && isBossRoomView)
 		{
 			bossHp = boss->GetBossLife();
 		}
@@ -421,9 +425,10 @@ void SceneGame::LateUpdate(float dt)
 	Scene::LateUpdate(dt);
 
 	preWorldViewCenter = worldView.getCenter();
-	worldViewCenter = { player->GetPosition().x , player->GetPosition().y - 30 };
-
-
+	if (!isWatingRoom)
+	{
+		worldViewCenter = { player->GetPosition().x , player->GetPosition().y - 30 };
+	}
 	viewXMax = map->GetGlobalBounds().left + map->GetGlobalBounds().width - viewSize.x / 2;
 	viewXMin = map->GetGlobalBounds().left + viewSize.x / 2;
 	viewYMax = map->GetGlobalBounds().top + map->GetGlobalBounds().height - viewSize.y / 2 - 15;
@@ -502,25 +507,28 @@ void SceneGame::LateUpdate(float dt)
 	}
 	// 3번 구역 카메라 제한
 
-	if (player->GetPosition().x > 7427 && !onWatingRoom)
+	if (player->GetPosition().x > 7427 && !isWatingRoom && cameraWorkCount < waitingRoomCameraWorkCount)
 	{
-		onWatingRoom = true;
+		isWatingRoom = true;
+		cameraWork = true;
+		player->SetWait(true); //플레이어 정지
 	}
 
-	if (player->GetPosition().x > 7750 && !onBoss)
+
+	if (player->GetPosition().x > 7680 && !isBossRoom && cameraWorkCount < bossRoomCameraWorkCount)
 	{
-		boss->SetActive(true);
-		onBoss = true;
-		player->SetWait(true);
+		isBossRoom = true; // 한번만
+		cameraWork = true;
+		player->SetWait(true); //플레이어 정지
 	}
 
 	worldViewCenter.x = Utils::Clamp(worldViewCenter.x, viewXMin, viewXMax);
 	worldViewCenter.y = Utils::Clamp(worldViewCenter.y, viewYMin, viewYMax);
 
-	if (!onWatingRoom && !onBoss)
+	if (!isWatingRoom && !isBossRoom)
 	{
 		worldView.setCenter(worldViewCenter);
-	}
+	} // 평소 카메라워크
 
 	worldViewMoment = worldViewCenter - preWorldViewCenter;
 	backgroundViewMoment = worldViewMoment * 0.5f;
@@ -529,23 +537,56 @@ void SceneGame::LateUpdate(float dt)
 	{
 		backgroundViewCenter.y = worldViewCenter.y + 30;
 		isStart = false;
-	}
-
-	if (!onWatingRoom && !onBoss)
+	} //처음 시작시 배경뷰 조절
+	if (!isWatingRoom && !isBossRoom)
 	{
 		backgroundView.setCenter(backgroundViewCenter);
-	}
-	if (bossFight)
+	} // 배경뷰 원근감 조절
+
+
+	if (isWatingRoom && cameraWork && cameraWorkCount <= waitingRoomCameraWorkCount)
 	{
-		worldView.setCenter({ 7668 + viewSize.x / 2, viewSize.y / 2});
-	}
+		cameraWorkTimer += dt;
+		if (cameraWorkTimer > 0.02)
+		{
+			worldView.move({ 1,0 });
+			player->SetPosition({ player->GetPosition().x + 0.2f, player->GetPosition().y});
+			cameraWorkTimer = 0;
+			cameraWorkCount++;
+			
+			if (cameraWorkCount == waitingRoomCameraWorkCount)
+			{
+				cameraWorkCount++;
+				cameraWork = false;
+				player->SetWait(false); //플레이어 정지 해제
+				collisionMapImage = waitingCollisionMapImage;
+			}
+		}
+	}//대기실 카메라워크
 
-	//if (onWatingRoom)
-	//{
-	//	worldView.setCenter(worldViewCenter);
-	//} TO-DO 월드뷰 이동, 월드뷰센터를 조절하는게 나을지도
+	if (isBossRoom && cameraWork && cameraWorkCount < bossRoomCameraWorkCount)
+	{
+		cameraWorkTimer += dt;
+		if (cameraWorkTimer > 0.02)
+		{
+			worldView.move({ 2,0 });
+			player->SetPosition({ player->GetPosition().x + 0.2f, player->GetPosition().y });
+			cameraWorkTimer = 0;
+			cameraWorkCount++;
 
-
+			if (cameraWorkCount == bossRoomCameraWorkCount)
+			{
+				cameraWorkCount++;
+				cameraWork = false;
+				BossAppear = true;
+				boss->SetActive(true); // 보스 등장
+			}
+		}
+	}// 보스룸 카메라워크
+	if (isBossRoomView)
+	{
+		worldView.setCenter({ 7668 + viewSize.x / 2, viewSize.y / 2 });
+	}// 보스룸 카메라 고정
 }
 
 void SceneGame::FixedUpdate(float dt)
@@ -656,4 +697,14 @@ void SceneGame::CreateWheeler(int g, sf::Vector2f pos)
 	AddGo(wheeler);
 	wheeler->SetOrigin(Origins::BC);
 	wheeler->SetPosition(pos);
+}
+
+void SceneGame::BlizzardEffect()
+{
+	Blizzard* blizzard = new Blizzard("blizzard");
+	AddGo(blizzard);
+	blizzard->Init();
+	blizzard->Reset();
+	blizzard->SetOrigin(Origins::TL);
+	blizzard->SetPosition({ viewBounds.left,viewBounds.top });
 }

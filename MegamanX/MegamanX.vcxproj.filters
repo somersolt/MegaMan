@@ -123,6 +123,12 @@
     <ClCompile Include="Enemy\BossShot.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
+    <ClCompile Include="Enemy\IceStatue.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="GameObjects\Blizzard.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Framework\Defines.h">
@@ -240,6 +246,12 @@
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="Enemy\BossShot.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Enemy\IceStatue.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="GameObjects\Blizzard.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
   </ItemGroup>

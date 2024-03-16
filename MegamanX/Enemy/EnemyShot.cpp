@@ -32,19 +32,26 @@ void EnemyShot::Init(std::string aniId, std::string texid)
 	animationId = aniId;
 	EnemyShotAnimation.SetTarget(&sprite);
 	textureId = texid;
-
+	timer = 0;
 }
 
 void EnemyShot::Update(float dt)
 {
 	GameObject::Update(dt);
 	EnemyShotAnimation.Update(dt);
+	timer += dt;
 	sf::Vector2f pos = position + direction * speed * dt;
 	SetPosition(pos);
 
 	if (!GetGlobalBounds().intersects(sceneGame->GetViewBounds()))
 	{
 		Release();
+		return;
+	}
+	if (textureId == "graphics/boss/breathe.png" && timer > 0.7)
+	{
+		Release();
+		return;
 	}
 }
 
