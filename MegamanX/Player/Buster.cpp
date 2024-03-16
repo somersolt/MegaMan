@@ -84,7 +84,7 @@ void Buster::Update(float dt)
 	}
 	if (busterType == BusterTypes::MaxChargeBuster)
 	{
-		damage = 4;
+		damage = 3;
 	}
 
 	if (!GetGlobalBounds().intersects(sceneGame->GetViewBounds()))

@@ -34,7 +34,7 @@ void SnowThrower::Reset()
 	SetOrigin(Origins::BC);
 	isGrounded = true;
 	speed = 0;
-	Hp = 4;
+	Hp = 3;
 	// 애니메이션 세팅
 
 	EnemyHitBox.setSize({ 16.f, 30.f });

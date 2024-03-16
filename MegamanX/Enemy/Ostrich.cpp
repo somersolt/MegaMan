@@ -60,7 +60,7 @@ void Ostrich::Update(float dt)
 	playerPos = player->GetPosition();
 
 	float toPlayerDistance = std::abs(playerPos.x - position.x);
-	if (!onSkill && skillTimer > 3 && toPlayerDistance < 200)
+	if (!onSkill && skillTimer > 3 && toPlayerDistance < 100)
 	{
 		onSkill = true;
 		EnemyAnimation.Play("animations/ostrich/Shot.csv");

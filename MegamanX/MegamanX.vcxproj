@@ -137,6 +137,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Enemy\BossShot.cpp" />
+    <ClCompile Include="Enemy\Boss.cpp" />
     <ClCompile Include="Enemy\Bee2.cpp" />
     <ClCompile Include="Enemy\BeeBoom.cpp" />
     <ClCompile Include="Enemy\Bee.cpp" />
@@ -181,6 +183,8 @@
     <ClCompile Include="Enemy\Wheeler.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Enemy\BossShot.h" />
+    <ClInclude Include="Enemy\Boss.h" />
     <ClInclude Include="Enemy\Bee2.h" />
     <ClInclude Include="Enemy\BeeBoom.h" />
     <ClInclude Include="Enemy\Bee.h" />

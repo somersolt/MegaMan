@@ -1,0 +1,22 @@
+ID,FPS,"LOOPTYPE (0: Single, 1: Loop, 2: PingPong)",,
+Swing,5,0,,
+,,,,
+TEXTURE ID,LEFT,TOP,WIDTH,HEIGHT
+graphics/boss/boss2.png,0,0,39,36
+graphics/boss/boss4.png,0,0,46,37
+graphics/boss/boss5.png,0,0,48,37
+graphics/boss/boss8.png,0,0,42,37
+graphics/boss/boss8.png,0,0,42,37
+graphics/boss/boss1.png,0,0,38,36
+graphics/boss/boss2.png,0,0,39,36
+graphics/boss/boss4.png,0,0,46,37
+graphics/boss/boss5.png,0,0,48,37
+graphics/boss/boss8.png,0,0,42,37
+graphics/boss/boss8.png,0,0,42,37
+graphics/boss/boss1.png,0,0,38,36
+graphics/boss/boss2.png,0,0,39,36
+graphics/boss/boss4.png,0,0,46,37
+graphics/boss/boss5.png,0,0,48,37
+graphics/boss/boss8.png,0,0,42,37
+graphics/boss/boss8.png,0,0,42,37
+graphics/boss/boss1.png,0,0,38,36

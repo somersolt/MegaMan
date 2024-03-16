@@ -10,6 +10,7 @@
 #include "Enemy/Bee.h"
 #include "Enemy/Bee2.h"
 #include "Enemy/Ostrich.h"
+#include "Enemy/Boss.h"
 
 SceneGame::SceneGame(SceneIds id) : Scene(id)
 {
@@ -59,8 +60,8 @@ void SceneGame::Init()
 	// 플레이어
 
 	player = new Player("player", collisionMapImage);
-	AddGo(player);
-	player->SetPosition({ 0,0 });
+	AddGo(player);/*
+	player->SetPosition({ 0,0 });*/
 
 	Stump* stump = new Stump("stump1");
 	AddGo(stump);
@@ -109,58 +110,63 @@ void SceneGame::Init()
 
 	Bat* bat = new Bat("enemy", collisionMapImage);
 	bat->Init();
-	bat->Reset({ 1663,875 });
+	bat->Reset({ 1663,867 });
 	AddGo(bat);
 	bat->SetOrigin(Origins::BC);
-	bat->SetPosition({ 1663,875 });
+	bat->SetPosition({ 1663,867 });
+
 	Bat* bat2 = new Bat("enemy", collisionMapImage);
 	bat2->Init();
-	bat2->Reset({ 1785,940 });
+	bat2->Reset({ 1788,950 });
 	AddGo(bat2);
 	bat2->SetOrigin(Origins::BC);
-	bat2->SetPosition({ 1785,940 });
+	bat2->SetPosition({ 1788,950 });
+
 	Bat* bat3 = new Bat("enemy", collisionMapImage);
 	bat3->Init();
-	bat3->Reset({ 1816,1040 });
+	bat3->Reset({ 1816,1015 });
 	AddGo(bat3);
 	bat3->SetOrigin(Origins::BC);
-	bat3->SetPosition({ 1816,1040 });
+	bat3->SetPosition({ 1816,1015 });
+
 	Bat* bat4 = new Bat("enemy", collisionMapImage);
 	bat4->Init();
-	bat4->Reset({ 1870, 1100 });
+	bat4->Reset({ 1870, 1090 });
 	AddGo(bat4);
 	bat4->SetOrigin(Origins::BC);
-	bat4->SetPosition({ 1870 ,1100 });
+	bat4->SetPosition({ 1870 ,1090 });
+
 	Bat* bat5 = new Bat("enemy", collisionMapImage);
 	bat5->Init();
-	bat5->Reset({ 1907, 1130 });
+	bat5->Reset({ 1907, 1120 });
 	AddGo(bat5);
 	bat5->SetOrigin(Origins::BC);
-	bat5->SetPosition({ 1907, 1130 });
+	bat5->SetPosition({ 1907, 1120 });
 	Bat* bat6 = new Bat("enemy", collisionMapImage);
 	bat6->Init();
-	bat6->Reset({ 1937, 1130 });
+	bat6->Reset({ 1937, 1120 });
 	AddGo(bat6);
 	bat6->SetOrigin(Origins::BC);
-	bat6->SetPosition({ 1937, 1130 });
+	bat6->SetPosition({ 1937, 1120 });
+
 	Bat* bat7 = new Bat("enemy", collisionMapImage);
 	bat7->Init();
-	bat7->Reset({ 2074, 1100 });
+	bat7->Reset({ 2074, 1090 });
 	AddGo(bat7);
 	bat7->SetOrigin(Origins::BC);
-	bat7->SetPosition({ 2074, 1100 });
+	bat7->SetPosition({ 2074, 1090 });
 	Bat* bat8 = new Bat("enemy", collisionMapImage);
 	bat8->Init();
-	bat8->Reset({ 2265 ,1100 });
+	bat8->Reset({ 2265 ,1090 });
 	AddGo(bat8);
 	bat8->SetOrigin(Origins::BC);
-	bat8->SetPosition({ 2265 ,1100 });
+	bat8->SetPosition({ 2265 ,1090 });
 	Bat* bat9 = new Bat("enemy", collisionMapImage);
 	bat9->Init();
-	bat9->Reset({ 2659, 1060 });
+	bat9->Reset({ 2659, 1050 });
 	AddGo(bat9);
 	bat9->SetOrigin(Origins::BC);
-	bat9->SetPosition({ 2659, 1060 });
+	bat9->SetPosition({ 2659, 1050 });
 
 	Ostrich* ostrich1 = new Ostrich("enemy", collisionMapImage);
 	ostrich1->Init();
@@ -187,8 +193,16 @@ void SceneGame::Init()
 	ostrich4->SetOrigin(Origins::BC);
 	ostrich4->SetPosition({ 3962, 671 });
 
-	CreateMonster(monster::rabbit, { 345,937 });
-	CreateMonster(monster::rabbit, { 586,935});
+	boss = new Boss("enemy", collisionMapImage);
+	boss->Init();
+	boss->Reset();
+	AddGo(boss);
+	boss->SetOrigin(Origins::BC);
+	boss->SetPosition({ 7900, 20 });
+	boss->SetActive(false);
+
+	CreateMonster(monster::rabbit, { 355,930 });
+	CreateMonster(monster::rabbit, { 586,935 });
 	CreateMonster(monster::rabbit, { 774,960 });
 	CreateMonster(monster::rabbit, { 892,892 });
 	CreateMonster(monster::rabbit, { 1189,943 });
@@ -202,13 +216,45 @@ void SceneGame::Init()
 	CreateMonster(monster::bee2, { 3361,320 });
 	CreateMonster(monster::bee2, { 3650,450 });
 	CreateMonster(monster::bee2, { 3889,600 });
-	
+	CreateWheeler(-1, { 2456, 1168 });
+	CreateWheeler(-1, { 2561, 1155 });
+	CreateWheeler(-1, { 2659, 1123 });
+	CreateWheeler(1, { 2620, 993 });
+	CreateWheeler(1, { 2356, 915 });
+	CreateWheeler(-1, { 2467, 842 });
+	CreateWheeler(-1, { 2643, 787 });
+	CreateWheeler(1, { 2355, 643 });
+
+	playerLife = new SpriteGo("lifebar");
+	playerLife->SetTexture("graphics/lifebar.png");
+	AddGo(playerLife, Layers::Ui);
+
+	bossLife = new SpriteGo("boslifebar");
+	bossLife->SetTexture("graphics/bosslifebar.png");
+	AddGo(bossLife, Layers::Ui);
+
+	for (int i = 0; i < 16; ++i)
+	{
+		SpriteGo* playerLifeGauge = new SpriteGo("playerLifeGauge");
+		playerLifeGauge->SetTexture("graphics/lifegauge.png");
+		playerLifeGauge->SetPosition({ 0,0 });
+		lifeGaugeList.push_back(playerLifeGauge);
+		AddGo(playerLifeGauge, Layers::Ui);
+	}
+	for (int i = 0; i < 32; ++i)
+	{
+		SpriteGo* bossLifeGauge = new SpriteGo("playerLifeGauge");
+		bossLifeGauge->SetTexture("graphics/lifegauge.png");
+		bossLifeGauge->SetPosition({ 0,0 });
+		bossGaugeList.push_back(bossLifeGauge);
+		AddGo(bossLifeGauge, Layers::Ui);
+	}
 
 	Scene::Init();
 
 	worldView.setSize(viewSize);
 	backgroundView.setSize(viewSize);
-
+	uiView.setSize(viewSize);
 
 	sf::RectangleShape pillar(sf::Vector2f(200, 600));
 	pillar.setPosition(0, 200);
@@ -243,6 +289,65 @@ void SceneGame::Exit()
 
 void SceneGame::Update(float dt)
 {
+	bossGaugeTimer += dt;
+	playerLife->SetPosition(worldView.getCenter() - worldView.getSize() / 2.f + sf::Vector2f(10, 70));
+	for (auto& lifegauge : lifeGaugeList) {
+		lifegauge->SetPosition(sf::Vector2f(0, 0));
+		lifegauge->SetActive(false);
+	}
+	int PlayerHP = player->GetPlayerLife();
+	if (PlayerHP < 0)
+	{
+		PlayerHP = 0;
+	}
+
+	for (int i = 0; i < PlayerHP && i < lifeGaugeList.size(); ++i) {
+		lifeGaugeList[i]->SetPosition(worldView.getCenter() - worldView.getSize() / 2.f + sf::Vector2f(10, 104 - static_cast<float>(i * 2)));
+		lifeGaugeList[i]->SetActive(true);
+	}
+
+	if (onBoss)
+	{
+		bossLife->SetPosition(worldView.getCenter() - worldView.getSize() / 2.f + sf::Vector2f(260, 40));
+		for (auto& bosslifegauge : bossGaugeList) {
+			bosslifegauge->SetPosition(sf::Vector2f(0, 0));
+			bosslifegauge->SetActive(false);
+		}
+		if (appearAnimation && bossGaugeTimer > 0.05f)
+		{
+			++bossHPAnimationCount;
+			bossHp = bossHPAnimationCount;
+			bossGaugeTimer = 0;
+			if (bossHPAnimationCount == 32)
+			{
+				appearAnimation = false;
+				bossFight = true;
+				boss->SetBossStatus(Boss::BossStatus::Idle);
+				player->SetWait(false);
+				collisionMapImage.loadFromFile("graphics/boss_collision.png");
+				collisionMapTexture.loadFromImage(collisionMapImage);
+			}
+			
+		}
+		if (!appearAnimation && bossFight)
+		{
+			bossHp = boss->GetBossLife();
+		}
+		if (bossHp < 0)
+		{
+			bossHp = 0;
+		}
+
+		for (int i = 0; i < bossHp && i < bossGaugeList.size(); ++i) {
+			bossGaugeList[i]->SetPosition(worldView.getCenter() - worldView.getSize() / 2.f + sf::Vector2f(260, 106 - static_cast<float>(i * 2)));
+			bossGaugeList[i]->SetActive(true);
+		}
+
+	}
+
+	uiView.setCenter(worldView.getCenter());
+	uiView.setSize(worldView.getSize());
+
 	if (InputMgr::GetKeyDown(sf::Keyboard::Q))
 	{
 		mapHitBox->SetActive(true);
@@ -397,12 +502,18 @@ void SceneGame::LateUpdate(float dt)
 	}
 	// 3번 구역 카메라 제한
 
+	if (player->GetPosition().x > 7750 && !onBoss)
+	{
+		boss->SetActive(true);
+		onBoss = true;
+		player->SetWait(true);
+	}
 
 	worldViewCenter.x = Utils::Clamp(worldViewCenter.x, viewXMin, viewXMax);
 	worldViewCenter.y = Utils::Clamp(worldViewCenter.y, viewYMin, viewYMax);
 
 	worldView.setCenter(worldViewCenter);
-	std::cout << player->GetPosition().x << "/" << player->GetPosition().y << std::endl;
+
 
 	worldViewMoment = worldViewCenter - preWorldViewCenter;
 	backgroundViewMoment = worldViewMoment * 0.5f;
@@ -413,6 +524,11 @@ void SceneGame::LateUpdate(float dt)
 		isStart = false;
 	}
 	backgroundView.setCenter(backgroundViewCenter);
+	if (bossFight)
+	{
+		worldView.setCenter({ 7668 + viewSize.x / 2, viewSize.y / 2});
+	}
+
 }
 
 void SceneGame::FixedUpdate(float dt)

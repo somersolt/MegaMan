@@ -1,0 +1,19 @@
+ID,FPS,"LOOPTYPE (0: Single, 1: Loop, 2: PingPong)",,
+Swing,10,0,,
+,,,,
+TEXTURE ID,LEFT,TOP,WIDTH,HEIGHT
+graphics/boss/breathe.png,0,0,12,12
+graphics/boss/breathe2.png,0,0,12,12
+graphics/boss/breathe3.png,0,0,14,14
+graphics/boss/breathe4.png,0,0,14,14
+graphics/boss/breathe5.png,0,0,16,16
+graphics/boss/breathe6.png,0,0,16,16
+graphics/boss/breathe7.png,0,0,15,15
+graphics/boss/breathe8.png,0,0,15,15
+graphics/boss/breathe9.png,0,0,17,17
+graphics/boss/breathe10.png,0,0,16,16
+graphics/boss/breathe11.png,0,0,16,16
+graphics/boss/breathe12.png,0,0,18,18
+graphics/boss/breathe13.png,0,0,14,15
+graphics/boss/breathe14.png,0,0,14,15
+graphics/boss/breathe15.png,0,0,16,17

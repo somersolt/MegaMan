@@ -4,7 +4,7 @@
 #include "Buster.h"
 #include <algorithm>
 
-Player::Player(const std::string& name, sf::Image& mapImage) : SpriteGo(name) , MapImage(mapImage)
+Player::Player(const std::string& name, sf::Image& mapImage) : SpriteGo(name), MapImage(mapImage)
 {
 
 }
@@ -33,7 +33,7 @@ void Player::Shoot()
 	}
 	if (GetCurrentStatus() == Status::JumpingUp || GetCurrentStatus() == Status::FallingDown)
 	{
-		buster->SetPosition({ position.x, position.y - 30});
+		buster->SetPosition({ position.x, position.y - 30 });
 	}
 
 	if (GetCurrentStatus() == Status::Climbing)
@@ -144,7 +144,7 @@ void Player::Reset()
 	playerAnimation.Play("animations/Idle.csv");
 	SetPlayerStatus(Status::Idle);
 	SetOrigin(Origins::BC);
-	SetPosition({ 200,900 });
+	SetPosition({ 150,900 });
 	isGrounded = true;
 	SetFlipX(false);
 	side = Sides::Right;
@@ -189,9 +189,14 @@ void Player::Update(float dt)
 	playerAnimation.Update(dt);
 	playerEffectAnimation.Update(dt);
 
-	if (currentStatus != Status::Hit) 
+	if (currentStatus != Status::Hit && !isWait)
 	{
 		h = InputMgr::GetAxisRaw(Axis::Horizontal);
+	}
+	if (isWait)
+	{
+		h = 0;
+		velocity.x = 0;
 	}
 
 	shootTimer += dt;
@@ -261,7 +266,7 @@ void Player::Update(float dt)
 
 	if (1.f > chargeTimer && chargeTimer > 0.5f)
 	{
-		sf::Color color(255, 255, 100, 255); 
+		sf::Color color(255, 255, 100, 255);
 		sprite.setColor(color);
 	}
 	if (chargeTimer > 1.f)
@@ -290,7 +295,7 @@ void Player::Update(float dt)
 	}
 
 	// 사격
-	if (currentStatus != Status::Hit && currentStatus != Status::Die)
+	if (currentStatus != Status::Hit && currentStatus != Status::Die && !isWait)
 	{
 		if (InputMgr::GetKeyDown(sf::Keyboard::X) && shootTimer > shootInterval)
 		{
@@ -400,7 +405,7 @@ void Player::UpdateIdle(float dt)
 		playerAnimation.Play("animations/JumpDown.csv");
 		return;
 	}
-	if (InputMgr::GetKeyDown(sf::Keyboard::Space))
+	if (InputMgr::GetKeyDown(sf::Keyboard::Space) && !isWait)
 	{
 		isJump = true;
 		isGrounded = false;
@@ -420,7 +425,7 @@ void Player::UpdateIdle(float dt)
 		playerAnimation.Play("animations/Run.csv");
 		return;
 	} // 대기 -> 달리기
-	if (InputMgr::GetKeyDown(sf::Keyboard::C))
+	if (InputMgr::GetKeyDown(sf::Keyboard::C) && !isWait)
 	{
 		isGrounded = false;
 		SetPlayerStatus(Status::Dash);
@@ -459,7 +464,7 @@ void Player::UpdateRun(float dt)
 		playerAnimation.Play("animations/JumpDown.csv");
 		return;
 	}
-	if (InputMgr::GetKeyDown(sf::Keyboard::Space))
+	if (InputMgr::GetKeyDown(sf::Keyboard::Space) && !isWait)
 	{
 		isJump = true;
 		isGrounded = false;
@@ -472,7 +477,7 @@ void Player::UpdateRun(float dt)
 		playerAnimation.Play("animations/JumpUp.csv");
 		return;
 	} // 달리기 -> 점프
-	if (InputMgr::GetKeyDown(sf::Keyboard::C))
+	if (InputMgr::GetKeyDown(sf::Keyboard::C) && !isWait)
 	{
 		SetPlayerStatus(Status::Dash);
 		playerAnimation.Play("animations/Dash.csv");
@@ -532,7 +537,7 @@ void Player::UpdateFallingDown(float dt)
 		playerAnimation.Play("animations/Climbing.csv");
 		return;
 	}
-	if(isMiddleRightColliding && h > 0)
+	if (isMiddleRightColliding && h > 0)
 	{
 		speed = 200;
 		isDash = false;
@@ -593,7 +598,7 @@ void Player::UpdateDash(float dt)
 	speed = 400;
 	isCantFlip = true;
 	isDash = true;
-	if (InputMgr::GetKeyDown(sf::Keyboard::Space))
+	if (InputMgr::GetKeyDown(sf::Keyboard::Space) && !isWait)
 	{
 		isJump = true;
 		isGrounded = false;
@@ -636,6 +641,10 @@ void Player::UpdateClimbing(float dt)
 	if (InputMgr::GetKeyDown(sf::Keyboard::Space))
 	{
 		isJump = true;
+		if (InputMgr::GetKey(sf::Keyboard::C))
+		{
+			speed = 400;
+		}
 		if (isMiddleRightColliding)
 		{
 			position.x -= 1.f;
@@ -752,6 +761,15 @@ void Player::UpdateWallJump(float dt)
 }
 void Player::UpdateHit(float dt)
 {
+	isCharge = false;
+	maxChargeTimer = 0;
+	sf::Color color(255, 255, 255, 255); // 원래 색으로 돌아옴
+	sprite.setColor(color);
+	effect.setColor(color);
+	if (isMiddleLeftColliding || isMiddleRightColliding)
+	{
+		velocity.x = 0;
+	}
 	isCantFlip = true;
 	isDash = false;
 	speed = 200;
@@ -780,11 +798,12 @@ void Player::UpdateDie(float dt)
 
 void Player::OnDamage(int damage)
 {
-	
+
 	if (side == Sides::Right)
 	{
 		velocity.x -= 40;
 		velocity.y = -80;
+		if (!isSlopeColliding)
 		isJump = true;
 		isGrounded = false;
 	}
@@ -792,6 +811,7 @@ void Player::OnDamage(int damage)
 	{
 		velocity.x += 40;
 		velocity.y = -80;
+		if(!isSlopeColliding)
 		isJump = true;
 		isGrounded = false;
 	}
@@ -804,16 +824,12 @@ void Player::OnDamage(int damage)
 
 void Player::LateUpdate(float dt)
 {
-	/*if (InputMgr::GetKeyDown(sf::Keyboard::Q) && currentStatus != Status::Die)
-	{
-		OnDamage(1);
-	}*/
 
 	if (InputMgr::GetKeyDown(sf::Keyboard::F1))
 	{
 		velocity.x = 0;
 		velocity.y = 0;
-		SetPosition({ 200,900 });
+		SetPosition({ 1500,900 });
 	}
 	if (InputMgr::GetKeyDown(sf::Keyboard::F2))
 	{
@@ -877,11 +893,11 @@ void Player::LateUpdate(float dt)
 	endY = std::min(static_cast<int>(MapImage.getSize().y),
 		static_cast<int>(boundingBoxLocalPos.y + 35));
 
-		CheckTopCollision();
-		CheckBottomCollision();
-		CheckRightCollision();
-		CheckLeftCollision();
-		CheckSlopeCollision();
+	CheckTopCollision();
+	CheckBottomCollision();
+	CheckRightCollision();
+	CheckLeftCollision();
+	CheckSlopeCollision();
 
 
 	if (isMiddleRightColliding) // 우측 보정
@@ -904,7 +920,7 @@ void Player::LateUpdate(float dt)
 	}
 	if (isSlopeColliding && isGrounded && velocity.y >= 0.f) // 경사 보정
 	{
- 		position.y -= rollBackSlope - 1;
+		position.y -= rollBackSlope - 1;
 		position.y = std::floor(position.y);
 		rollBackSlope = 0;
 	}
@@ -980,7 +996,7 @@ void Player::CheckBottomCollision()
 		while (BottomCenterPixel == collisionColor)
 		{
 			temp++;
-			BottomCenterPixel = MapImage.getPixel(startX + 15, endY- temp);
+			BottomCenterPixel = MapImage.getPixel(startX + 15, endY - temp);
 		}
 		rollBackBottomCenter = temp;
 	}
@@ -1018,7 +1034,7 @@ void Player::CheckBottomCollision()
 			temp++;
 			BottomRightPixel = MapImage.getPixel(endX - 1, endY - temp);
 		}
-		rollBackSideSlope = std::max(temp , rollBackSideSlope);
+		rollBackSideSlope = std::max(temp, rollBackSideSlope);
 	}
 	else
 	{
@@ -1026,8 +1042,8 @@ void Player::CheckBottomCollision()
 	}
 
 	isBottomColliding = ((isBottomLeftColliding || isBottomRightColliding) || isBottomCenterColliding);
-	if(!isJump)
-	isGrounded = isBottomColliding;
+	if (!isJump)
+		isGrounded = isBottomColliding;
 	isBottomSlopeColliding = (isBottomLeftSlopeColliding || isBottomRightSlopeColliding);
 }
 void Player::CheckRightCollision()

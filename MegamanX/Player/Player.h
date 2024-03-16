@@ -35,7 +35,7 @@ protected:
 	sf::Sprite effect;
 	Animator playerEffectAnimation;
 
-	int HP = 5; // TO-DO 체력 제대로 설정해놓기
+	int HP = 16; 
 	float speed = 200.f;
 	float damageTimer = 0.f; // 무적 타이머
 	sf::Vector2f velocity;
@@ -127,6 +127,8 @@ protected:
 	int rollBackSlope;
 	int rollBackSideSlope;
 
+	bool isWait = false;
+
 public:
 
 	Player(const std::string& name, sf::Image& mapImage);
@@ -134,10 +136,13 @@ public:
 
 	const Status GetPreStatus() { return preStatus; }
 	const Status GetCurrentStatus() {return currentStatus;}
+
 	void SetPlayerStatus(Status status);
 	const float GetDamageTimer() { return damageTimer; }
 	void SetDamageTimer(float t) { damageTimer = t; }
 	const sf::FloatRect GetPlayerBounds() { return playerBounds; }
+	const int GetPlayerLife() { return HP; }
+	void SetWait(bool s) { isWait = s; }
 
 	void Shoot();
 	void ChargeShoot();

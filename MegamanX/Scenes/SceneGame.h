@@ -2,6 +2,7 @@
 #include "Scene.h"
 
 class Player;
+class Boss;
 class SpriteGo;
 
 class SceneGame : public Scene
@@ -25,6 +26,7 @@ protected:
 
 	Status currentStatus;
 	Player* player = nullptr;
+	Boss* boss = nullptr;
 	sf::FloatRect viewBounds;
 	sf::Vector2f viewSize = { 284, 244 };
 
@@ -38,13 +40,24 @@ protected:
 	float viewXMin;
 	float viewYMax;
 	float viewYMin;
-
+	bool onBoss = false;
 
 public:
 	SceneGame(SceneIds id);
 	~SceneGame() override = default;
 
 	std::list<GameObject*> enemyList;
+	std::vector<SpriteGo*> lifeGaugeList;
+	std::vector<SpriteGo*> bossGaugeList;
+	
+	float bossGaugeTimer = 0.f;
+	int bossHp = 0;
+	int bossHPAnimationCount = 0;
+	bool appearAnimation = false;
+	bool bossFight = false;
+
+	SpriteGo* playerLife = nullptr;
+	SpriteGo* bossLife = nullptr;
 
 	SpriteGo* background = nullptr;
 	SpriteGo* maptest = nullptr;
@@ -59,6 +72,8 @@ public:
 	const std::list<GameObject*>& GetEnemyList() const { return enemyList; }
 
 	void SetStatus(Status newStatus);
+	void SetAppearAnimation(bool s) { appearAnimation = s; }
+
 	sf::Vector2f GetPlayerPostion();
 	sf::FloatRect GetViewBounds() const { return viewBounds; }
 	bool isStart = true;
