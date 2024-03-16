@@ -502,6 +502,11 @@ void SceneGame::LateUpdate(float dt)
 	}
 	// 3번 구역 카메라 제한
 
+	if (player->GetPosition().x > 7427 && !onWatingRoom)
+	{
+		onWatingRoom = true;
+	}
+
 	if (player->GetPosition().x > 7750 && !onBoss)
 	{
 		boss->SetActive(true);
@@ -512,8 +517,10 @@ void SceneGame::LateUpdate(float dt)
 	worldViewCenter.x = Utils::Clamp(worldViewCenter.x, viewXMin, viewXMax);
 	worldViewCenter.y = Utils::Clamp(worldViewCenter.y, viewYMin, viewYMax);
 
-	worldView.setCenter(worldViewCenter);
-
+	if (!onWatingRoom && !onBoss)
+	{
+		worldView.setCenter(worldViewCenter);
+	}
 
 	worldViewMoment = worldViewCenter - preWorldViewCenter;
 	backgroundViewMoment = worldViewMoment * 0.5f;
@@ -523,11 +530,21 @@ void SceneGame::LateUpdate(float dt)
 		backgroundViewCenter.y = worldViewCenter.y + 30;
 		isStart = false;
 	}
-	backgroundView.setCenter(backgroundViewCenter);
+
+	if (!onWatingRoom && !onBoss)
+	{
+		backgroundView.setCenter(backgroundViewCenter);
+	}
 	if (bossFight)
 	{
 		worldView.setCenter({ 7668 + viewSize.x / 2, viewSize.y / 2});
 	}
+
+	//if (onWatingRoom)
+	//{
+	//	worldView.setCenter(worldViewCenter);
+	//} TO-DO 월드뷰 이동, 월드뷰센터를 조절하는게 나을지도
+
 
 }
 

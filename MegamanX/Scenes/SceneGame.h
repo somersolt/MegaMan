@@ -41,6 +41,8 @@ protected:
 	float viewYMax;
 	float viewYMin;
 	bool onBoss = false;
+	bool onWatingRoom = false;
+
 
 public:
 	SceneGame(SceneIds id);
