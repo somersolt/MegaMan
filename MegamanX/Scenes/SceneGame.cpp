@@ -11,6 +11,7 @@
 #include "Enemy/Bee2.h"
 #include "Enemy/Ostrich.h"
 #include "Enemy/Boss.h"
+#include "Enemy/Tree.h"
 #include "Blizzard.h"
 
 SceneGame::SceneGame(SceneIds id) : Scene(id)
@@ -33,7 +34,6 @@ void SceneGame::SetStatus(Status newStatus)
 
 void SceneGame::Init()
 {
-
 
 	background = new SpriteGo("background");
 	background->SetTexture("graphics/background.png");
@@ -78,158 +78,11 @@ void SceneGame::Init()
 	stump2->SetOrigin(Origins::BC);
 	stump2->SetPosition({ 950, 865 });
 
-	Lumberjack* lumberjack = new Lumberjack("enemy", collisionMapImage, "stump1");
-	AddGo(lumberjack);
-	lumberjack->SetOrigin(Origins::BC);
-	lumberjack->SetPosition({ 495, 900 });
+	EnemySummon();
 
-	Lumberjack* lumberjack2 = new Lumberjack("enemy", collisionMapImage, "stump2");
-	AddGo(lumberjack2);
-	lumberjack2->SetOrigin(Origins::BC);
-	lumberjack2->SetPosition({ 1005, 865 });
+	BossSummon();
 
-	SnowThrower* snowThrower1 = new SnowThrower("enemy", collisionMapImage);
-	AddGo(snowThrower1);
-	snowThrower1->SetOrigin(Origins::BC);
-	snowThrower1->SetPosition({ 6611, 353 });
-
-	SnowThrower* snowThrower2 = new SnowThrower("enemy", collisionMapImage);
-	AddGo(snowThrower2);
-	snowThrower2->SetOrigin(Origins::BC);
-	snowThrower2->SetPosition({ 6759, 368 });
-
-	SnowThrower* snowThrower3 = new SnowThrower("enemy", collisionMapImage);
-	AddGo(snowThrower3);
-	snowThrower3->SetOrigin(Origins::BC);
-	snowThrower3->SetPosition({ 6873, 314 });
-
-	SnowThrower* snowThrower4 = new SnowThrower("enemy", collisionMapImage);
-	AddGo(snowThrower4);
-	snowThrower4->SetOrigin(Origins::BC);
-	snowThrower4->SetPosition({ 7091, 225 });
-
-	SnowThrower* snowThrower5 = new SnowThrower("enemy", collisionMapImage);
-	AddGo(snowThrower5);
-	snowThrower5->SetOrigin(Origins::BC);
-	snowThrower5->SetPosition({ 7315, 145 });
-
-	Bat* bat = new Bat("enemy", collisionMapImage);
-	bat->Init();
-	bat->Reset({ 1663,867 });
-	AddGo(bat);
-	bat->SetOrigin(Origins::BC);
-	bat->SetPosition({ 1663,867 });
-
-	Bat* bat2 = new Bat("enemy", collisionMapImage);
-	bat2->Init();
-	bat2->Reset({ 1788,950 });
-	AddGo(bat2);
-	bat2->SetOrigin(Origins::BC);
-	bat2->SetPosition({ 1788,950 });
-
-	Bat* bat3 = new Bat("enemy", collisionMapImage);
-	bat3->Init();
-	bat3->Reset({ 1816,1015 });
-	AddGo(bat3);
-	bat3->SetOrigin(Origins::BC);
-	bat3->SetPosition({ 1816,1015 });
-
-	Bat* bat4 = new Bat("enemy", collisionMapImage);
-	bat4->Init();
-	bat4->Reset({ 1870, 1090 });
-	AddGo(bat4);
-	bat4->SetOrigin(Origins::BC);
-	bat4->SetPosition({ 1870 ,1090 });
-
-	Bat* bat5 = new Bat("enemy", collisionMapImage);
-	bat5->Init();
-	bat5->Reset({ 1907, 1120 });
-	AddGo(bat5);
-	bat5->SetOrigin(Origins::BC);
-	bat5->SetPosition({ 1907, 1120 });
-	Bat* bat6 = new Bat("enemy", collisionMapImage);
-	bat6->Init();
-	bat6->Reset({ 1937, 1120 });
-	AddGo(bat6);
-	bat6->SetOrigin(Origins::BC);
-	bat6->SetPosition({ 1937, 1120 });
-
-	Bat* bat7 = new Bat("enemy", collisionMapImage);
-	bat7->Init();
-	bat7->Reset({ 2074, 1090 });
-	AddGo(bat7);
-	bat7->SetOrigin(Origins::BC);
-	bat7->SetPosition({ 2074, 1090 });
-	Bat* bat8 = new Bat("enemy", collisionMapImage);
-	bat8->Init();
-	bat8->Reset({ 2265 ,1090 });
-	AddGo(bat8);
-	bat8->SetOrigin(Origins::BC);
-	bat8->SetPosition({ 2265 ,1090 });
-	Bat* bat9 = new Bat("enemy", collisionMapImage);
-	bat9->Init();
-	bat9->Reset({ 2659, 1050 });
-	AddGo(bat9);
-	bat9->SetOrigin(Origins::BC);
-	bat9->SetPosition({ 2659, 1050 });
-
-	Ostrich* ostrich1 = new Ostrich("enemy", collisionMapImage);
-	ostrich1->Init();
-	ostrich1->Reset();
-	AddGo(ostrich1);
-	ostrich1->SetOrigin(Origins::BC);
-	ostrich1->SetPosition({ 3328, 383 });
-	Ostrich* ostrich2 = new Ostrich("enemy", collisionMapImage);
-	ostrich2->Init();
-	ostrich2->Reset();
-	AddGo(ostrich2);
-	ostrich2->SetOrigin(Origins::BC);
-	ostrich2->SetPosition({ 3538 ,447 });
-	Ostrich* ostrich3 = new Ostrich("enemy", collisionMapImage);
-	ostrich3->Init();
-	ostrich3->Reset();
-	AddGo(ostrich3);
-	ostrich3->SetOrigin(Origins::BC);
-	ostrich3->SetPosition({ 3641, 480 });
-	Ostrich* ostrich4 = new Ostrich("enemy", collisionMapImage);
-	ostrich4->Init();
-	ostrich4->Reset();
-	AddGo(ostrich4);
-	ostrich4->SetOrigin(Origins::BC);
-	ostrich4->SetPosition({ 3962, 671 });
-
-	boss = new Boss("enemy", collisionMapImage);
-	boss->Init();
-	boss->Reset();
-	AddGo(boss);
-	boss->SetOrigin(Origins::BC);
-	boss->SetPosition({ 7900, 20 });
-	boss->SetActive(false);
-
-	CreateMonster(monster::rabbit, { 355,930 });
-	CreateMonster(monster::rabbit, { 586,935 });
-	CreateMonster(monster::rabbit, { 774,960 });
-	CreateMonster(monster::rabbit, { 892,892 });
-	CreateMonster(monster::rabbit, { 1189,943 });
-	CreateMonster(monster::bee, { 520,830 });
-	CreateMonster(monster::bee, { 774,875 });
-	CreateMonster(monster::bee, { 1018,820 });
-	CreateMonster(monster::bee, { 1212,820 });
-	CreateMonster(monster::bee2, { 3111,370 });
-	CreateMonster(monster::bee2, { 3242,431 });
-	CreateMonster(monster::bee2, { 3361,384 });
-	CreateMonster(monster::bee2, { 3361,320 });
-	CreateMonster(monster::bee2, { 3650,450 });
-	CreateMonster(monster::bee2, { 3889,600 });
-	CreateWheeler(-1, { 2456, 1168 });
-	CreateWheeler(-1, { 2561, 1155 });
-	CreateWheeler(-1, { 2659, 1123 });
-	CreateWheeler(1, { 2620, 993 });
-	CreateWheeler(1, { 2356, 915 });
-	CreateWheeler(-1, { 2467, 842 });
-	CreateWheeler(-1, { 2643, 787 });
-	CreateWheeler(1, { 2355, 643 });
-
+	//// Ã¼·Â¹Ù UI
 	playerLife = new SpriteGo("lifebar");
 	playerLife->SetTexture("graphics/lifebar.png");
 	AddGo(playerLife, Layers::Ui);
@@ -255,16 +108,18 @@ void SceneGame::Init()
 		AddGo(bossLifeGauge, Layers::Ui);
 	}
 
+	pauseMenu = new SpriteGo("pauseMenu");
+	pauseMenu->SetTexture("graphics/pausemenu.png");
+	AddGo(pauseMenu, Layers::Ui);
+	pauseMenu->SetActive(false);
+
 	Scene::Init();
 
 	worldView.setSize(viewSize);
 	backgroundView.setSize(viewSize);
 	uiView.setSize(viewSize);
 
-	sf::RectangleShape pillar(sf::Vector2f(200, 600));
-	pillar.setPosition(0, 200);
-	pillar.setFillColor(sf::Color::Red);
-
+	currentStatus = Status::Playing;
 }
 
 sf::Vector2f SceneGame::GetPlayerPostion()
@@ -294,6 +149,40 @@ void SceneGame::Exit()
 
 void SceneGame::Update(float dt)
 {
+	std::cout << worldView.getCenter().x << "/" << worldView.getCenter().y << std::endl;
+	if (player->GetCurrentStatus() == Player::Status::Die)
+	{
+		resetTimer += dt;
+		if (resetTimer > 3)
+		{
+			if (isWatingRoom)
+			{
+				resetTimer = 0;
+				player->Reset();
+				player->SetPosition({ 7554, 163 });
+				EnemyClear();
+				BossClear();
+				BossSummon();
+				collisionMapImage = waitingCollisionMapImage;
+				isBossRoom = false;
+				isBossRoomView = false;
+				BossAppear = false;
+				cameraWorkCount = waitingRoomCameraWorkCount + 1;
+				bossHp = 0;
+				bossHPAnimationCount = 0;
+				bossLife->SetActive(false);
+				worldView.setCenter({ 7556 , 122 });
+			}
+			else {
+				resetTimer = 0;
+				player->Reset();
+				EnemyClear();
+				EnemySummon();
+			}
+		}
+
+	}
+
 	bossGaugeTimer += dt;
 	playerLife->SetPosition(worldView.getCenter() - worldView.getSize() / 2.f + sf::Vector2f(10, 70));
 	for (auto& lifegauge : lifeGaugeList) {
@@ -313,6 +202,7 @@ void SceneGame::Update(float dt)
 
 	if (BossAppear)
 	{
+		bossLife->SetActive(true);
 		bossLife->SetPosition(worldView.getCenter() - worldView.getSize() / 2.f + sf::Vector2f(260, 40));
 		for (auto& bosslifegauge : bossGaugeList) {
 			bosslifegauge->SetPosition(sf::Vector2f(0, 0));
@@ -348,18 +238,10 @@ void SceneGame::Update(float dt)
 		}
 
 	}
+	pauseMenu->SetPosition(worldView.getCenter() - worldView.getSize() / 2.f);
 
 	uiView.setCenter(worldView.getCenter());
 	uiView.setSize(worldView.getSize());
-
-	if (InputMgr::GetKeyDown(sf::Keyboard::Q))
-	{
-		mapHitBox->SetActive(true);
-	}
-	if (InputMgr::GetKeyDown(sf::Keyboard::W))
-	{
-		mapHitBox->SetActive(false);
-	}
 
 	FindGoAll("enemy", enemyList, Scene::Layers::World);
 
@@ -368,56 +250,24 @@ void SceneGame::Update(float dt)
 	viewBounds.width = worldView.getCenter().x + worldView.getSize().x / 2.f;
 	viewBounds.height = worldView.getCenter().y + worldView.getSize().y / 2.f;
 
+
+	Test();
+
+	if (InputMgr::GetKeyDown(sf::Keyboard::Escape))
+	{
+		if (currentStatus == Status::Playing)
+		{
+			SetStatus(Status::Pause);
+			pauseMenu->SetActive(true);
+		}
+		else if (currentStatus == Status::Pause)
+		{
+			SetStatus(Status::Playing);
+			pauseMenu->SetActive(false);
+		}
+	}
+
 	Scene::Update(dt);
-
-	if (InputMgr::GetKeyDown(sf::Keyboard::F5))
-	{
-		Bat* bat = new Bat("enemy", collisionMapImage);
-		bat->Init();
-		bat->Reset({ 300, 900 });
-		AddGo(bat);
-		bat->SetOrigin(Origins::BC);
-		bat->SetPosition({ 300, 900 });
-	}
-	if (InputMgr::GetKeyDown(sf::Keyboard::F6))
-	{
-		Bee* bee = new Bee("enemy", collisionMapImage);
-		bee->Init();
-		bee->Reset();
-		AddGo(bee);
-		bee->SetOrigin(Origins::BC);
-		bee->SetPosition({ 300, 850 });
-	}
-
-	if (InputMgr::GetKeyDown(sf::Keyboard::F7))
-	{
-		Bee2* bee2 = new Bee2("enemy", collisionMapImage);
-		bee2->Init();
-		bee2->Reset();
-		AddGo(bee2);
-		bee2->SetOrigin(Origins::BC);
-		bee2->SetPosition({ 300, 850 });
-	}
-
-	if (InputMgr::GetKeyDown(sf::Keyboard::F8))
-	{
-		Ostrich* ostrich = new Ostrich("enemy", collisionMapImage);
-		ostrich->Init();
-		ostrich->Reset();
-		AddGo(ostrich);
-		ostrich->SetOrigin(Origins::BC);
-		ostrich->SetPosition({ 300, 850 });
-	}
-
-	if (InputMgr::GetKeyDown(sf::Keyboard::F9))
-	{
-		Wheeler* wheeler = new Wheeler("enemy", collisionMapImage);
-		wheeler->Init();
-		wheeler->Reset(-1);
-		AddGo(wheeler);
-		wheeler->SetOrigin(Origins::BC);
-		wheeler->SetPosition({ 2440, 680 });
-	}
 }
 
 void SceneGame::LateUpdate(float dt)
@@ -569,6 +419,7 @@ void SceneGame::LateUpdate(float dt)
 		cameraWorkTimer += dt;
 		if (cameraWorkTimer > 0.02)
 		{
+			player->SetWait(true);
 			worldView.move({ 2,0 });
 			player->SetPosition({ player->GetPosition().x + 0.2f, player->GetPosition().y });
 			cameraWorkTimer = 0;
@@ -684,7 +535,36 @@ void SceneGame::CreateMonster(monster monster, sf::Vector2f pos)
 		bee2->SetOrigin(Origins::BC);
 		bee2->SetPosition(pos);
 	}
-
+	break;
+	case SceneGame::monster::snowThrower:
+	{
+		SnowThrower* snowThrower = new SnowThrower("enemy", collisionMapImage);
+		snowThrower->Init();
+		snowThrower->Reset();
+		AddGo(snowThrower);
+		snowThrower->SetOrigin(Origins::BC);
+		snowThrower->SetPosition(pos);
+	}
+	break;
+	case SceneGame::monster::bat:
+	{
+		Bat* bat = new Bat("enemy", collisionMapImage);
+		bat->Init();
+		bat->Reset(pos);
+		AddGo(bat);
+		bat->SetOrigin(Origins::BC);
+		bat->SetPosition(pos);
+	}
+	break;
+	case SceneGame::monster::ostrich:
+	{
+		Ostrich* ostrich = new Ostrich("enemy", collisionMapImage);
+		ostrich->Init();
+		ostrich->Reset();
+		AddGo(ostrich);
+		ostrich->SetOrigin(Origins::BC);
+		ostrich->SetPosition(pos);
+	}
 	break;
 	}
 }
@@ -699,6 +579,16 @@ void SceneGame::CreateWheeler(int g, sf::Vector2f pos)
 	wheeler->SetPosition(pos);
 }
 
+void SceneGame::CreateLumberjack(std::string name, sf::Vector2f pos)
+{
+	Lumberjack* lumberjack = new Lumberjack("enemy", collisionMapImage, name);
+	lumberjack->Init();
+	lumberjack->Reset();
+	AddGo(lumberjack);
+	lumberjack->SetOrigin(Origins::BC);
+	lumberjack->SetPosition(pos);
+}
+
 void SceneGame::BlizzardEffect()
 {
 	Blizzard* blizzard = new Blizzard("blizzard");
@@ -707,4 +597,162 @@ void SceneGame::BlizzardEffect()
 	blizzard->Reset();
 	blizzard->SetOrigin(Origins::TL);
 	blizzard->SetPosition({ viewBounds.left,viewBounds.top });
+}
+
+void SceneGame::EnemyClear()
+{
+	for (auto it = enemyList.begin(); it != enemyList.end(); )
+	{
+		GameObject* go = *it;
+		if (go == nullptr)
+		{
+			break;
+		}
+		if (dynamic_cast<Boss*>(go) != nullptr || dynamic_cast<Tree*>(go) != nullptr)
+		{
+			++it;
+			continue;
+		}
+		it = enemyList.erase(it);
+		RemoveGo(go);
+	}
+}
+
+void SceneGame::EnemySummon()
+{
+	CreateLumberjack("stump1", { 495, 900 });
+	CreateLumberjack("stump2", { 1005, 865 });
+
+	CreateMonster(monster::rabbit, { 355,930 });
+	CreateMonster(monster::rabbit, { 586,935 });
+	CreateMonster(monster::rabbit, { 774,960 });
+	CreateMonster(monster::rabbit, { 892,892 });
+	CreateMonster(monster::rabbit, { 1189,943 });
+	CreateMonster(monster::bee, { 520,830 });
+	CreateMonster(monster::bee, { 774,875 });
+	CreateMonster(monster::bee, { 1018,820 });
+	CreateMonster(monster::bee, { 1212,820 });
+	CreateMonster(monster::bee2, { 3111,370 });
+	CreateMonster(monster::bee2, { 3242,431 });
+	CreateMonster(monster::bee2, { 3361,384 });
+	CreateMonster(monster::bee2, { 3361,320 });
+	CreateMonster(monster::bee2, { 3650,450 });
+	CreateMonster(monster::bee2, { 3889,600 });
+	CreateWheeler(-1, { 2456, 1168 });
+	CreateWheeler(-1, { 2561, 1155 });
+	CreateWheeler(-1, { 2659, 1123 });
+	CreateWheeler(1, { 2620, 993 });
+	CreateWheeler(1, { 2356, 915 });
+	CreateWheeler(-1, { 2467, 842 });
+	CreateWheeler(-1, { 2643, 787 });
+	CreateWheeler(1, { 2355, 643 });
+	CreateMonster(monster::snowThrower, { 6611, 353 });
+	CreateMonster(monster::snowThrower, { 6759, 368 });
+	CreateMonster(monster::snowThrower, { 6873, 314 });
+	CreateMonster(monster::snowThrower, { 7091, 225 });
+	CreateMonster(monster::snowThrower, { 7315, 145 });
+	CreateMonster(monster::bat, { 1663,867 });
+	CreateMonster(monster::bat, { 1788,950 });
+	CreateMonster(monster::bat, { 1816,1015 });
+	CreateMonster(monster::bat, { 1870 ,1090 });
+	CreateMonster(monster::bat, { 1907, 1120 });
+	CreateMonster(monster::bat, { 1937, 1120 });
+	CreateMonster(monster::bat, { 2074, 1090 });
+	CreateMonster(monster::bat, { 2265 ,1090 });
+	CreateMonster(monster::bat, { 2659, 1050 });
+	CreateMonster(monster::ostrich, { 3328, 383 });
+	CreateMonster(monster::ostrich, { 3538 ,447 });
+	CreateMonster(monster::ostrich, { 3641, 480 });
+	CreateMonster(monster::ostrich, { 3962, 671 });
+
+}
+
+void SceneGame::BossClear()
+{
+	RemoveGo(boss);
+}
+
+void SceneGame::BossSummon()
+{
+	boss = new Boss("enemy", collisionMapImage);
+	boss->Init();
+	boss->Reset();
+	AddGo(boss);
+	boss->SetOrigin(Origins::BC);
+	boss->SetPosition({ 7900, 20 });
+	boss->SetActive(false);
+}
+
+void SceneGame::Test()
+{
+	if (InputMgr::GetKeyDown(sf::Keyboard::J))
+	{
+		player->OnDamage(10);
+	}
+	//if (InputMgr::GetKeyDown(sf::Keyboard::J))
+	//{
+	//	EnemyClear();
+	//}
+	//if (InputMgr::GetKeyDown(sf::Keyboard::K))
+	//{
+	//	EnemySummon();
+	//}
+
+	if (InputMgr::GetKeyDown(sf::Keyboard::Q))
+	{
+		mapHitBox->SetActive(true);
+	}
+	if (InputMgr::GetKeyDown(sf::Keyboard::W))
+	{
+		mapHitBox->SetActive(false);
+	}
+
+	if (InputMgr::GetKeyDown(sf::Keyboard::F5))
+	{
+		Bat* bat = new Bat("enemy", collisionMapImage);
+		bat->Init();
+		bat->Reset({ 300, 900 });
+		AddGo(bat);
+		bat->SetOrigin(Origins::BC);
+		bat->SetPosition({ 300, 900 });
+	}
+	if (InputMgr::GetKeyDown(sf::Keyboard::F6))
+	{
+		Bee* bee = new Bee("enemy", collisionMapImage);
+		bee->Init();
+		bee->Reset();
+		AddGo(bee);
+		bee->SetOrigin(Origins::BC);
+		bee->SetPosition({ 300, 850 });
+	}
+
+	if (InputMgr::GetKeyDown(sf::Keyboard::F7))
+	{
+		Bee2* bee2 = new Bee2("enemy", collisionMapImage);
+		bee2->Init();
+		bee2->Reset();
+		AddGo(bee2);
+		bee2->SetOrigin(Origins::BC);
+		bee2->SetPosition({ 300, 850 });
+	}
+
+	if (InputMgr::GetKeyDown(sf::Keyboard::F8))
+	{
+		Ostrich* ostrich = new Ostrich("enemy", collisionMapImage);
+		ostrich->Init();
+		ostrich->Reset();
+		AddGo(ostrich);
+		ostrich->SetOrigin(Origins::BC);
+		ostrich->SetPosition({ 300, 850 });
+	}
+
+	if (InputMgr::GetKeyDown(sf::Keyboard::F9))
+	{
+		Wheeler* wheeler = new Wheeler("enemy", collisionMapImage);
+		wheeler->Init();
+		wheeler->Reset(-1);
+		AddGo(wheeler);
+		wheeler->SetOrigin(Origins::BC);
+		wheeler->SetPosition({ 2440, 680 });
+	}
 }

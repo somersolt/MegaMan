@@ -50,7 +50,7 @@ void Boss::Reset()
 		ToShot);
 	EnemyAnimation.AddEvent("animations/boss/Shot.csv", 15,
 		ToShot);
-	EnemyAnimation.AddEvent("animations/boss/Shot.csv", 17,
+	EnemyAnimation.AddEvent("animations/boss/Shot.csv", 16,
 		ToIdle);
 	EnemyAnimation.AddEvent("animations/boss/Appear.csv", 17,
 		[=]() {sceneGame->SetAppearAnimation(true); });
@@ -151,6 +151,7 @@ void Boss::Update(float dt)
 
 void Boss::UpdateAppear(float dt)
 {
+	player->SetWait(true);
 	if (isGrounded && !isappear)
 	{
 		EnemyAnimation.Play("animations/boss/Appear.csv");
@@ -165,7 +166,7 @@ void Boss::UpdateIdle(float dt)
 	int skill = -1;
 	if (skillTimer > 2 && !onSkill)
 	{
-		skill = Utils::RandomRange(0, 9);
+		skill = Utils::RandomRange(0, 12);
 	}
 
 	switch (skill)
@@ -173,34 +174,36 @@ void Boss::UpdateIdle(float dt)
 	case 0:
 	case 1:
 	case 2:
+	case 3:
 		EnemyAnimation.Play("animations/boss/Shot.csv");
 		skillTimer = 0;
 		break;
-	case 3:
+	case 4:
+	case 5:
 		Jump();
 		skillTimer = 0;
 		break;
-	case 4:
+	case 6:
 		ToIdle();
 		skillTimer = 0;
 		break;
-	case 5:
-	case 6:
+	case 7:
+	case 8:
 
 		EnemyAnimation.Play("animations/boss/Sliding.csv");
 		skillTimer = 0;
 		onSkill = true;
 		SetBossStatus(BossStatus::Sliding);
 		break;
-
-	case 7:
+	case 9:
+	case 10:
 		EnemyAnimation.Play("animations/boss/Breath.csv");
 		skillTimer = 0;
 		onSkill = true;
 		SummonIceStatue();
 		SetBossStatus(BossStatus::Breath);
 		break;
-	case 8:
+	case 11:
 		Hang();
 		break;
 	default:
@@ -312,6 +315,7 @@ void Boss::UpdateHit(float dt)
 
 void Boss::UpdateDie(float dt)
 {
+	player->SetWait(true);
 	speed = 0;
 	sprite.setColor({ 255,255,255,255 });
 	EnemyAnimation.Stop();
@@ -332,6 +336,7 @@ void Boss::UpdateDie(float dt)
 	if (dieTimer > 5.f)
 	{
 		SetActive(false);
+		player->SetPlayerStatus(Player::Status::Victory);
 	}
 }
 
@@ -409,6 +414,7 @@ void Boss::LateUpdate(float dt)
 	}
 	if (Hp <= 0)
 	{
+		sceneGame->EnemyClear();
 		SetBossStatus(BossStatus::Die);
 	}
 
@@ -544,6 +550,7 @@ void Boss::Jump()
 
 void Boss::IceBreath()
 {
+	isSuperArmor = true;
 	onSkill = true;
 	EnemyShot* iceBreat = new EnemyShot("iceBreat");
 	iceBreat->Init("animations/boss/BreathBullet.csv", "graphics/boss/breathe.png");

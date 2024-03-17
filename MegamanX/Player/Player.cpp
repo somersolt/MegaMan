@@ -129,25 +129,26 @@ void Player::Init()
 	playerAnimation.SetTarget(&sprite);
 	playerEffectAnimation.SetTarget(&effect);
 	textureId = "graphics/xsheet.png";
-
+	sceneGame = dynamic_cast<SceneGame*>(SCENE_MGR.GetCurrentScene());
+	MapImage = sceneGame->collisionMapImage;
 }
 
 void Player::Reset()
 {
 	SpriteGo::Reset();
-	sceneGame = dynamic_cast<SceneGame*>(SCENE_MGR.GetCurrentScene());
-	MapImage = sceneGame->collisionMapImage;
 	//게임 씬 동기화
 
 	playerAnimation.ClearEvent();
 	playerEffectAnimation.ClearEvent();
-	playerAnimation.Play("animations/Idle.csv");
-	SetPlayerStatus(Status::Idle);
+	playerAnimation.Play("animations/Appear.csv");
+	SetPlayerStatus(Status::Appear);
 	SetOrigin(Origins::BC);
-	SetPosition({ 150,900 });
+	SetPosition({ 150,940 });
+	isJump = false;
 	isGrounded = true;
 	SetFlipX(false);
 	side = Sides::Right;
+	HP = 16;
 	// 플레이어 애니메이션 세팅
 
 	playerHitBox.setSize({ 30.f, 35.f });
@@ -161,13 +162,17 @@ void Player::Reset()
 	playerAnimation.AddEvent("animations/Dash.csv", 3, ToIdle);
 	playerAnimation.AddEvent("animations/Shot.csv", 6, ToIdle);
 	playerAnimation.AddEvent("animations/Hit.csv", 5, ToIdle);
+	playerAnimation.AddEvent("animations/Appear.csv", 10, ToIdle);
 
 	std::function<void()> ToShot = std::bind(&Player::ShotAnimation, this);
 	playerAnimation.AddEvent("animations/DashShot.csv", 3, ToShot);
+	playerAnimation.AddEvent("animations/Victory.csv", 26,
+		[=]() {SetActive(false); });
 }
 
 void Player::IdleAnimation()
 {
+	isWait = false;
 	playerAnimation.Play("animations/Idle.csv");
 	SetPlayerStatus(Status::Idle);
 	speed = 200;
@@ -356,6 +361,9 @@ void Player::Update(float dt)
 	{
 	case Player::None:
 		break;
+	case Player::Appear:
+		UpdateAppear(dt);
+		break;
 	case Player::Idle:
 		UpdateIdle(dt);
 		break;
@@ -386,9 +394,17 @@ void Player::Update(float dt)
 	case Player::Die:
 		UpdateDie(dt);
 		break;
+	case Player::Victory:
+		UpdateVictory(dt);
+		break;
 	default:
 		break;
 	}
+}
+
+void Player::UpdateAppear(float dt)
+{
+	isWait = true;
 }
 
 void Player::UpdateIdle(float dt)
@@ -796,6 +812,16 @@ void Player::UpdateDie(float dt)
 	//sceneGame->SetStatus(SceneGame::Status::Pause);
 }
 
+void Player::UpdateVictory(float dt)
+{
+	isWait = true;
+	if (isVictory == false)
+	{
+		isVictory = true;
+		playerAnimation.Play("animations/Victory.csv");
+	}
+}
+
 void Player::OnDamage(int damage)
 {
 
@@ -909,7 +935,7 @@ void Player::LateUpdate(float dt)
 	CheckRightCollision();
 	CheckLeftCollision();
 	CheckSlopeCollision();
-
+	CheckFallenCollision();
 
 	if (isMiddleRightColliding) // 우측 보정
 	{
@@ -1235,6 +1261,15 @@ void Player::CheckSlopeCollision()
 		rollBackSlope = 0;
 	}
 	isSlopeGrounded = isSlopeColliding;
+}
+
+void Player::CheckFallenCollision()
+{
+	sf::Color TopCenterPixel = MapImage.getPixel(startX + 15, startY);
+	if (TopCenterPixel == fallenCollisionColor)
+	{
+		HP = 0;
+	}
 }
 
 void Player::Draw(sf::RenderWindow& window)

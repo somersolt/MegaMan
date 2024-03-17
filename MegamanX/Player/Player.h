@@ -10,6 +10,7 @@ public:
 	enum Status
 	{
 		None,
+		Appear,
 		Idle,
 		Run,
 		JumpingUp,
@@ -20,6 +21,7 @@ public:
 		WallJump,
 		Hit,
 		Die,
+		Victory,
 	};
 
 protected:
@@ -28,9 +30,10 @@ protected:
 	Animator playerAnimation; // sprite와는 별개
 	sf::RectangleShape playerHitBox;  //충돌박스 표시
 	sf::FloatRect playerBounds;
-	sf::Color collisionColor = { 255 , 0 , 0 }; // 충돌 색깔 - 빨간색
-	sf::Color sideCollisionColor = { 0 , 255 , 0 }; // 충돌 색깔 - 초록색
-	sf::Color slopeCollisionColor = { 0 , 0 , 255 }; // 충돌 색깔 - 파란색
+	sf::Color collisionColor = { 255 , 0 , 0 }; // 충돌 색깔 - 빨간색 (바닥)
+	sf::Color sideCollisionColor = { 0 , 255 , 0 }; // 충돌 색깔 - 초록색 (벽)
+	sf::Color slopeCollisionColor = { 0 , 0 , 255 }; // 충돌 색깔 - 파란색 (경사)
+	sf::Color fallenCollisionColor = { 255 , 255 , 0 }; // 충돌 색깔 - 노란색 (추락)
 
 	sf::Sprite effect;
 	Animator playerEffectAnimation;
@@ -125,6 +128,7 @@ protected:
 	int rollBackSideSlope;
 
 	bool isWait = false;
+	bool isVictory = false;
 	bool wind = false;
 	Sides windSide = Sides::Left;
 
@@ -153,6 +157,7 @@ public:
 	void Reset() override;
 	void Update(float dt) override;
 
+	void UpdateAppear(float dt);
 	void UpdateIdle(float dt);
 	void UpdateRun(float dt);
 	void UpdateJumpingUp(float dt);
@@ -163,6 +168,7 @@ public:
 	void UpdateWallJump(float dt);
 	void UpdateHit(float dt);
 	void UpdateDie(float dt);
+	void UpdateVictory(float dt);
 
 	void OnDamage(int damage);
 
@@ -174,6 +180,7 @@ public:
 	void CheckLeftCollision();
 	void CheckTopCollision();
 	void CheckSlopeCollision();
+	void CheckFallenCollision();
 
 	void Draw(sf::RenderWindow& window) override;
 };

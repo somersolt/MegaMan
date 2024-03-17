@@ -19,7 +19,10 @@ public:
 		None = -1,
 		rabbit,
 		bee,
-		bee2
+		bee2,
+		snowThrower,
+		bat,
+		ostrich,
 	};
 
 protected:
@@ -44,6 +47,8 @@ protected:
 	bool isWatingRoom = false;
 	bool BossAppear = false;
 
+	float resetTimer = 0.f;
+
 public:
 	SceneGame(SceneIds id);
 	~SceneGame() override = default;
@@ -66,6 +71,7 @@ public:
 
 	SpriteGo* playerLife = nullptr;
 	SpriteGo* bossLife = nullptr;
+	SpriteGo* pauseMenu = nullptr;
 
 	SpriteGo* background = nullptr;
 	SpriteGo* maptest = nullptr;
@@ -108,6 +114,15 @@ public:
 
 	void CreateMonster(monster monster, sf::Vector2f pos);
 	void CreateWheeler(int g , sf::Vector2f pos);
+	void CreateLumberjack(std::string name, sf::Vector2f pos);
 	void BlizzardEffect();
+
+
+	void EnemyClear();
+	void EnemySummon();
+
+	void BossClear();
+	void BossSummon();
+	void Test();
 };
 

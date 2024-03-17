@@ -14,13 +14,13 @@ void Tree::Init()
 {
 	SpriteGo::Init();
 	textureId = "graphics/stump2.png";
+	sceneGame = dynamic_cast<SceneGame*>(SCENE_MGR.GetCurrentScene());
+	player = dynamic_cast<Player*>(SCENE_MGR.GetCurrentScene()->FindGo("player"));
 }
 
 void Tree::Reset()
 {
 	SpriteGo::Reset();
-	sceneGame = dynamic_cast<SceneGame*>(SCENE_MGR.GetCurrentScene());
-	player = dynamic_cast<Player*>(SCENE_MGR.GetCurrentScene()->FindGo("player"));
 	if (stumpName == "stump1")
 	{
 		stump = dynamic_cast<Stump*>(SCENE_MGR.GetCurrentScene()->FindGo("stump1"));

@@ -1,0 +1,31 @@
+ID,FPS,"LOOPTYPE (0: Single, 1: Loop, 2: PingPong)",,
+Victory,20,0,,
+,,,,
+TEXTURE ID,LEFT,TOP,WIDTH,HEIGHT
+graphics/xsheet.png,320,0,35,51
+graphics/xsheet.png,320,0,35,51
+graphics/xsheet.png,320,0,35,51
+graphics/xsheet.png,320,0,35,51
+graphics/xsheet.png,320,0,35,51
+graphics/xsheet.png,320,0,35,51
+graphics/xsheet.png,320,0,35,51
+graphics/xsheet.png,320,0,35,51
+graphics/player/Victory.png,0,0,34,48
+graphics/player/Victory2.png,0,0,34,48
+graphics/player/Victory3.png,0,0,34,48
+graphics/player/Victory4.png,0,0,34,48
+graphics/player/Victory5.png,0,0,34,48
+graphics/player/Victory.png,0,0,34,48
+graphics/player/Victory.png,0,0,34,48
+graphics/player/Victory.png,0,0,34,48
+graphics/player/Victory.png,0,0,34,48
+graphics/player/Victory.png,0,0,34,48
+graphics/player/Victory.png,0,0,34,48
+graphics/player/Victory.png,0,0,34,48
+graphics/player/Victory.png,0,0,34,48
+graphics/player/Appear2.png,0,0,30,48
+graphics/player/Appear2.png,0,0,30,48
+graphics/player/Appear2.png,0,0,28,48
+graphics/player/Appear1.png,0,0,28,48
+graphics/player/Appear1.png,0,0,28,48
+graphics/player/Appear1.png,0,0,28,48

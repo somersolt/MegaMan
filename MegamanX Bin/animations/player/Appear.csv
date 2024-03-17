@@ -1,0 +1,12 @@
+ID,FPS,"LOOPTYPE (0: Single, 1: Loop, 2: PingPong)",,
+Appear,20,0,,
+,,,,
+TEXTURE ID,LEFT,TOP,WIDTH,HEIGHT
+graphics/player/Appear1.png,0,0,28,48
+graphics/player/Appear2.png,0,0,30,48
+graphics/player/Appear3.png,0,0,30,48
+graphics/player/Appear4.png,0,0,30,48
+graphics/player/Appear5.png,0,0,30,48
+graphics/player/Appear6.png,0,0,30,48
+graphics/player/Appear7.png,0,0,30,48
+graphics/xsheet.png,320,0,35,51
