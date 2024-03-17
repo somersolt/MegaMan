@@ -149,7 +149,6 @@ void SceneGame::Exit()
 
 void SceneGame::Update(float dt)
 {
-	std::cout << worldView.getCenter().x << "/" << worldView.getCenter().y << std::endl;
 	if (player->GetCurrentStatus() == Player::Status::Die)
 	{
 		resetTimer += dt;
